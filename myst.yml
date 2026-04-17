@@ -12,8 +12,6 @@ project:
     - reproducible research
   license: MIT
   open_access: true
-  authors:
-    - id: ai-pipeline
   plugins:
     - plugins/citation-annotation-plugin.mjs
     - plugins/authorship-plugin.mjs
