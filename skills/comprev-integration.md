@@ -8,7 +8,7 @@ Phase 10 (six-pass integration across all sections) and Phase 11 (Introduction, 
 
 ## Phase 10: Integration
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE
+**Agent:** LITREVIEW
 
 **PREREQUISITE:**
 ```python
@@ -69,7 +69,7 @@ advance_phase('6_integration', '<saved_version_id>')
 
 ## Phase 11: Introduction and Conclusion
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE
+**Agent:** LITREVIEW
 
 **MANDATORY:** Written AFTER all body sections are complete and integrated. Writing them first commits to conclusions before evidence is reviewed.
 

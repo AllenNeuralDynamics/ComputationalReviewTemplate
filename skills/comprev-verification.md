@@ -8,9 +8,9 @@ Phase 15 delegation template. Verify citation triples: DOI resolution, title mat
 
 ## Phase 15: Citation Verification
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per batch of 18 triples — ALL triples must be verified, no sampling)
+**Agent:** LITREVIEW (parallel — one per batch of 18 triples — ALL triples must be verified, no sampling)
 
-**AGENT ENFORCEMENT:** Phase 15 MUST be delegated to EXPERT_CRITICAL_LITERATURE_REVIE, 
+**AGENT ENFORCEMENT:** Phase 15 MUST be delegated to LITREVIEW, 
 NOT to DATAML. The 5-step verification requires abstract-level semantic checking that 
 DATAML cannot perform. A mechanical DOI-exists check is NOT a substitute for verifying 
 that the claimed finding actually matches the paper's abstract.

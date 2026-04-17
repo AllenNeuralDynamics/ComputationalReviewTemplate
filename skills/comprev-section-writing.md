@@ -11,7 +11,7 @@ Phase 7 delegation template for section writers. Draft one section of the review
 
 ## Phase 7: Section Drafting
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per section)
+**Agent:** LITREVIEW (parallel — one per section)
 
 Section writers load `comprev-figure-construction` for figure production.
 

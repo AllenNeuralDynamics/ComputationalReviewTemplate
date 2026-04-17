@@ -1,5 +1,5 @@
 ## Purpose
-Worker skill for EXPERT_CRITICAL_LITERATURE_REVIE agents conducting evidence gathering and section writing in scientific reviews. Defines HOW to evaluate literature, gather evidence, and write review prose. The orchestrator skill defines WHEN and WHAT — this skill defines HOW.
+Worker skill for LITREVIEW agents conducting evidence gathering and section writing in scientific reviews. Defines HOW to evaluate literature, gather evidence, and write review prose. The orchestrator skill defines WHEN and WHAT — this skill defines HOW.
 
 ** For figure production, load the skill `comprev-figure-construction`.
 

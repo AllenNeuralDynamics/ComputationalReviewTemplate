@@ -8,7 +8,7 @@ Phase 4 delegation template. Build the architectural scaffold (argument arc, sec
 
 ## Phase 4: Scaffold Construction
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE
+**Agent:** LITREVIEW
 
 **Input:** The condensed scaffold input from the Phase 3 transition (not the raw evidence artifacts).
 

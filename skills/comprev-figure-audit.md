@@ -8,7 +8,7 @@ Phase 6 delegation template for BLINDED figure auditors. Evaluate whether cross-
 
 ## Phase 6: Figure Comparability Audit
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per ~4 comparisons)
+**Agent:** LITREVIEW (parallel — one per ~4 comparisons)
 
 **PREREQUISITE:**
 ```python

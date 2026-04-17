@@ -8,7 +8,7 @@ Phase 2 delegation template for EXPERT evidence-gathering agents. Each agent sea
 
 ## Phase 2: Evidence Gathering
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per topic cluster) 
+**Agent:** LITREVIEW (parallel — one per topic cluster) 
 
 **Database selection:** The specific literature databases depend on the review's domain. This skill references PubMed, Europe PMC, bioRxiv, and medRxiv as examples because its initial deployment was in biomedical sciences. For other domains, substitute the appropriate databases:
 - **Biomedical / life sciences:** PubMed, Europe PMC, bioRxiv, medRxiv

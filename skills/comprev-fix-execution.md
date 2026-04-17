@@ -8,7 +8,7 @@ Phase 17 delegation template. Execute citation fixes: replace bib entries, corre
 
 ## Phase 17: Fix Execution
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per fix batch)
+**Agent:** LITREVIEW (parallel — one per fix batch)
 
 Two types of fixes, handled differently:
 

@@ -8,7 +8,7 @@ Phase 8 delegation template for BLINDED section critics. Evaluate sections for u
 
 ## Phase 8: Section Critics
 
-**Agent:** EXPERT_CRITICAL_LITERATURE_REVIE (parallel — one per 1–2 sections)
+**Agent:** LITREVIEW (parallel — one per 1–2 sections)
 
 **Purpose:** Actor-critic separation for section prose. The Phase 7 agents optimized for narrative coherence. This phase checks whether the prose accurately represents the evidence. Like Phase 6, this uses the same agent type with different inputs and a different objective.
 
