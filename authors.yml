@@ -10,7 +10,7 @@ project:
 
   contributors:
     - id: ai-pipeline
-      name: Claude (Anthropic)
+      name: Claude
       corresponding: false
       roles:
         - Investigation
