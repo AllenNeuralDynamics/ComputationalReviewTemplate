@@ -267,3 +267,196 @@ Do NOT include `{authorship-explorer}` in section files. It belongs only on the 
 After the writer returns, the coordinator verifies: the number of `:::{dropdown}` blocks equals the number of `:::{figure}` blocks. If not, send back.
 
 
+
+
+---
+
+# Writing Standards and Format (from comprev-reviewer-agent)
+
+## Part IV: Writing Standards
+
+
+
+### False Consensus Detection (Critical)
+
+**Never state a mechanistic claim as established fact without a primary data citation.**
+
+- If you write "X targets Y" or "A drives B" or "C mediates D", you MUST cite a paper that
+  **experimentally demonstrated** this mechanism (electrophysiology, imaging, anatomy, etc.)
+  — not a review that repeats the claim.
+- If you cannot find a primary experimental source: use qualifiers like "commonly described as...",
+  "widely assumed to...", or "the prevailing model holds that..." and note the absence of primary
+  data: "though the primary experimental demonstration of this specific mechanism is rarely cited."
+- The absence of a citable primary source IS itself a finding worth noting in the review.
+  A sentence like "Despite widespread repetition in reviews, the primary data supporting X
+  is surprisingly thin" is more valuable than confidently asserting X.
+- Be especially vigilant about "textbook facts" — claims you feel certain about but cannot
+  trace to a specific experiment. These are the highest-risk claims for false consensus.
+
+### Write at Colleague Level
+- Precise: "observed in [specific system] under [specific conditions]" not "happens in [broad domain]"
+- Hedging: "suggests" vs "demonstrates" — calibrate to evidence strength
+- When presenting a model, always follow with what it does not account for
+
+### Depth Floors
+Every paragraph discussing a specific paper must include:
+1. **What was measured** — study system, n, experimental conditions, technique
+2. **What was found** — quantitative results (effect sizes, not just "significant")
+3. **What it means and what it doesn't** — interpretation AND limitations
+4. **Replication status** — woven into narrative naturally
+
+**Tiered treatment based on paper importance:**
+- **Landmark papers (~15–20% of citations):** Full dedicated treatment — detailed methods, quantitative results, and limitations — either within a multi-paper synthesis paragraph or, for singular milestones, as a standalone paragraph.
+- **Core papers (~40–50% of citations):** Substantive mention (2–3 sentences) integrated into synthesis paragraphs. The paragraph's argument comes first; papers are marshaled as evidence.
+- **Confirmatory/replication papers (~30–40% of citations):** Cited as converging evidence within synthesis sentences. These papers matter for establishing replication breadth, not for individual exposition.
+
+**One-sentence summaries of LANDMARK papers are unacceptable.** But not every cited paper needs its own paragraph — most should appear within multi-paper synthesis paragraphs averaging 5–8 citations each. The goal is dense integration, not sequential coverage.
+
+**Target density:** 3,000–6,000 words per major section. A comprehensive review targeting literature saturation: 50,000–80,000 words total. Length grows sub-linearly with citation count because most additional papers are integrated at the core or confirmatory tier, not the landmark tier.
+
+**Quantitative fidelity:** Your evidence package is your lab notebook.
+During writing, work from the notebook. Your synthesis, your argument,
+your critical assessment — write those freely. But numbers come only
+from the notebook. Every number you write should make you pause: is this
+in my notebook? Can I trace it?
+
+  ✅ "[Intervention X] increased [outcome Y] (Author et al. 20XX)"
+  ✅ "The evidence for this claim is weaker than commonly assumed,
+     resting primarily on a single experimental preparation"
+  ❌ "[Intervention X] increased [outcome Y] by 43% (Author et al. 20XX)"
+     [if 43% is not in the evidence package with a source sentence]
+
+The first two earn trust — one reports an observation, one offers
+reasoned assessment. The third spends trust by presenting an unverified
+number as a measured fact.
+
+### Section Writing (Phase 7)
+When writing sections for a larger review:
+- Before saving any .tex file, verify that all braces are balanced. In particular, check that every \caption{ has a matching closing }. An unclosed caption will cause LaTeX to read past the end of the file.
+- Follow the scaffold's argument arc
+- Use the curated evidence package, not raw Phase 1 output
+- Begin where the previous section left off (opening constraint)
+- End by setting up the next section (closing constraint)
+- Include cross-references specified in the scaffold
+- Do NOT write a standalone introduction to the field
+- Do NOT re-present findings from earlier sections
+- Do NOT cite any paper not present in your evidence package. If a claim needs a source you don't have, write the claim without a citation.
+- Use \citep{CiteKey} (or \citet{CiteKey} for textual) with a DOI comment on first use: `\citep{Smith2022} % doi:10.1234/example` — this ensures traceability during bibliography assembly
+- EXCEPTION: Inside \caption{} arguments, do NOT use % doi comments. The % character comments out the rest of the LaTeX line, which will break the caption's closing brace. In captions, use bare \citep{CiteKey} without the DOI comment.
+- **Author names from table ONLY:** When writing prose-style author mentions (e.g., "Smith and Jones (2022) established..."), look up names in the `author_name_table` provided with your evidence package. Use the `display` field for 1–2 authors, `et_al` for 3+. NEVER write author names from memory. If a cite_key is not in the table, use citation-only format: "It has been shown \citep{Key} that..." — do NOT guess.
+- If your evidence package includes `mandatory_caption_caveats` for any figure, include ALL of them verbatim in the figure's \caption{}.
+
+**HARD RULE — You May ONLY Cite From Your Evidence Package:**
+
+This applies to initial writing AND to all revisions:
+- Every cite_key you use MUST come from your per-section evidence package
+- Every author name you write MUST come from the author_name_table
+- You MUST NOT generate, recall, or invent citations from memory — EVER
+- If you need a paper that is not in your evidence package, report it:
+  "I need evidence on [specific topic] but it's not in my package. Request 
+  supplementary search." The coordinator will handle the search.
+- If a critic says "cite both sides" and one side's papers aren't in your 
+  package, report the gap — do NOT fill it from memory
+- This rule exists because memory-generated citations are the #1 source of 
+  hallucination in automated reviews. The citation_key_map was built from 
+  CrossRef metadata — it's the only trustworthy source of cite_keys.
+
+
+### Co-Loading with Figure Construction
+When `comprev-figure-construction` is loaded (Phase 7):
+- You own the prose and argument; figure construction owns the visual execution
+- Identify where each figure belongs in your argument before producing it
+- Pass `figure_data` from your evidence package to the figure production step
+- After figure production, write surrounding prose that interprets what the figure shows
+- Ensure \ref{fig:secN-name} in text matches the figure's \label{}
+
+
+**Figure paths in .md files:**
+- `:::{figure} ../figures/fig_secN_name.png` (note: ../figures/ prefix from content/ dir)
+- `:name: fig-secN-name` (dashes not colons)
+- Start each section file with `(sec-LABEL)=` label directive before the first heading
+
+### Managing Long Documents
+- Write each section as a complete, deep unit before moving to the next
+- Never compress to fit output limits — split and continue
+- Save each completed section as a checkpoint
+- Maintain consistent voice across sections
+
+---
+
+## Output Format: MyST Markdown
+
+When writing review sections, produce BOTH formats:
+1. **`section_NN.md`** — MyST markdown (primary, for the GitHub repo)
+2. **`section_NN.tex`** — LaTeX (for PDF compilation)
+
+MyST citation syntax:
+- Parenthetical: `` {cite:p}`CiteKey` `` (equivalent to `\citep{CiteKey}`)
+- Textual: `` {cite:t}`CiteKey` `` (equivalent to `\citet{CiteKey}`)
+
+**MyST citation syntax (CRITICAL — must be exact):**
+- Parenthetical: `` {cite:p}`AuthorYear` `` (e.g., `` {cite:p}`Cardin2009` ``)
+- Textual: `` {cite:t}`AuthorYear` `` (e.g., `` {cite:t}`Cardin2009` ``)
+- Multiple: `` {cite:p}`Author2009, Author2012, Author2020` ``
+- The backtick MUST come AFTER the closing brace: `{cite:p}` then backtick
+- Do NOT wrap in parentheses: `` ({cite:p}`key`) `` is WRONG
+- Do NOT use LaTeX citation commands (\citep{}, \citet{}) in .md files
+
+
+MyST figure syntax:
+```markdown
+:::{figure} ../figures/fig_secN_name.png
+:name: fig-secN-name
+:width: 100%
+Caption text with {cite:p}`Source2020` attribution.
+:::
+```
+
+**Cross-references between sections:**
+- Use `` {ref}`sec-target-label` `` (no parentheses wrapping)
+- Use `` {numref}`fig-secN-name` `` for figure references (dashes, not colons)
+- Labels are defined at the top of each target section as `(sec-label)=`
+- Never use double backticks: `` {numref}`fig-name` `` not `` {numref}`fig-name`` ``
+
+
+For evidence conflicts, use admonitions:
+```markdown
+:::{admonition} Evidence Conflict
+:class: warning
+Description of the conflict...
+:::
+```
+
+For provenance on key claims, use margin notes:
+```markdown
+:::{margin} Provenance
+**Source:** verbatim sentence from Paper2020 (fulltext)
+**Replication:** independently_replicated (3 labs)
+:::
+```
+
+---
+
+## Figure Notebooks
+
+For each figure you produce, also create a Jupyter notebook that generates it:
+
+1. Save as `figures/notebooks/fig_secN_name.ipynb`
+2. Cell 1: Import `shared_style` and load evidence JSON
+3. Cell 2: Extract the relevant comparison data from the evidence
+4. Cell 3: Create the figure using the style guide colors/fonts
+5. Cell 4: Save as PNG
+
+The notebook must be self-contained and runnable with:
+`jupyter execute figures/notebooks/fig_secN_name.ipynb`
+
+Import the style module:
+```python
+import sys; sys.path.insert(0, '../scripts')
+from shared_style import COLORS, apply_style, save_figure
+```
+
+---
+
+
+**Figure code embedding (MANDATORY):** After producing each figure, you MUST embed the COMPLETE Python generation code in a `:::{dropdown} 📓 Figure code` block immediately following the `:::{figure}` directive in the section .md file. The code must be the actual executed code — not a placeholder or stub. A figure without its code block is incomplete and will be sent back.

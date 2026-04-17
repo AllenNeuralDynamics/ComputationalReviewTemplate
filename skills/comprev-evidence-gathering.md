@@ -243,3 +243,201 @@ Every evidence-gathering agent returns a JSON matching this schema. The coordina
 - Conflicts MUST use exactly these fields: `paper_a_doi`, `paper_b_doi`, `paper_a_claim`, `paper_b_claim`, `nature_of_conflict`, `resolution_status`. No other field names. No nested objects for sides. No `papers[]` arrays. No custom field names per conflict type. Every conflict MUST have both DOIs.
 - JSON values: use `null` for missing values, NEVER the Python string `"None"`. Agents must ensure None→null conversion during JSON serialization.
 - `figure_data` papers arrays MUST have unique DOIs. Deduplicate before saving. If the same paper appears multiple times in a comparison, keep only the first entry.
+
+
+---
+
+# Working Procedures (from comprev-reviewer-agent)
+
+## Part III: How to Work
+
+### Coverage and Search
+- ≥70 papers per major topic, 800–1,200 total for comprehensive reviews targeting literature saturation
+- Seed papers → citation chains (3 iterations) → systematic database search
+- ≥6 distinct targeted queries per topic across domain-appropriate databases (e.g., PubMed, bioRxiv, Europe PMC, OpenAlex for biomedical; ADS, arXiv for physics; DBLP, Semantic Scholar for CS)
+- Search must extend beyond landmark papers to include: replication studies, negative results, methodological variants, cross-domain extensions, and cross-system comparison studies
+- For each topic, after initial search, identify which subtopics have <10 papers and run dedicated follow-up queries for those gaps
+
+### DOI Provenance: Search-First, Never Memory-First
+
+DOIs are opaque identifiers. LLMs do not reliably know the mapping
+between paper titles and DOI strings. A DOI that looks correct (right
+journal prefix, plausible format) frequently points to a different paper.
+
+**The ONLY permitted workflow for adding a paper to findings:**
+1. Run a database search query (using domain-appropriate databases — e.g., Europe PMC, PubMed, OpenAlex, bioRxiv for biomedical)
+2. Parse the results returned by the API
+3. Extract the DOI from the result object: `doi = result.get("doi")`
+4. Use this DOI for all subsequent steps (article_getter, fulltext retrieval)
+
+**PROHIBITED patterns:**
+```python
+# ❌ NEVER pre-populate paper lists from memory
+key_papers_to_verify = [
+    {"doi": "10.1038/s41586-019-1506-7", "title": "..."},
+]
+
+# ❌ NEVER create landmark/seed paper dicts with hardcoded DOIs
+landmark_verified = {
+    "10.xxxx/some-recalled-doi": {"title": "..."},
+}
+
+# ❌ NEVER type a DOI as a string literal in add_finding()
+add_finding("10.1038/nn.1199", title="...", ...)
+
+# ❌ NEVER create master_papers / core_papers / seed_papers dicts
+landmark_dois = {"10.xxxx/some-recalled-doi": "Author et al 20XX - Famous Result"}
+```
+
+**REQUIRED pattern:**
+```python
+# ✅ ALWAYS extract DOIs by iterating over search results
+for r in data.get('resultList', {}).get('result', []):
+    doi = r.get('doi')  # DOI comes FROM the API
+    if doi:
+        title = r.get('title', '')
+        papers.append({'doi': doi, 'title': title, ...})
+```
+
+If you know a paper should be included but it didn't appear in search results: Do NOT hardcode its DOI. Instead:
+- Run a NEW search query using the paper's title as the search string
+- Use the DOI returned by that title search
+- If the title search returns zero results, put it in `search_failures`
+
+LLMs recall paper titles accurately but DOI strings inaccurately. The title is usually right; the DOI is often wrong. By searching for the title, you get the correct DOI from the database instead of fabricating one from memory.
+
+### Paper Verification
+- Every cited paper MUST have a verified DOI
+- Search databases to confirm: title, authors, journal, year, DOI
+- When using PubMed: use esummary (JSON), not efetch (XML) — JSON parses reliably; XML silently drops fields
+- Never cite from LLM memory alone — always verify against a database
+- If a paper cannot be found in any database, flag it explicitly
+- Citation keys MUST be ASCII-only. Replace accented characters with their ASCII equivalents (ø→o, ö→o, ü→u, é→e, ñ→n, ç→c, å→a, etc.). Example: Lensjø2017 → Lensjo2017. Non-ASCII keys cause LaTeX compilation failures.
+
+
+### Consensus Challenge Search (Mandatory)
+
+For every major consensus claim you encounter during evidence gathering, ask:
+**"Which paper first demonstrated this experimentally?"**
+
+- If you find the primary experimental source → include it in findings with a note
+- If you CANNOT find the primary source (only reviews repeating the claim) → log it as an
+  `evidence_gap` with type: `false_consensus_risk`:
+  ```json
+  {
+    "topic": "the specific mechanistic claim",
+    "what_is_missing": "Primary experimental demonstration — claim is repeated across reviews but original data source not identified",
+    "why_it_matters": "Risk of false consensus: widely stated claim without traceable experimental evidence"
+  }
+  ```
+
+Additionally, for each major topic, run at least one **contradiction search**:
+- "[established mechanism] challenged OR revised OR reconsidered"
+- "[textbook claim] incorrect OR alternative OR reinterpreted"
+- "[mechanism] new evidence against OR contradicts"
+
+Recent papers (last 2-3 years) that revise long-standing claims are among the most
+valuable findings for a critical review. Prioritize them.
+
+### Evidence Gathering Output
+When gathering evidence (Phase 2 of orchestrator), produce STRUCTURED output — not prose. Return findings, conflicts, unreplicated claims, evidence gaps, strongest/weakest evidence, and figure_data as specified by the orchestrator's schema.
+
+**For every paper you include, follow this procedure:**
+
+1. **Retrieve metadata and text.** Call `article_getter` with the DOI. Do not store title, authors, journal, volume, or pages — those fields do not exist in your output schema. Do NOT generate cite_keys — the coordinator assigns them mechanically from database metadata after evidence gathering. If `article_getter` returns abstract but no full text, try these additional sources before giving up:
+   - If the paper has a PMCID: call `bc_get_europepmc_fulltext` for full-text XML.
+   - Search domain-appropriate full-text sources by DOI (e.g., `bc_get_europepmc_articles` for biomedical — check for `fullTextUrlList` for open-access URLs). If a URL is returned, fetch it.
+   - For preprints: use the appropriate reader — `read_biorxiv_paper`, `read_medrxiv_paper`, or `read_arxiv_paper` as applicable to the domain.
+   - For your top 50 papers by relevance, also call `fetch_article_fulltext(doi)` and update `text_access` to `fulltext` if successful.
+
+   Set `text_access` to `fulltext`, `abstract_only`, or `metadata_only` based on what you obtained.
+
+   After retrieving metadata, COMPARE the returned title against the title from the search result that provided this DOI:
+   ```python
+   search_title_words = set(search_result_title.lower().split()[:10])
+   retrieved_title_words = set(retrieved_title.lower().split()[:10])
+   overlap = len(search_title_words & retrieved_title_words) / max(len(search_title_words), len(retrieved_title_words))
+
+   if overlap < 0.3:
+       # DOI POINTS TO WRONG PAPER — do not use this DOI
+       # Search by title instead to find the correct DOI
+   ```
+   This catches DOIs that resolve but point to a different paper.
+
+   **After retrieval, call `add_finding()` using ONLY these fields:**
+   ```python
+   add_finding(
+       doi=doi,                          # from search result
+       claim=claim,                      # paraphrased from retrieved text
+       claim_source_sentence=verbatim,   # copied from retrieved text
+       effect_size=effect_size,           # from retrieved text, or null
+       effect_size_source_sentence=src,   # verbatim sentence, or null
+       n=n,                              # from retrieved text, or null
+       study_system=study_system,        # from retrieved text
+       text_access=text_access,          # fulltext | abstract_only
+       replication_status="replication_unknown",
+       # ↑ Default — but do NOT accept blindly. Before finalizing each finding:
+       #   • Search for the same result from a different lab → "independently_replicated" (list DOIs)
+       #   • Search for contradicting results → "contested" (list DOIs)
+       #   • Only keep "replication_unknown" after active search found nothing
+       replication_evidence_dois=[],
+   )
+   ```
+   There is no `title` parameter. There is no `authors` parameter. There is no `cite_key` parameter (the coordinator assigns cite_keys mechanically from database metadata). There is no `journal`, `volume`, or `pages` parameter. If you find yourself typing any of those field names, you are inventing schema fields that do not exist — stop.
+
+**Fulltext sourcing requirement:** If `text_access` is `fulltext`, the `claim_source_sentence` MUST come from the BODY of the paper (results, methods, or discussion section) — NOT the abstract. Abstract-sourced sentences for fulltext papers are a compliance failure. Include the paper section identifier (e.g., "Results, paragraph 3" or "Discussion") as a prefix to the source sentence.
+
+
+2. **Extract findings from the retrieved text.** Read what you retrieved. Identify sentences describing the paper's main results. Paraphrase them as the `claim`. Copy the verbatim sentence(s) into `claim_source_sentence`. Do not describe findings from LLM memory — describe what the text says.
+
+"When text_access is fulltext, extract claims from the Results and Methods sections — not just the abstract. Full text contains effect sizes with confidence intervals, exact sample sizes per condition, control comparisons, and methodological caveats that abstracts omit. These are the measurements that distinguish a landmark finding entry from a confirmatory one. When text_access is abstract_only, extract what the abstract provides but note the lower resolution."
+
+3. **Extract numbers from the retrieved text.** Numbers are
+   measurements. They come from your instrument (the text), not memory.
+
+   a. Search for sentences containing digits, percentages,
+      fold-changes, or units.
+   b. When you find a number: copy the ENTIRE sentence into
+      `value_source_sentence`. This is your raw data.
+   c. When the text describes a result without a number:
+      set `effect_size` to the qualitative description. This is a
+      valid observation at lower resolution.
+   d. When you cannot find the result: set `effect_size` to null.
+      This is a null measurement — record it, do not fill it.
+   e. For `figure_data`: ONLY include papers where you found the
+      number in the text with a source sentence.
+
+4. **Papers without text access.** Papers with `text_access` = `metadata_only` (no abstract, no full text) MUST be excluded from findings entirely. Move them to `search_failures` with `action` = "metadata_only — no text available for evidence extraction." Papers without even an abstract cannot contribute claims, source sentences, or quantitative data.
+
+5. **Replication status.** To mark a finding as `independently_replicated`, you must have found ≥2 papers from different labs (different last authors) reporting the same result. List their DOIs in `replication_evidence_dois`. For `contested`, list the conflicting DOIs. If you cannot identify specific replicating or conflicting papers from your searches, use `replication_unknown`.
+
+6. **Before saving, verify your count.** `len(set(f['doi'] for f in findings))` must be ≥70 per section covered. If below 70, you are over-filtering — go back and include replication studies, negative results, and cross-area extensions.
+
+7. **Before saving, verify extraction rates.** The orchestrator will reject clusters that fall below these thresholds:
+   - **Effect size rate:** ≥30% of findings must have a non-empty, non-null `effect_size` (excluding "not reported", "N/A", "qualitative"). If below 30%, return to abstracts/full text for your top 50 papers and extract any reported numbers.
+   - **Sample size rate:** ≥20% of findings must have `n` as an integer > 0. Check abstracts for cell counts, animal counts, recording counts.
+   - **Replication status rate:** ≤70% of findings may have `replication_status` = `replication_unknown`. For your top 50 claims, actively search for replication or contradiction evidence before accepting "unknown."
+
+**figure_data is mandatory:** For each major conflict or convergence, extract quantitative values from each paper's text. Every `figure_data.papers.value` must have a `value_source_sentence`. If the number isn't in the text, exclude that paper from the comparison.
+
+**Comparability fields:** For each figure_data comparison, also record:
+- `scope_region`: the anatomical/geographic scope of the measurement
+- `scope_population`: what entity population was measured
+- `taxonomic_level`: the classification granularity of any count
+- `n_definition`: what n counts (e.g., samples collected vs samples post-QC)
+- `n_analyzed`: the post-QC or actually-analyzed count, if different from n
+
+After assembling all entries in a comparison, record a `homogeneity_check`: are all entries comparable in scope_region, scope_population, taxonomic_level, and n_definition? List any caveats. This metadata is used by the comparability audit (Phase 6) to catch misleading cross-study figures.
+
+### Citation Density
+Before saving any .tex file, count your `\citep{}`/`\citet{}` commands and divide by the number of substantial paragraphs (exclude figure environments, single-sentence transitions, and subsection-opening topic sentences followed by elaboration). Report this as `citations_per_paragraph` in your structured output. If below 4.0, restructure: merge consecutive single-paper paragraphs into synthesis paragraphs that cite 5–8 papers in dialogue before each paragraph's concluding synthesis sentence.
+
+### Synthesis Structure
+Organize by **debates and open questions**, not just topics. Each section: historical context, strongest evidence, contradictions, limitations, critical assessment.
+
+**Integration density targets:**
+- Each synthesis paragraph should cite 5–8 papers in dialogue, not cover them sequentially.
+- Structure: "Claim sentence citing \citep{A, B}. \citet{A} established X under condition C1. \citet{B} extended this to C2 but found a discrepancy in Z. \citet{C} and \citet{D} resolved this by showing condition-dependence \citep{C, D}. Confirmatory evidence spans three additional preparations \citep{E, F, G}. Together, these studies establish [synthesis], though [remaining gap]."
+- Reserve sequential paper-by-paper exposition for historical narratives where chronology IS the argument.
+
+---
