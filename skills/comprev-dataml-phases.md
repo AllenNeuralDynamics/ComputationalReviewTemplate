@@ -269,11 +269,11 @@ The Methods section is a transparency document describing how the review was pro
 
 **M.6 Pipeline Execution:**
 ```python
-# Extract from operon.frames() metadata
+# Extract from pipeline metadata metadata
 methods_data = {
-    'model_version': operon.model_version(),
-    'total_frames': len(operon.frames()),
-    'total_tokens': sum(f['token_count'] for f in operon.frames()),
+    'model_version': 'claude-opus-4-6',
+    'total_frames': len(pipeline metadata),
+    'total_tokens': sum(f['token_count'] for f in pipeline metadata),
     'phases_completed': [p for p, v in phase_ledger.items() if v['status'] == 'complete'],
     'wall_clock_hours': (end_time - start_time).total_seconds() / 3600,
 }
@@ -431,7 +431,7 @@ Section writers do NOT embed dropdown code. Phase 13 DATAML does it mechanically
 5. Insert after the figure directive as: `:::{dropdown} 📓 Figure code` followed by a python code block and `:::`
 6. Validate: no single line > 200 chars (catches concatenation bugs)
 
-If notebooks are stubs ("see main workspace"), build them from `operon.lineage[figure_vid]`:
+If notebooks are stubs ("see main workspace"), build them from `pipeline.lineage[figure_vid]`:
 extract the generation code, clean workspace-specific paths, create proper .ipynb.
 
 **myst.yml Preservation:**

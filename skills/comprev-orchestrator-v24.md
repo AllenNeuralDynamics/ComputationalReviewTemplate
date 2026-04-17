@@ -154,7 +154,7 @@ This puts the full phase rules in kernel memory (usable for delegation templates
 import json, os
 
 # Read orchestrator into kernel memory (NOT into context)
-orch_path = os.path.expandvars("/sessions/operon-k-c0dcfc88-548a-298d/mnt/artifacts/.../orchestrator_v24.md")
+orch_path = os.path.expandvars(".../skills/orchestrator_v24.md")
 with open(orch_path) as f:
     orch_lines = f.readlines()
 
@@ -182,7 +182,7 @@ All three are tool calls, not Python functions. They produce visible output in c
 - **No loops** in coordinator python cells. >5 iterations → delegate to DATAML.
 - **No API calls** in coordinator python cells. CrossRef, databases, repository APIs → DATAML.
 - **Inspection cells ≤20 lines.** Read JSON, check fields, print pass/fail.
-- **Gate checks ≤5 lines.** `operon.artifacts(filename='gate_X.json')` + assert.
+- **Gate checks ≤5 lines.** `pipeline.artifacts(filename='gate_X.json')` + assert.
 - **Re-read the orchestrator before each phase.** This is the most important use of context.
 
 **No opportunistic phase completion:** When sending a follow-up to DATAML (e.g., 
