@@ -50,8 +50,19 @@ that the claimed finding actually matches the paper's abstract.
 > **ALL triples receive the full check.** There is no Tier A/B split.
 > Every citation-claim pair in the review is verified to the same standard.
 > For each triple:
-> - Fetch abstract via PubMed or Europe PMC
-> - Does the abstract support the SPECIFIC claim, not just the topic?
+> - **Fetch full text first, abstract as fallback.** Use the full-text
+>   retrieval protocol from `comprev-reviewer-agent` (Elsevier API →
+>   Springer API → PMC efetch → Europe PMC OA → `fetch_article_fulltext`).
+>   If full text is obtained, search it for passages supporting the
+>   specific claim. If full text is unavailable, fall back to abstract
+>   from PubMed or Europe PMC — but record `verification_depth:
+>   "abstract_only"` on that triple (see output schema below).
+> - Does the paper (full text or abstract) support the SPECIFIC claim, not just the topic?
+>   When full text is available, search for the claim's key terms
+>   (method names, cell types, effect directions, numerical values)
+>   in the Results and Discussion sections. A claim not findable
+>   anywhere in the paper is stronger evidence of misattribution
+>   than the same result from an abstract-only check.
 > - If the review text includes a NUMBER attributed to this paper
 >   (percentage, fold-change, cell count, latency, etc.), is that
 >   number present in the abstract? If not → category: **MISATTRIBUTED**
@@ -89,10 +100,10 @@ that the claimed finding actually matches the paper's abstract.
 >
 > **Databases to use (in order):**
 > 1. CrossRef (primary for DOI resolution — universal across domains)
-> 2. Domain-appropriate abstract/metadata database (e.g., PubMed/Europe PMC for biomedical, ADS for astronomy, DBLP for CS, Semantic Scholar for general)
-> 3. Domain-appropriate full-text source (e.g., Europe PMC for biomedical, arXiv for physics/CS/math)
+> 2. **Full-text retrieval** (Elsevier/Springer/PMC/Europe PMC OA/`fetch_article_fulltext` — see `comprev-reviewer-agent` protocol). Full text enables claim verification against the actual paper, not just the abstract.
+> 3. Domain-appropriate abstract/metadata database as fallback (e.g., PubMed/Europe PMC for biomedical, ADS for astronomy, DBLP for CS, Semantic Scholar for general)
 > 4. Domain-appropriate preprint servers (e.g., bioRxiv/medRxiv for biomedical, arXiv for STEM, SSRN for social sciences)
-> 6. arXiv API (`export.arxiv.org/api/query`) for computational, physics, math, and CS preprints
+> 5. arXiv API (`export.arxiv.org/api/query`) for computational, physics, math, and CS preprints
 >
 > For each triple, return:
 > ```json
@@ -100,6 +111,8 @@ that the claimed finding actually matches the paper's abstract.
 >   "cite_key": "Smith2022",
 >   "category": "VERIFIED | MINOR | CHIMERIC | HALLUCINATED | MISATTRIBUTED",
 >   "failed_at_step": null or 1-5,
+>   "verification_depth": "fulltext | abstract_only | metadata_only",
+>   "supporting_passage": "verbatim sentence(s) from the paper that support the claim (null if MISATTRIBUTED or not found)",
 >   "details": "specific description of the issue",
 >   "correct_metadata": {
 >     "title": "database-fetched title (if different)",
@@ -108,7 +121,23 @@ that the claimed finding actually matches the paper's abstract.
 >   },
 >   "suggested_action": "description of what should change"
 > }
-> ```"
+> ```
+>
+> **Verification depth reporting (MANDATORY):**
+> - `fulltext`: full paper text was retrieved and searched. Highest confidence.
+> - `abstract_only`: only abstract available. Claim verification is limited —
+>   a claim can appear supported by the abstract but contradicted by the
+>   paper's actual results or discussion. Flag in the gate summary.
+> - `metadata_only`: neither full text nor abstract retrieved. Claim
+>   verification could not be performed — flag as requiring manual review.
+>
+> **Supporting passage requirement:** For every VERIFIED triple checked at
+> fulltext depth, include the verbatim passage (≤2 sentences) from the
+> paper that supports the claim. This creates an auditable evidence chain
+> from review claim → cited paper → specific passage. If no supporting
+> passage can be found in the full text, the triple cannot be VERIFIED —
+> it must be MISATTRIBUTED regardless of whether the abstract seemed
+> compatible."
 
 **Contamination confirmation scan (final safety net):**
 

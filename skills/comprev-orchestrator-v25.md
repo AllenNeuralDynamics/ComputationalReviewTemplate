@@ -76,7 +76,7 @@ delegations:
 | 13 | Methods | DATAML | Pipeline metadata → M_methods.md + architecture figure |
 | 14 | Document Assembly | DATAML | Collect files, verify paths, build LaTeX preamble, run assertions |
 | 15 | Citation Triples | DATAML | Exhaustive extraction: one triple per cite key occurrence, no sampling |
-| 16 | Citation Verification | EXPERT (parallel) | 5-step deep check on every triple: DOI → title → authors → metadata → claim verification (no tiering) |
+| 16 | Citation Verification | EXPERT (parallel) | 5-step deep check on every triple: DOI → title → authors → metadata → full-text claim verification (no tiering) |
 | 17 | Fix Preparation | DATAML | Build fix requests with ±10 line context per non-VERIFIED triple |
 | 18 | Fix Execution | EXPERT (parallel) | Apply bib fixes and text fixes per fix request |
 | 19 | Fix Application | DATAML | Apply diffs in reverse order, verify zero orphans |
