@@ -24,6 +24,24 @@ Two types of fixes, handled differently:
 - Must preserve surrounding text exactly — only modify the flagged sentence
 - Output: `{cite_key, old_text, new_text, new_bib_entry (if replacement)}`
 
+**Evidence-type matching (MANDATORY for replacement citations):**
+When replacing a misattributed citation with a different paper, the
+replacement must match the **evidence type** required by the claim:
+- An electrophysiology claim ("recordings show...", "AP kinetics", "Rin")
+  must be supported by a paper containing patch-clamp or in-vivo
+  electrophysiology data — not a transcriptomic or anatomical study.
+- A transcriptomic claim ("transcriptomic types are conserved across
+  species") must be supported by an RNA-seq study — not a slice
+  electrophysiology paper.
+- A behavioral claim must cite a behavioral study, a modeling claim must
+  cite a computational study, and so on.
+
+Before committing a replacement, check: does the replacement paper contain
+the **kind** of data the sentence claims? A paper can be topically related
+(same cell type, same species) yet be the wrong evidence type. If no
+paper of the correct evidence type is available in the bibliography, flag
+the fix as `needs_review` rather than substituting a wrong-type paper.
+
 **SENTENCE CLEANUP AFTER CITATION DELETION (MANDATORY):**
 When removing a `{cite:t}` (textual citation), check whether it serves as the
 **grammatical subject** of the sentence (e.g., "{cite:t}\`Smith2020\` show that…").
