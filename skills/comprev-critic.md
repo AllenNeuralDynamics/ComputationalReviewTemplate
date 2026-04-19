@@ -237,6 +237,13 @@ formatting bugs that MyST cannot resolve at build time.
 `^##+ \d+(\.\d+)* ` (headings that embed a manual number). Flag and strip —
 MyST auto-numbers sections from `toc.yml` order.
 
+**Hardcoded cross-reference audit (same gate):** grep each section .md for
+`§\d+`, `Section \d+\.\d+`, and `[Ss]ec\.\s*\d+`. Any match in prose (not
+inside a code block or dropdown) is a formatting violation: these must be
+`{ref}` cross-references with `(label)=` anchors on the target headings.
+Flag as MUST_FIX — hardcoded references break on reorder and don't render
+as clickable links.
+
 **GATE ARTIFACT:** After all MUST_FIX issues are resolved (via `send_message` back to Phase 7 writers), save `gate_critic_complete.json`:
 
 **MUST_FIX enforcement loop (coordinator executes):**

@@ -429,6 +429,14 @@ MyST figure syntax:
 - Labels are defined at the top of each target section as `(sec-label)=`
 - Never use double backticks: `` {numref}`fig-name` `` not `` {numref}`fig-name`` ``
 
+**NEVER use hardcoded section numbers in prose.** Do not write §8.4, §10.2,
+"Section 3.1", "see §10", or any variant that embeds a manual number. These
+break when sections are reordered, render as opaque numbers to the reader,
+and do not produce clickable links in the built site. Always use
+`` {ref}`sec-label` `` instead. If you are referencing a subsection within
+your own section, add a `(sec-NN-subsection-slug)=` label above the target
+heading first, then reference it with `` {ref}`sec-NN-subsection-slug` ``.
+
 
 For evidence conflicts, use admonitions:
 ```markdown

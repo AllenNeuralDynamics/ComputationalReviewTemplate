@@ -24,7 +24,7 @@ Single agent reads all sections, performs:
 Rewrite boundary paragraphs between consecutive sections for natural flow. Ending of Section N should create expectation that Section N+1 answers.
 
 #### 6b. Cross-Reference Resolution
-Verify every scaffold cross-reference exists in text. Add missing ones. Ensure references are specific ("As discussed in Section 3, the laminar distribution...") not vague ("As mentioned earlier...").
+Verify every scaffold cross-reference exists in text. Add missing ones. **Flag and convert any hardcoded §N.M or "Section N.M" references** — these must become `{ref}` cross-references with labels. Add `(label)=` anchors to target subsection headings as needed. Ensure references are specific ("As discussed in Section 3, the laminar distribution...") not vague ("As mentioned earlier...").
 
 #### 6c. Terminology and Voice
 Consistent terminology throughout. Fix terms used differently across sections. Abbreviations defined on first use. Smooth voice inconsistencies.
