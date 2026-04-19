@@ -388,6 +388,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 9 | DATAML | single | `comprev-dataml-phases` | `gate_bibliography.json` | entries=unique cite_keys, 0 Bhatt hits |
 | 10 | EXPERT | single | `comprev-integration` | `gate_integration.json` | 6 passes documented, diffs in transitions |
 | 11 | EXPERT | single | `comprev-integration` | `gate_intro_conclusion.json` | no new citations, abstract written |
+| 12 | EXPERT | parallel | `comprev-critic` | `gate_bookend_critic.json` | MUST_FIX = 0, novel pairs verified |
 | 13 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
 | 14 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
 | 15 | DATAML | single | `comprev-dataml-phases` | — | triples extracted into batches of 18 |
@@ -423,4 +424,5 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 9 | Misleading cross-study comparisons — incomparable data on same axis | Phase 6 blinded figure audit | Strip narrative framing before critic review |
 | 10 | MUST_FIX deferral — advancing past unresolved critic findings | Hard block assertion before Phase 9 | `assert total_must_fix == 0` |
 | 11 | Blind metadata resolution — guessing papers from author + year | Prohibition in Phase 14 | Unresolvable keys → send back to writers, never guess |
-| 13 | Conflict suppression — presenting contested findings as resolved | Phase 8 conflict survival pre-check + Phase 8 critic Track 3 | Mechanical pre-check: both DOIs from each conflict must appear |
+| 12 | Conflict suppression — presenting contested findings as resolved | Phase 8 conflict survival pre-check + Phase 8 critic Track 3 | Mechanical pre-check: both DOIs from each conflict must appear |
+| 13 | Bookend citation misattribution — intro/conclusion attaches existing bib keys to unsupported claims | Phase 12 bookend critic Track 1 | Novel claim-citation pairs checked against abstracts; inherited pairs skipped |

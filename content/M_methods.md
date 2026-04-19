@@ -84,7 +84,7 @@ The review was produced through a 20-phase pipeline. Key execution metadata from
 | 11 | Introduction & Conclusion | Pending | — |
 | 12 | Bookend Critic | Pending | — |
 | 13 | Methods | Pending | — |
-| 13–19 | Remaining phases | Pending | — |
+| 14–20 | Remaining phases | Pending | — |
 
 (sec-methods-figures)=
 ## M.7 Figure Reproducibility
@@ -108,16 +108,16 @@ fix protocol.
 |---|---|---|
 | `comprev-orchestrator-v25.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–20 (all) |
 | `comprev-evidence-gathering.md` | Worker protocol for EXPERT evidence-gathering frames (one per topic cluster) | 2 |
-| `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 7, 10, 11, 12 |
+| `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 4, 6–8, 10–12, 16, 18 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |
 | `comprev-figure-construction.md` | Worker skill for producing publication-quality figures from `figure_data` JSON | 6–7 |
 | `comprev-figure-audit.md` | Blinded figure-auditor protocol — cross-study comparison validity | 6 |
 | `comprev-section-writing.md` | Writer protocol: MyST formatting, citation discipline, synthesis rules | 7 |
 | `comprev-critic.md` | Blinded section-critic protocol — unsupported claims, misrepresented evidence | 8, 12 |
 | `comprev-integration.md` | Cross-section integration passes; Introduction, Conclusion, and Abstract drafting | 10, 11 |
-| `comprev-verification.md` | Citation-triple verification against CrossRef and full-text sources | 14–16 |
-| `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 17–18 |
-| `comprev-dataml-phases.md` | Worker protocol for DATAML agents — citation infrastructure, BibTeX, CrossRef | 3, 5, 13, 15, 19 |
+| `comprev-verification.md` | Citation-triple verification against CrossRef and full-text sources | 15–17 |
+| `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 18 |
+| `comprev-dataml-phases.md` | Worker protocol for DATAML agents — citation infrastructure, BibTeX, CrossRef | 3, 5, 9, 13–15, 17, 19–20 |
 
 To re-run this pipeline against a different topic, clone the
 [ComputationalReviewTemplate](https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate)

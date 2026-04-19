@@ -58,10 +58,10 @@ The pipeline is split into role-specific skills with **information barriers** to
 | `comprev-section-writing` | 7 | EXPERT | Cannot see critic criteria |
 | `comprev-critic` | 8, 12 | EXPERT | Blinded — no scaffold or writing template |
 | `comprev-integration` | 10-11 | EXPERT | Full visibility (integration role) |
-| `comprev-verification` | 16 | EXPERT | Cannot see fix protocol |
+| `comprev-verification` | 15–17 | EXPERT | Cannot see fix protocol |
 | `comprev-fix-execution` | 18 | EXPERT | Cannot see verification criteria |
-| `comprev-dataml-phases` | 3,5,9,13-15,17,19-20 | DATAML | No barriers (mechanical work) |
-| `comprev-reviewer-agent` | 2,4,6-8,10-12,15,17 | EXPERT | Evidence & writing procedures |
+| `comprev-dataml-phases` | 3,5,9,13–15,17,19–20 | DATAML | No barriers (mechanical work) |
+| `comprev-reviewer-agent` | 2,4,6–8,10–12,16,18 | EXPERT | Evidence & writing procedures |
 | `comprev-figure-construction` | 7 | EXPERT | Figure production |
 
 ### Plugins (3 files in `plugins/`)
