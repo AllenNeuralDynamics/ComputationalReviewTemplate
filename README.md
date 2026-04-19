@@ -1,12 +1,12 @@
 # Computational Review Template
 
-Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v24.
+Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v25.
 
 ## Pipeline Overview
 
-![Expert Review Pipeline v24](figures/fig_methods_pipeline.png)
+![Expert Review Pipeline v25](figures/fig_methods_pipeline.png)
 
-The pipeline executes 19 phases with **actor-critic separation** — section writers cannot see how they will be critiqued, figure auditors cannot see the argument arc, and citation verifiers cannot see the fix protocol. This prevents agents from gaming evaluation criteria.
+The pipeline executes 20 phases with **actor-critic separation** — section writers cannot see how they will be critiqued, figure auditors cannot see the argument arc, and citation verifiers cannot see the fix protocol. This prevents agents from gaming evaluation criteria.
 
 ## Quick Start
 
@@ -19,8 +19,8 @@ Start a comprehensive critical literature review titled: "[YOUR TITLE]"
 
 The three files in skills/ define the complete pipeline:
 
-skills/comprev-orchestrator-v24.md — The orchestrator protocol. Read this FIRST.
-It defines all 19 phases, the coordinator protocol, gate artifacts, and the plan structure.
+skills/comprev-orchestrator-v25.md — The orchestrator protocol. Read this FIRST.
+It defines all 20 phases, the coordinator protocol, gate artifacts, and the plan structure.
 Follow it phase by phase.
 
 skills/comprev-reviewer-agent.md — The worker skill for EXPERT agents.
@@ -30,7 +30,7 @@ skills/comprev-figure-construction.md — Already published as a skill on EXPERT
 Section writers load it for figure production.
 
 GitHub Repository: https://github.com/[YOUR-ORG]/[YOUR-REPO]
-Push all outputs to this repo in Phase 19.
+Push all outputs to this repo in Phase 20.
 
 Table of Contents:
 1. Introduction
@@ -51,17 +51,17 @@ The pipeline is split into role-specific skills with **information barriers** to
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
-| `comprev-orchestrator-v24` | All | Coordinator | Sees everything |
+| `comprev-orchestrator-v25` | All | Coordinator | Sees everything |
 | `comprev-evidence-gathering` | 2 | EXPERT | Cannot see critic/writing criteria |
 | `comprev-scaffold` | 4 | EXPERT | Cannot see critic criteria |
 | `comprev-figure-audit` | 6 | EXPERT | Blinded — no scaffold or argument arc |
 | `comprev-section-writing` | 7 | EXPERT | Cannot see critic criteria |
-| `comprev-critic` | 8 | EXPERT | Blinded — no scaffold or writing template |
+| `comprev-critic` | 8, 12 | EXPERT | Blinded — no scaffold or writing template |
 | `comprev-integration` | 10-11 | EXPERT | Full visibility (integration role) |
-| `comprev-verification` | 15 | EXPERT | Cannot see fix protocol |
-| `comprev-fix-execution` | 17 | EXPERT | Cannot see verification criteria |
-| `comprev-dataml-phases` | 3,5,9,12-14,16,18-19 | DATAML | No barriers (mechanical work) |
-| `comprev-reviewer-agent` | 2,4,6-8,10-11,15,17 | EXPERT | Evidence & writing procedures |
+| `comprev-verification` | 16 | EXPERT | Cannot see fix protocol |
+| `comprev-fix-execution` | 18 | EXPERT | Cannot see verification criteria |
+| `comprev-dataml-phases` | 3,5,9,13-15,17,19-20 | DATAML | No barriers (mechanical work) |
+| `comprev-reviewer-agent` | 2,4,6-8,10-12,15,17 | EXPERT | Evidence & writing procedures |
 | `comprev-figure-construction` | 7 | EXPERT | Figure production |
 
 ### Plugins (3 files in `plugins/`)
@@ -92,9 +92,9 @@ Pre-configured pages that the pipeline populates:
 
 **Act 1 — Evidence & Infrastructure** (Phases 1-6): Define scope, gather evidence from literature databases (PubMed, OpenAlex, bioRxiv), build citation infrastructure from CrossRef, construct the review scaffold, curate per-section evidence packages, and audit figure comparisons for methodological validity.
 
-**Act 2 — Drafting & Criticism** (Phases 7-13): Draft sections in parallel (max 4 agents), run blinded 6-track criticism, build bibliography from CrossRef, perform 6-pass integration for consistency, write introduction/conclusion/abstract, generate methods section, and assemble the complete document.
+**Act 2 — Drafting & Criticism** (Phases 7-14): Draft sections in parallel (max 4 agents), run blinded 6-track criticism, build bibliography from CrossRef, perform 6-pass integration for consistency, write introduction/conclusion/abstract, run blinded bookend critic on intro/conclusion, generate methods section, and assemble the complete document.
 
-**Act 3 — Verification & Deploy** (Phases 14-19): Extract citation triples, verify ALL citations against databases (DOI resolution, title/author/metadata match, claim verification), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
+**Act 3 — Verification & Deploy** (Phases 15-20): Extract citation triples, verify ALL citations against databases (DOI resolution, title/author/metadata match, claim verification), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
 
 ### Key Design Principles
 
