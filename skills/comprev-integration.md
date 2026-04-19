@@ -79,7 +79,9 @@ require_phase('6_integration')
 check_gate('gate_integration.json')
 ```
 
-**Citation discipline:** Introduction and conclusion may ONLY cite papers already cited in the body sections. The master citation list from Phase 10f must be provided to the writer. Do not introduce new references.
+**Citation discipline:** Introduction and conclusion may ONLY cite papers already cited in the body sections.
+
+**Post-writing critic (Phase 12):** After Phase 11 completes, the coordinator launches a blinded bookend critic (Phase 12, specified in `comprev-critic.md`). The critic is a different child frame from the Phase 11 writer. It checks all novel claim-citation pairs (those not inherited from body sections) against paper abstracts. MUST_FIX findings are sent back to the Phase 11 writer for revision before the pipeline advances to Phase 13 (Methods). The master citation list from Phase 10f must be provided to the writer. Do not introduce new references.
 
 - **Introduction:** Receives 1-paragraph summaries of all sections + central argument + master citation list. Frames problem, explains why review is needed, previews argument arc naturally.
 - **Conclusion:** Receives section summaries + key findings including conflicts and gaps + master citation list. Synthesizes (not summarizes), acknowledges limitations, identifies open questions.
@@ -142,7 +144,7 @@ subtitle: A Reproducible Computational Review
    un-headed — don't; the reader and search index need the anchor).
 5. Keywords line at bottom, bold label, comma-separated, 4–8 terms.
 
-Save the assembled file directly to `content/00_frontmatter.md`. Phase 13
+Save the assembled file directly to `content/00_frontmatter.md`. Phase 14
 (assembly) verifies the five layout rules above and fails the gate if any are
 violated.
 

@@ -5,7 +5,7 @@
 
 Phase 7 delegation template for section writers. Draft one section of the review in MyST markdown with figures, citations, and evidence synthesis.
 
-**Information barrier:** This skill contains ONLY writing instructions. You cannot see how your section will be critiqued (Phase 8), how figures were audited (Phase 6), or how citations will be verified (Phase 15). Write the best section you can from the evidence — the evaluation criteria are not your concern.
+**Information barrier:** This skill contains ONLY writing instructions. You cannot see how your section will be critiqued (Phase 8), how figures were audited (Phase 6), or how citations will be verified (Phase 16). Write the best section you can from the evidence — the evaluation criteria are not your concern.
 
 ---
 
@@ -263,7 +263,7 @@ Do NOT accept the section until all 9 checks pass.
 For EACH figure produced, include a `:::{dropdown} 📓 Figure code` block immediately after the `:::{figure}` directive containing the COMPLETE Python code used to generate it. The code must be the actual executed code, not a stub or placeholder.
 
 **MANDATORY — No authorship-explorer in sections:**
-Do NOT include `{authorship-explorer}` in section files. It belongs only on the frontmatter page (added during Phase 13 assembly).
+Do NOT include `{authorship-explorer}` in section files. It belongs only on the frontmatter page (added during Phase 14 assembly).
 
 **Gate check — dropdown count:**
 After the writer returns, the coordinator verifies: the number of `:::{dropdown}` blocks equals the number of `:::{figure}` blocks. If not, send back.

@@ -1,12 +1,12 @@
 # Citation Fix Execution Protocol
 
-Phase 17 delegation template. Execute citation fixes: replace bib entries, correct claiming sentences, verify replacements against databases.
+Phase 18 delegation template. Execute citation fixes: replace bib entries, correct claiming sentences, verify replacements against databases.
 
-**Information barrier:** This skill contains ONLY fix execution instructions. You cannot see the verification protocol (Phase 15). You receive structured fix requests and execute them — the verification was done independently.
+**Information barrier:** This skill contains ONLY fix execution instructions. You cannot see the verification protocol (Phase 16). You receive structured fix requests and execute them — the verification was done independently.
 
 ---
 
-## Phase 17: Fix Execution
+## Phase 18: Fix Execution
 
 **Agent:** LITREVIEW (parallel — one per fix batch)
 

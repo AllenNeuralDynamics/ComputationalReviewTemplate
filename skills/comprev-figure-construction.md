@@ -348,7 +348,7 @@ Caption text here.
 ```
 Note: `../figures/` prefix (content files are in content/ subdirectory).
 Note: dashes in `:name:` (fig-secN not fig:secN).
-Do NOT add dropdown code blocks — Phase 13 assembly will do this mechanically from notebooks.
+Do NOT add dropdown code blocks — Phase 14 assembly will do this mechanically from notebooks.
  The [H] specifier (from the float package) prevents LaTeX from deferring figure placement, ensuring figures appear inline with the text that references them.
 
 ### Checklist

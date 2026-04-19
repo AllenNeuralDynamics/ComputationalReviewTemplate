@@ -35,7 +35,7 @@ Before any execution, the coordinator MUST build a complete execution plan using
 
 1. **Read the user's task description.** This is Phase 1 (Scope): the title, table of contents, section structure, target paper count, and any domain-specific instructions.
 
-2. **Call `generate_plan` with ALL 19 phases as separate plan phases.** Each phase maps to one `generate_plan` phase with `depends_on` chains enforcing sequential execution. Include the agent, the key steps, and the compliance checks for each phase.
+2. **Call `generate_plan` with ALL 20 phases as separate plan phases.** Each phase maps to one `generate_plan` phase with `depends_on` chains enforcing sequential execution. Include the agent, the key steps, and the compliance checks for each phase.
 
 3. **The plan phases use ONLY `DATAML` and `LITREVIEW` as agents.** The coordinator NEVER appears as an agent. Coordinator work (gate checks, compliance inspection, send-backs) happens BETWEEN plan phases and is described in the step descriptions as "coordinator verifies X before advancing."
 
@@ -43,7 +43,7 @@ Before any execution, the coordinator MUST build a complete execution plan using
 
 ### Plan Phase Template
 
-Use this structure for each of the 19 phases:
+Use this structure for each of the 20 phases:
 
 ```
 Phase name: "Phase N: [Title]"
@@ -72,14 +72,15 @@ delegations:
 | 9 | Bibliography | DATAML | CrossRef → BibTeX, ASCII-only, dedup, contamination scan |
 | 10 | Integration | EXPERT | 6 passes: transitions, cross-refs, terminology, continuity, figures, hygiene |
 | 11 | Introduction and Conclusion | EXPERT | Written LAST, after all body sections, may only cite existing papers |
-| 12 | Methods | DATAML | Pipeline metadata → M_methods.md + architecture figure |
-| 13 | Document Assembly | DATAML | Collect files, verify paths, build LaTeX preamble, run assertions |
-| 14 | Citation Triples | DATAML | Extract {cite_key, sentence, claimed_finding, bib_entry} per citation |
-| 15 | Citation Verification | EXPERT (parallel) | 5-step check: DOI → title → authors → metadata → claim verification |
-| 16 | Fix Preparation | DATAML | Build fix requests with ±10 line context per non-VERIFIED triple |
-| 17 | Fix Execution | EXPERT (parallel) | Apply bib fixes and text fixes per fix request |
-| 18 | Fix Application | DATAML | Apply diffs in reverse order, verify zero orphans |
-| 19 | Repository Push | DATAML | Push all files via Contents API |
+| 12 | Bookend Critic | EXPERT | Blinded critic on intro/conclusion; novel claim-citation pairs verified |
+| 13 | Methods | DATAML | Pipeline metadata → M_methods.md + architecture figure |
+| 14 | Document Assembly | DATAML | Collect files, verify paths, build LaTeX preamble, run assertions |
+| 15 | Citation Triples | DATAML | Extract {cite_key, sentence, claimed_finding, bib_entry} per citation |
+| 16 | Citation Verification | EXPERT (parallel) | 5-step check: DOI → title → authors → metadata → claim verification |
+| 17 | Fix Preparation | DATAML | Build fix requests with ±10 line context per non-VERIFIED triple |
+| 18 | Fix Execution | EXPERT (parallel) | Apply bib fixes and text fixes per fix request |
+| 19 | Fix Application | DATAML | Apply diffs in reverse order, verify zero orphans |
+| 20 | Repository Push | DATAML | Push all files via Contents API |
 
 ### After Plan Approval
 
@@ -87,7 +88,7 @@ Once the user approves the plan:
 1. Store the plan's `version_id` as `PLAN_VID`
 2. Store this orchestrator's `version_id` as `ORCHESTRATOR_VID`
 3. Initialize the phase ledger
-4. Begin Phase 1 immediately — no further user interaction until Phase 19 completes or a gate fails
+4. Begin Phase 1 immediately — no further user interaction until Phase 20 completes or a gate fails
 
 The plan is the coordinator's external memory. At every phase boundary, re-read it.
 
@@ -335,14 +336,15 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 9 | DATAML | single | `comprev-dataml-phases` | `gate_bibliography.json` | entries=unique cite_keys, 0 Bhatt hits |
 | 10 | EXPERT | single | `comprev-integration` + `comprev-reviewer-agent` | `gate_integration.json` | 6 passes documented, diffs in transitions |
 | 11 | EXPERT | single | `comprev-integration` + `comprev-reviewer-agent` | `gate_intro_conclusion.json` | no new citations, abstract written |
-| 12 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
-| 13 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
-| 14 | DATAML | single | `comprev-dataml-phases` | — | triples extracted into batches of 18 |
-| 15 | EXPERT | ×4 batches | `comprev-verification` + `comprev-reviewer-agent` | — | ALL triples verified, no sampling |
-| 16 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
-| 17 | EXPERT | ×4 batches | `comprev-fix-execution` + `comprev-reviewer-agent` | — | fixes executed with DB-verified replacements |
-| 18 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
-| 19 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
+| 12 | EXPERT | parallel | `comprev-critic` + `comprev-reviewer-agent` | `gate_bookend_critic.json` | MUST_FIX = 0, novel pairs verified |
+| 13 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
+| 14 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
+| 15 | DATAML | single | `comprev-dataml-phases` | — | triples extracted into batches of 18 |
+| 16 | EXPERT | ×4 batches | `comprev-verification` + `comprev-reviewer-agent` | — | ALL triples verified, no sampling |
+| 17 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
+| 18 | EXPERT | ×4 batches | `comprev-fix-execution` + `comprev-reviewer-agent` | — | fixes executed with DB-verified replacements |
+| 19 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
+| 20 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
 
 ### Delegation Pattern
 
@@ -386,14 +388,14 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 9 | DATAML | single | `comprev-dataml-phases` | `gate_bibliography.json` | entries=unique cite_keys, 0 Bhatt hits |
 | 10 | EXPERT | single | `comprev-integration` | `gate_integration.json` | 6 passes documented, diffs in transitions |
 | 11 | EXPERT | single | `comprev-integration` | `gate_intro_conclusion.json` | no new citations, abstract written |
-| 12 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
-| 13 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
-| 14 | DATAML | single | `comprev-dataml-phases` | — | triples extracted into batches of 18 |
-| 15 | EXPERT | ×4 batches | `comprev-verification` | — | ALL triples verified, no sampling |
-| 16 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
-| 17 | EXPERT | ×4 batches | `comprev-fix-execution` | — | fixes executed with DB-verified replacements |
-| 18 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
-| 19 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
+| 13 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
+| 14 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
+| 15 | DATAML | single | `comprev-dataml-phases` | — | triples extracted into batches of 18 |
+| 16 | EXPERT | ×4 batches | `comprev-verification` | — | ALL triples verified, no sampling |
+| 17 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
+| 18 | EXPERT | ×4 batches | `comprev-fix-execution` | — | fixes executed with DB-verified replacements |
+| 19 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
+| 20 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
 
 ### Delegation Pattern
 
@@ -420,5 +422,5 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 8 | Silent fulltext false positives — metadata-only XML marked as fulltext | Size validation (>15KB + `<body>` tag) | Enforce in Phase 2 compliance checks |
 | 9 | Misleading cross-study comparisons — incomparable data on same axis | Phase 6 blinded figure audit | Strip narrative framing before critic review |
 | 10 | MUST_FIX deferral — advancing past unresolved critic findings | Hard block assertion before Phase 9 | `assert total_must_fix == 0` |
-| 11 | Blind metadata resolution — guessing papers from author + year | Prohibition in Phase 13 | Unresolvable keys → send back to writers, never guess |
-| 12 | Conflict suppression — presenting contested findings as resolved | Phase 8 conflict survival pre-check + Phase 8 critic Track 3 | Mechanical pre-check: both DOIs from each conflict must appear |
+| 11 | Blind metadata resolution — guessing papers from author + year | Prohibition in Phase 14 | Unresolvable keys → send back to writers, never guess |
+| 13 | Conflict suppression — presenting contested findings as resolved | Phase 8 conflict survival pre-check + Phase 8 critic Track 3 | Mechanical pre-check: both DOIs from each conflict must appear |

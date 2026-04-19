@@ -1,6 +1,6 @@
 # DATAML Phase Protocols
 
-> **Template-aware:** This pipeline assumes the repo was created from `ComputationalReviewTemplate`. All directory structure, plugins, widgets, `myst.yml`, `deploy.yml`, and `authors.yml` already exist. Phase 13 UPDATES existing files (adds section entries to `myst.yml` toc, populates `content/provenance.md`). Phase 19 pushes content into the existing structure — it does NOT create directories or deploy infrastructure.
+> **Template-aware:** This pipeline assumes the repo was created from `ComputationalReviewTemplate`. All directory structure, plugins, widgets, `myst.yml`, `deploy.yml`, and `authors.yml` already exist. Phase 14 UPDATES existing files (adds section entries to `myst.yml` toc, populates `content/provenance.md`). Phase 20 pushes content into the existing structure — it does NOT create directories or deploy infrastructure.
 
 
 Delegation templates for all DATAML mechanical phases: citation infrastructure (3), evidence curation (5), bibliography (9), methods (12), document assembly (13), citation triples (14), fix preparation (16), fix application (18), and repository push (19).
@@ -230,7 +230,7 @@ For each match:
 **BibTeX ASCII requirement:** The final `.bib` file must be pure ASCII. Replace accented characters with LaTeX escapes (é → `{\'e}`, ü → `{\"u}`, ñ → `{\~n}`). Strip any remaining non-ASCII bytes. This is a hard compilation requirement — a single emoji or Unicode character can cause BibTeX to silently drop dozens of entries.
 
 
-## Phase 12: Methods
+## Phase 13: Methods
 
 **Agent:** DATAML
 
@@ -263,8 +263,8 @@ The Methods section is a transparency document describing how the review was pro
 - Replication status distribution
 
 **M.5 Citation Verification:**
-- Phase 15 results: VERIFIED / MINOR / CHIMERIC / HALLUCINATED / MISATTRIBUTED counts
-- Fix actions taken (Phase 16-13)
+- Phase 16 results: VERIFIED / MINOR / CHIMERIC / HALLUCINATED / MISATTRIBUTED counts
+- Fix actions taken (Phase 17-13)
 - Final error rate after fixes
 
 **M.6 Pipeline Execution:**
@@ -339,11 +339,11 @@ this section — fill in the table from the live `skills/` directory rather than
 retyping the template literal.
 
 
-## Phase 13: Document Assembly
+## Phase 14: Document Assembly
 
 **Agent:** DATAML
 
-Phase 13 now produces two parallel outputs: the MyST repository (primary) and the LaTeX PDF.
+Phase 14 now produces two parallel outputs: the MyST repository (primary) and the LaTeX PDF.
 
 **PROHIBITION — Unresolvable citation keys at assembly time:**
 
@@ -352,7 +352,7 @@ If section `.md` or `.tex` files contain citation keys not present in the `.bib`
 1. **The `citation_key_map` was not built** → go back to Phase 3 and build it. This is the most likely cause.
 2. **Writers ignored the map** → send sections back to Phase 7 writers with: "Replace all citation keys with canonical keys from the citation_key_map. Keys not in the map must be removed, not guessed."
 
-**MANDATORY — Figure artifact collection and path verification (Phase 13):**
+**MANDATORY — Figure artifact collection and path verification (Phase 14):**
 
 After assembling all content files, the coordinator MUST:
 
@@ -374,7 +374,7 @@ After assembling all content files, the coordinator MUST:
 
 Copy all `.md` section files, figures, evidence, and provenance to the repository structure:
 
-*(Assembly file-copy logic delegated to DATAML — see Phase 13 task description)*
+*(Assembly file-copy logic delegated to DATAML — see Phase 14 task description)*
 
 Verify MyST build: `myst build --execute` should complete without errors.
 
@@ -454,7 +454,7 @@ appropriate agent (citation issues → Phase 9 rebuild, cross-ref issues → Pha
 image issues → path fixes).
 
 **Mechanical Notebook→Dropdown Embedding:**
-Section writers do NOT embed dropdown code. Phase 13 DATAML does it mechanically:
+Section writers do NOT embed dropdown code. Phase 14 DATAML does it mechanically:
 1. For each figure PNG, find the matching .ipynb in figures/notebooks/
 2. Read the notebook JSON, extract ALL code cells (not just one)
 3. For each cell, join source lines: `'\n'.join(line.rstrip('\n') for line in cell['source'])`
@@ -466,7 +466,7 @@ If notebooks are stubs ("see main workspace"), build them from `pipeline.lineage
 extract the generation code, clean workspace-specific paths, create proper .ipynb.
 
 **myst.yml Preservation:**
-Phase 13 MUST NOT rewrite myst.yml from scratch. Instead:
+Phase 14 MUST NOT rewrite myst.yml from scratch. Instead:
 1. Read the existing myst.yml from the repo
 2. Update ONLY the `toc:` entries to match the new section filenames
 3. Preserve: site:, extends:, plugins:, bibliography:, exports:, and all other fields
@@ -485,7 +485,7 @@ Phase 13 MUST NOT rewrite myst.yml from scratch. Instead:
 
 
 **MANDATORY — Site infrastructure:**
-Phase 13 MUST also:
+Phase 14 MUST also:
 a) Create `content/evidence_database.md` with `:::{evidence-explorer}` directive
 b) Create `content/provenance.md` with pipeline summary from gate artifacts
 c) Add `:::{authorship-explorer}` with `:authors: ../authors.yml` to `content/00_frontmatter.md` ONLY (after the abstract, before the body)
@@ -500,7 +500,7 @@ g) Insert the Phase 11 Abstract into `content/00_frontmatter.md`
 - The `authorship-plugin.mjs` resolves `./authors.yml` relative to the document directory — directives must specify `:authors: ../authors.yml` since content files are in `content/`
 
 
-## Phase 14: Citation Triples
+## Phase 15: Citation Triples
 
 **Agent:** DATAML
 
@@ -527,7 +527,7 @@ For every `\citep{}`/`\citet{}` in the final document, extract a triple:
 Split into batches of 15–20 triples. The bib entry gives checkers everything needed to verify without guessing keywords.
 
 
-## Phase 16: Fix Preparation
+## Phase 17: Fix Preparation
 
 **Agent:** DATAML
 
@@ -580,7 +580,7 @@ FIX REQUEST (MISATTRIBUTED — wrong finding attributed)
                   Do NOT change the citation — the paper is correct, the description is wrong."
 ```
 
-**For FIGURE_MISLEADING issues (from Phase 15 figure-level verification):**
+**For FIGURE_MISLEADING issues (from Phase 16 figure-level verification):**
 ```
 FIX REQUEST (FIGURE_MISLEADING — visual implies invalid comparison)
   figure_label: fig:sec2-type-counts
@@ -595,7 +595,7 @@ FIX REQUEST (FIGURE_MISLEADING — visual implies invalid comparison)
 ```
 
 **For CRITIC findings (from Phase 8, severity SHOULD_CAVEAT, deferred to Phase 10):**
-These are passed through to Phase 17 only if Phase 10 integration did not address them. Check each deferred SHOULD_CAVEAT against the post-integration text. If still present → create a fix request:
+These are passed through to Phase 18 only if Phase 10 integration did not address them. Check each deferred SHOULD_CAVEAT against the post-integration text. If still present → create a fix request:
 ```
 FIX REQUEST (SCOPE_INFLATION — claim broader than evidence)
   cite_keys: [A, B, C]
@@ -609,7 +609,7 @@ FIX REQUEST (SCOPE_INFLATION — claim broader than evidence)
 **CRITICAL:** The fixer never receives the full document. Only the ±10 line context window + the fix request. This prevents unintended changes elsewhere and limits the fixer's hallucination surface.
 
 
-## Phase 18: Fix Application
+## Phase 19: Fix Application
 
 **Agent:** DATAML
 
@@ -627,7 +627,7 @@ Apply fixes in **reverse document order** (last occurrence first) to prevent off
 6. **Save** final `.tex` and `.bib` files.
 
 
-## Phase 19: Repository Push
+## Phase 20: Repository Push
 
 **Agent:** DATAML
 

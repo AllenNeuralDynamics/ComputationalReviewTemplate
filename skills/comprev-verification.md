@@ -1,16 +1,16 @@
 # Citation Verification Protocol
 
-Phase 15 delegation template. Verify citation triples: DOI resolution, title match, author match, metadata match, claim verification.
+Phase 16 delegation template. Verify citation triples: DOI resolution, title match, author match, metadata match, claim verification.
 
 **Information barrier:** This skill contains ONLY verification instructions. You cannot see how citation issues will be fixed (Phases 16-17). Your job is to find problems, not solve them. This separation ensures verification is independent of the fix process.
 
 ---
 
-## Phase 15: Citation Verification
+## Phase 16: Citation Verification
 
 **Agent:** LITREVIEW (parallel — one per batch of 18 triples — ALL triples must be verified, no sampling)
 
-**AGENT ENFORCEMENT:** Phase 15 MUST be delegated to LITREVIEW, 
+**AGENT ENFORCEMENT:** Phase 16 MUST be delegated to LITREVIEW, 
 NOT to DATAML. The 5-step verification requires abstract-level semantic checking that 
 DATAML cannot perform. A mechanical DOI-exists check is NOT a substitute for verifying 
 that the claimed finding actually matches the paper's abstract.
@@ -162,6 +162,6 @@ In addition to verifying individual citation triples, run one check per multi-so
 > }
 > ```"
 
-Figures flagged as MISLEADING are added to Phase 16 fix requests as a new category: **FIGURE_MISLEADING**. The fix request includes the specific issue and suggested caption amendment or figure redesign.
+Figures flagged as MISLEADING are added to Phase 17 fix requests as a new category: **FIGURE_MISLEADING**. The fix request includes the specific issue and suggested caption amendment or figure redesign.
 
 

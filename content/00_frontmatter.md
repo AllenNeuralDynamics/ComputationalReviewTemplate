@@ -20,7 +20,7 @@ supervision.
 **What the AI did:** [PIPELINE FILLS THIS — one-paragraph description of what the pipeline
 did, e.g., searched literature databases, extracted evidence from N candidate papers,
 drafted M sections and Methods, produced K figures, ran actor–critic separation across
-the 19-phase pipeline.]
+the 20-phase pipeline.]
 
 **What the human did:** [PIPELINE OR AUTHOR FILLS THIS — one-paragraph description of
 the human contributions, e.g., conceived the review, designed the scope, reviewed

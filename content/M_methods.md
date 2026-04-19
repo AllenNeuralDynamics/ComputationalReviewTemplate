@@ -5,7 +5,7 @@
 :label: fig-methods-pipeline
 :width: 100%
 
-Overview of the 19-phase Expert Review Pipeline v24. Green boxes indicate EXPERT agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
+Overview of the 20-phase Expert Review Pipeline v25. Green boxes indicate EXPERT agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
 :::
 
 
@@ -62,12 +62,12 @@ Each evidence package was stored as a versioned artifact linked to its cluster, 
 (sec-methods-citation-verification)=
 ## M.5 Citation Verification
 
-[PIPELINE FILLS THIS — citation verification results from Phase 15]
+[PIPELINE FILLS THIS — citation verification results from Phase 16]
 
 (sec-methods-pipeline)=
 ## M.6 Pipeline Execution
 
-The review was produced through a 19-phase pipeline. Key execution metadata from completed phases:
+The review was produced through a 20-phase pipeline. Key execution metadata from completed phases:
 
 | Phase | Description | Status | Key Outputs |
 |-------|-------------|--------|-------------|
@@ -82,7 +82,8 @@ The review was produced through a 19-phase pipeline. Key execution metadata from
 | 9 | Bibliography assembly | Pending | — |
 | 10 | Integration | Pending | — |
 | 11 | Introduction & Conclusion | Pending | — |
-| 12 | Methods | Pending | — |
+| 12 | Bookend Critic | Pending | — |
+| 13 | Methods | Pending | — |
 | 13–19 | Remaining phases | Pending | — |
 
 (sec-methods-figures)=
@@ -105,14 +106,14 @@ fix protocol.
 
 | Skill | Role | Phase(s) |
 |---|---|---|
-| `comprev-orchestrator-v24.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–19 (all) |
+| `comprev-orchestrator-v25.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–19 (all) |
 | `comprev-evidence-gathering.md` | Worker protocol for EXPERT evidence-gathering frames (one per topic cluster) | 2 |
-| `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 7, 10, 11 |
+| `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 7, 10, 11, 12 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |
 | `comprev-figure-construction.md` | Worker skill for producing publication-quality figures from `figure_data` JSON | 6–7 |
 | `comprev-figure-audit.md` | Blinded figure-auditor protocol — cross-study comparison validity | 6 |
 | `comprev-section-writing.md` | Writer protocol: MyST formatting, citation discipline, synthesis rules | 7 |
-| `comprev-critic.md` | Blinded section-critic protocol — unsupported claims, misrepresented evidence | 8 |
+| `comprev-critic.md` | Blinded section-critic protocol — unsupported claims, misrepresented evidence | 8, 12 |
 | `comprev-integration.md` | Cross-section integration passes; Introduction, Conclusion, and Abstract drafting | 10, 11 |
 | `comprev-verification.md` | Citation-triple verification against CrossRef and full-text sources | 14–16 |
 | `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 17–18 |
@@ -122,7 +123,7 @@ To re-run this pipeline against a different topic, clone the
 [ComputationalReviewTemplate](https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate)
 repository (which ships these same twelve skills), update `myst.yml` with a new title
 and table of contents, and issue a single coordinator prompt — the orchestrator skill
-then drives all nineteen phases to completion.
+then drives all twenty phases to completion.
 
 (sec-methods-reproducibility)=
 ## M.9 Reproducibility Statement
@@ -136,6 +137,6 @@ All pipeline artifacts are preserved and versioned, enabling full reproduction o
 - **Critic reports:** Reports documenting MUST_FIX, SHOULD_CAVEAT, and SUGGESTION items.
 - **Bibliography:** Validated BibTeX entries with full DOI traceability.
 - **Integration log:** Tracked changes including orphan citation removal, terminology standardization, and structural fixes.
-- **Phase ledger:** Records the status and gate artifact for each of the 19 pipeline phases.
+- **Phase ledger:** Records the status and gate artifact for each of the 20 pipeline phases.
 
 The pipeline used no manual curation steps. All evidence extraction, section drafting, critic review, and integration were performed computationally, with gate artifacts serving as checkpoints between phases.

@@ -178,7 +178,7 @@ for sec_num, writer_id in section_to_writer_id.items():
 - MINOR findings are logged in the review metadata but do not block.
 - **Conflict survival threshold:** If conflicts_represented / conflicts_in_package < 0.5, send back to the section writer: "More than half the conflicts in your evidence package are absent from the section. The following conflicts must be represented: [list]. Revise to include both sides of each."
 
-**Interaction with Phase 15:** Phase 8 checks whether the text accurately represents the relationship between papers. Phase 15 checks whether the papers themselves are real and correctly identified. Both are needed — a claim can pass Phase 8 (synthesis is valid given the abstracts) and fail Phase 15 (one DOI is chimeric), or vice versa.
+**Interaction with Phase 16:** Phase 8 checks whether the text accurately represents the relationship between papers. Phase 16 checks whether the papers themselves are real and correctly identified. Both are needed — a claim can pass Phase 8 (synthesis is valid given the abstracts) and fail Phase 16 (one DOI is chimeric), or vice versa.
 
 **ACTOR-CRITIC SEPARATION ENFORCEMENT:**
 
@@ -292,3 +292,107 @@ Gate check before Phase 10: assert orphaned_keys == 0 (cited in .tex/.md but not
 
 
 
+
+
+---
+
+## Phase 12: Bookend Critic
+
+**Agent:** LITREVIEW (parallel — one for Introduction, one for Conclusion)
+
+**Information barrier:** This skill contains ONLY bookend-critic instructions. The Phase 12 critic is a different child frame from the Phase 11 writer and cannot see the Phase 11 task prompt. This separation ensures the critic evaluates the output independently.
+
+**ACTOR-CRITIC SEPARATION ENFORCEMENT:**
+
+Phase 12 critics MUST be different child frames from the Phase 11 bookend
+writer. The coordinator verifies after launching:
+
+```python
+for critic_id in phase_12_critic_ids:
+    assert critic_id not in phase_11_writer_ids, \
+        f'Bookend critic {critic_id} is the same agent as bookend writer — blinding violated'
+```
+
+**Critic receives:**
+- The section .md file (Introduction or Conclusion)
+- Paper abstracts for ALL papers cited in the section
+- The body-section summaries that the Phase 11 writer received (so the critic can verify the bookends accurately represent the body)
+- The master citation list with per-paper claim summaries from body sections (so the critic can distinguish inherited vs novel claim-citation pairs)
+
+**Critic does NOT receive:**
+- The Phase 11 task prompt (blinding)
+- Phase 8 critic findings (independence)
+
+**Delegation template:**
+
+> "Read this bookend section (Introduction or Conclusion) and the cited-paper abstracts. Your job is to find claims not supported by the cited evidence. Check three tracks:
+>
+> **TRACK 1 — Novel Claim-Citation Pairs (CRITICAL):**
+> For every `{cite:p}` / `{cite:t}` in the section, check: was this exact
+> claim-citation pairing already used in a body section? If so, it was
+> validated by Phase 8 — mark as INHERITED and skip.
+>
+> For each NON-INHERITED pairing (new claim attached to existing citation):
+> - Fetch the abstract
+> - Does the abstract support the SPECIFIC claim, not just the topic?
+> - Interpretive-mismatch check: does the paper advance the interpretation
+>   the review places on it, or does the review impose a conclusion the
+>   authors do not draw? Example: a paper reporting high tool specificity
+>   cannot support a claim about tool unreliability unless the paper
+>   explicitly discusses the discrepancy.
+> - Direction check: does the paper argue in the same direction as the claim?
+> - General-caveat check: if the claim is a methodological caveat, does
+>   the cited paper actually discuss that caveat — or does it merely use
+>   the tool in question?
+>
+> This is the critical track. Phase 11 can create novel claim-citation
+> pairs because it has bibliography access without evidence-package
+> constraints. Any claim-citation pair not inherited from the body
+> sections must be independently verified here.
+>
+> **TRACK 2 — Accuracy of Body Summaries:**
+> The Introduction and Conclusion summarize the body sections' findings.
+> For each summary statement, verify it accurately represents what the
+> body section says. Flag if the bookend overstates, understates, or
+> misrepresents a body finding.
+>
+> **TRACK 3 — Scope Inflation:**
+> Find claims that generalize beyond what the cited evidence supports:
+> - Scope inflation: 'in [broad domain]' citing only [narrow subdomain]
+> - System inflation: unqualified claims citing only one study system
+> - Temporal inflation: 'established' citing a single unreplicated study
+>
+> Bookend sections are particularly prone to scope inflation because they
+> synthesize across the entire review.
+>
+> For each finding, return:
+> ```json
+> {
+>   "track": "1-3",
+>   "severity": "MUST_FIX | SHOULD_CAVEAT | MINOR",
+>   "location": "subsection or line identifier",
+>   "claim_text": "the problematic sentence(s)",
+>   "cite_keys_involved": [],
+>   "issue": "description of the problem",
+>   "evidence": "what the abstract actually says",
+>   "suggested_fix": "specific rewrite or caveat language"
+> }
+> ```
+>
+> Also return a summary:
+> ```json
+> {
+>   "total_citation_pairs": 0,
+>   "inherited_pairs": 0,
+>   "novel_pairs_checked": 0,
+>   "must_fix_count": 0,
+>   "should_caveat_count": 0
+> }
+> ```
+
+**Gate:**
+- MUST_FIX findings block Phase 13. The Phase 11 writer receives the findings via `send_message` and must revise.
+- SHOULD_CAVEAT findings are logged in the gate artifact.
+- Save `gate_bookend_critic.json` with: per-section MUST_FIX count (must be 0), novel pairs checked, findings list.
+
+**HARD BLOCK:** `assert total_must_fix == 0` before any Phase 13 delegation.
