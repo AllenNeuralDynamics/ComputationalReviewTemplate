@@ -178,7 +178,7 @@ for sec_num, writer_id in section_to_writer_id.items():
 - MINOR findings are logged in the review metadata but do not block.
 - **Conflict survival threshold:** If conflicts_represented / conflicts_in_package < 0.5, send back to the section writer: "More than half the conflicts in your evidence package are absent from the section. The following conflicts must be represented: [list]. Revise to include both sides of each."
 
-**Interaction with Phase 16:** Phase 8 checks whether the text accurately represents the relationship between papers. Phase 16 checks whether the papers themselves are real and correctly identified. Both are needed — a claim can pass Phase 8 (synthesis is valid given the abstracts) and fail Phase 16 (one DOI is chimeric), or vice versa.
+**Interaction with Phase 16:** Phase 8 checks whether the text accurately represents the relationship between papers (using abstracts). Phase 16 performs exhaustive full-text verification of every citation-claim pair — checking that each cited paper's actual content supports the specific claim. Both are needed — a claim can pass Phase 8 (abstract seems compatible) and fail Phase 16 (the paper's full text contradicts the claim), or vice versa.
 
 **ACTOR-CRITIC SEPARATION ENFORCEMENT:**
 
@@ -333,7 +333,9 @@ for critic_id in phase_12_critic_ids:
 > validated by Phase 8 — mark as INHERITED and skip.
 >
 > For each NON-INHERITED pairing (new claim attached to existing citation):
-> - Fetch the abstract
+> - Fetch full text using the retrieval protocol from `comprev-reviewer-agent`
+>   (Elsevier → Springer → PMC → Europe PMC OA → `fetch_article_fulltext`).
+>   Fall back to abstract if full text unavailable.
 > - Does the abstract support the SPECIFIC claim, not just the topic?
 > - Interpretive-mismatch check: does the paper advance the interpretation
 >   the review places on it, or does the review impose a conclusion the

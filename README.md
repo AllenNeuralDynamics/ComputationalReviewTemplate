@@ -94,7 +94,7 @@ Pre-configured pages that the pipeline populates:
 
 **Act 2 — Drafting & Criticism** (Phases 7-14): Draft sections in parallel (max 4 agents), run blinded 6-track criticism, build bibliography from CrossRef, perform 6-pass integration for consistency, write introduction/conclusion/abstract, run blinded bookend critic on intro/conclusion, generate methods section, and assemble the complete document.
 
-**Act 3 — Verification & Deploy** (Phases 15-20): Extract citation triples, verify ALL citations against databases (DOI resolution, title/author/metadata match, claim verification), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
+**Act 3 — Verification & Deploy** (Phases 15-20): Exhaustively extract citation triples (every citation occurrence), verify ALL citations with full-text-first claim checking (DOI resolution, title/author/metadata match, full-text claim verification with supporting passage audit trail), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
 
 ### Key Design Principles
 
@@ -103,6 +103,7 @@ Pre-configured pages that the pipeline populates:
 - **Incremental artifact saves**: Agents save intermediate work before expensive operations. If an agent crashes, partial work survives.
 - **Max 4 parallel agents**: Prevents system resource exhaustion from too many simultaneous heavy agents.
 - **Gate checkpoints**: Each phase transition requires a named gate artifact. The coordinator verifies compliance before advancing.
+- **Full-text citation verification**: Every citation-claim pair is verified against the cited paper's full text (not just abstract). VERIFIED status requires a verbatim supporting passage from the paper. This catches interpretive mismatches where the abstract is topically compatible but the paper's findings contradict the review's claim.
 
 ## Customization
 
