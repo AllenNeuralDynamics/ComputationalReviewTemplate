@@ -3,7 +3,7 @@
 > **Template-aware:** This pipeline assumes the repo was created from `ComputationalReviewTemplate`. All directory structure, plugins, widgets, `myst.yml`, `deploy.yml`, and `authors.yml` already exist. Phase 14 UPDATES existing files (adds section entries to `myst.yml` toc, populates `content/provenance.md`). Phase 20 pushes content into the existing structure — it does NOT create directories or deploy infrastructure.
 
 
-Delegation templates for all DATAML mechanical phases: citation infrastructure (3), evidence curation (5), bibliography (9), methods (12), document assembly (13), citation triples (14), fix preparation (16), fix application (18), and repository push (19).
+Delegation templates for all DATAML mechanical phases: citation infrastructure (3), evidence curation (5), bibliography (9), methods (13), document assembly (14), citation triples (15), fix preparation (17), fix application (19), and repository push (20).
 
 **Information barrier:** No information barrier. DATAML performs mechanical work (database queries, JSON manipulation, file assembly, git operations). Seeing all phase templates does not bias scientific judgment because DATAML does not make scientific judgments.
 
@@ -300,7 +300,7 @@ Strategy`:
 :::{figure} ../figures/fig_methods_pipeline.png
 :label: fig-methods-pipeline
 :width: 100%
-**Pipeline architecture.** Nineteen-phase orchestrator for computational reviews.
+**Pipeline architecture.** Twenty-phase orchestrator for computational reviews.
 Green: coordinator-owned mechanical phases. Orange: agent delegations. Purple: blinded
 critic phases. Numbers show actual execution metrics from this run.
 :::
