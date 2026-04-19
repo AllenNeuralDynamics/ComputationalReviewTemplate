@@ -106,7 +106,7 @@ fix protocol.
 
 | Skill | Role | Phase(s) |
 |---|---|---|
-| `comprev-orchestrator-v25.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–19 (all) |
+| `comprev-orchestrator-v25.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–20 (all) |
 | `comprev-evidence-gathering.md` | Worker protocol for EXPERT evidence-gathering frames (one per topic cluster) | 2 |
 | `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 7, 10, 11, 12 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |

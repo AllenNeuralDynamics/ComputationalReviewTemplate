@@ -1,6 +1,6 @@
-# Expert Review Orchestrator v24
+# Expert Review Orchestrator v25
 
-# Expert Review Orchestrator v24
+# Expert Review Orchestrator v25
 
 ## Purpose
 Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages).
@@ -57,7 +57,7 @@ delegations:
                       at the end of the last step in each phase.]
 ```
 
-### The 19 Phases to Include
+### The 20 Phases to Include
 
 | Phase | Title | Agent | Key Steps |
 |-------|-------|-------|-----------|
@@ -155,7 +155,7 @@ This puts the full phase rules in kernel memory (usable for delegation templates
 import json, os
 
 # Read orchestrator into kernel memory (NOT into context)
-orch_path = os.path.expandvars(".../skills/orchestrator_v24.md")
+orch_path = os.path.expandvars(".../skills/orchestrator_v25.md")
 with open(orch_path) as f:
     orch_lines = f.readlines()
 
