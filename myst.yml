@@ -12,6 +12,15 @@ project:
     - reproducible research
   license: MIT
   open_access: true
+  numbering:
+    figure:
+      continue: true
+    table:
+      continue: true
+    equation:
+      continue: true
+    code:
+      continue: true
   plugins:
     - plugins/citation-annotation-plugin.mjs
     - plugins/authorship-plugin.mjs
