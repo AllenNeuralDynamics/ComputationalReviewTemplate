@@ -37,10 +37,6 @@ after a deletion. Similarly, when deleting a citation from a comma-separated lis
 clean up double commas (`,,`) and orphaned conjunctions (`and show that` with no
 preceding subject).
 
-**Self-check before saving:** After all deletions, grep for `,,` and for sentences
-that begin with a lowercase verb immediately after a period. Both are signs of
-incomplete cleanup.
-
 **Citation discipline in fixes:** Any NEW citation introduced as a replacement must have a DOI verified against PubMed, Europe PMC, or CrossRef. Include the DOI comment: `\citep{NewKey} % doi:10.1234/verified`
 
 

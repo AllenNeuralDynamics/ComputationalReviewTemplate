@@ -637,10 +637,18 @@ Apply fixes in **reverse document order** (last occurrence first) to prevent off
 3. **Add new bib entries:** For any replacement citations, add their database-fetched bib entries to the `.bib` file
 4. **Remove orphaned bib entries:** If a hallucinated citation was removed (not replaced), delete its bib entry
 5. **Verify integrity:**
-   - Zero orphaned `\citep{}`/`\citet{}` keys (cited in `.tex` but not in `.bib`)
-   - Zero orphaned bib entries (in `.bib` but never cited in `.tex`)
+   - Zero orphaned `\citep{}`/`\citet{}` keys (cited in `.tex`/`.md` but not in `.bib`)
+   - Zero orphaned bib entries (in `.bib` but never cited in `.tex`/`.md`)
    - All DOIs in `.bib` resolve (spot-check 10%)
    - Run output hygiene check one final time
+   - **Citation-deletion cleanup audit (MANDATORY):** After applying all text fixes,
+     grep for `,,` (double commas from deleted list items) and for sentences that
+     begin with a lowercase verb immediately after a period (`. show`, `. report`,
+     `. demonstrate`, etc. — orphaned predicates from deleted `{cite:t}` subjects).
+     Any match is a Phase 18 fix-execution failure: the LITREVIEW agent deleted a
+     citation without cleaning up the dependent prose. Send the affected lines back
+     to the Phase 18 agent via `send_message` for sentence-level repair before
+     proceeding to Phase 20.
 6. **Save** final `.tex` and `.bib` files.
 
 
