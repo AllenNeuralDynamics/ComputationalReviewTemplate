@@ -404,6 +404,13 @@ MyST citation syntax:
 - Do NOT wrap in parentheses: `` ({cite:p}`key`) `` is WRONG
 - Do NOT use LaTeX citation commands (\citep{}, \citet{}) in .md files
 
+**Author name rule (CRITICAL — prevents hallucinated attributions):**
+When mentioning authors by name in prose, ALWAYS use `{cite:t}` (textual citation) which renders the correct name from the bibliography. NEVER type author surnames from memory. The LLM's memory of who wrote a paper is unreliable — the bibliography has the CrossRef-verified truth.
+- CORRECT: `{cite:t}\`Dudok2021recruitment\`` → renders as "Dudok et al. (2021)"
+- WRONG: "Bhatt and colleagues showed..." with `{cite:p}\`Dudok2021recruitment\`` → hallucinated name
+- If you want to say "X et al. showed...", use `{cite:t}` — it does exactly this, with the right name.
+- If you must use a parenthetical citation, do NOT precede it with an author name: write "Chandelier cells suppress pyramidal firing during behavior {cite:p}\`Dudok2021recruitment\`" — not "Bhatt and colleagues showed ... {cite:p}\`Dudok2021recruitment\`".
+
 
 MyST figure syntax:
 ```markdown
