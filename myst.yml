@@ -1,6 +1,6 @@
 version: 1
 extends:
-  - authors.yml
+  - content/authors.yml
 project:
   title: "REVIEW TITLE — Update in myst.yml"
   subtitle: A Reproducible Computational Review
@@ -42,14 +42,5 @@ site:
   template: book-theme
   title: "Computational Review"
   nav:
-    - title: Review
-      children:
-        - file: content/00_frontmatter.md
-    - title: Methods
-      file: content/M_methods.md
-    - title: Evidence Database
-      file: content/evidence_database.md
-    - title: Pipeline Provenance
-      file: content/provenance.md
     - title: GitHub
       url: https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate

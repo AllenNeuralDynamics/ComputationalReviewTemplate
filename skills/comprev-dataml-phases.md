@@ -486,6 +486,14 @@ Phase 14 MUST NOT rewrite myst.yml from scratch. Instead:
 
 **MANDATORY — Site infrastructure:**
 Phase 14 MUST also:
+- **Split evidence database into per-section files for the evidence-explorer plugin.**
+  The evidence-explorer plugin reads `evidence/section_XX_evidence_package.json` files
+  (XX = 02 through 13), NOT the combined `evidence_database.json`. Phase 14 MUST:
+  1. Read the combined evidence database (or section_evidence_packages.json from Phase 5)
+  2. For each section 02–13, extract that section's findings, conflicts, and figure_data
+  3. Save as `evidence/section_XX_evidence_package.json` with required keys:
+     `section_title`, `findings`, `conflicts`, `figure_data`, `unique_papers`, `total_findings`
+  4. Verify all 12 files exist and are non-empty before proceeding
 a) Create `content/evidence_database.md` with `:::{evidence-explorer}` directive
 b) Create `content/provenance.md` with pipeline summary from gate artifacts
 c) Add `:::{authorship-explorer}` with `:authors: ../authors.yml` to `content/00_frontmatter.md` ONLY (after the abstract, before the body)

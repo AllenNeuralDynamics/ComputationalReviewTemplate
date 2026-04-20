@@ -408,7 +408,7 @@ MyST citation syntax:
 MyST figure syntax:
 ```markdown
 :::{figure} ../figures/fig_secN_name.png
-:label: fig-secN-name
+:name: fig-secN-name
 :width: 100%
 **Short descriptive title.** Caption body with {cite:p}`Source2020` attribution.
 :::
@@ -416,10 +416,20 @@ MyST figure syntax:
 
 **Figure caption rules (enforced in Phase 8 critic audit):**
 
-1. **Use `:label:` not `:name:`.** MyST resolves `{numref}` against `:label:` first; using `:name:` in addition produces a duplicate-key warning. Pick one, and standardise on `:label:` everywhere.
+1. **Use `:name:` not `:label:`.** MyST uses `:name:` for figure cross-reference labels. Do NOT use `:label:` — it is not a standard MyST directive option and may cause silent rendering failures. Standardise on `:name:` everywhere.
 2. **No manual figure numbering in captions.** Never write `**Figure 10.2** —` at the start of a caption. MyST auto-numbers figures from document order, and a manual prefix of `10.2` placed before `10.1` in source order produces a contradiction that the build cannot resolve. Let `{numref}` do the work.
 3. **Caption MUST open with a short bold title phrase.** Format: `**Five-or-fewer-word title.** Body of caption...` The bold title is rhetorical — it tells the reader at a glance what the figure shows. The body sentence(s) that follow explain the mechanism or evidence and attach citations.
-4. **One `:label:` directive per figure, no aliases.** If the same figure needs multiple xref anchors, use MyST target syntax (`(sec-fig-alt)=`) above the figure rather than duplicate `:label:` directives.
+4. **One `:name:` directive per figure, no aliases.** If the same figure needs multiple xref anchors, use MyST target syntax (`(sec-fig-alt)=`) above the figure rather than duplicate `:name:` directives. NEVER include two `:name:` lines in the same figure block — this causes MyST to silently fail rendering the figure.
+
+**Figure image path rule (MANDATORY):**
+- Figure directives MUST point to image file paths (`../figures/fig_secN_name.png`), NEVER to `#label` references.
+- `:::{figure} ../figures/fig_sec5_my_plot.png` — CORRECT
+- `:::{figure} #fig-sec5-my-plot` — WRONG (this is a cross-reference, not an image path; the figure will not render)
+
+**Figure-dropdown pairing rule (MANDATORY):**
+- Every `:::{figure}` block MUST be immediately followed by a `:::{dropdown}` block containing the complete Python code that generates that figure.
+- A figure without an accompanying code dropdown is INCOMPLETE and will be flagged by the Phase 8 critic.
+- A code dropdown without a preceding figure image is also invalid — the code must be executed and the PNG saved BEFORE writing the markdown.
 
 **Heading numbering rule:** Section headings must NOT embed manual numbers (`## 10.2 Mechanisms`). Use plain titles (`## Mechanisms`) plus an invisible label above (`(sec-10-mechanisms)=`) for cross-references. Numbering is the build system's responsibility.
 

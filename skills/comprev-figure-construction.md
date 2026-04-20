@@ -11,8 +11,6 @@ Every figure MUST produce TWO outputs:
 The dropdown block format:
 ```
 :::{dropdown} 📓 Figure code
-:icon: code
-:color: light
 
 ```python
 # [complete generation code here — NOT a stub]

@@ -17,24 +17,31 @@ subtitle: A Reproducible Computational Review
 evidence synthesis were produced by an AI pipeline operating under human direction and
 supervision.
 
-**What the AI did:** [PIPELINE FILLS THIS — one-paragraph description of what the pipeline
-did, e.g., searched literature databases, extracted evidence from N candidate papers,
-drafted M sections and Methods, produced K figures, ran actor–critic separation across
-the 20-phase pipeline.]
+:::{warning}
+**What the AI did:** Replace this placeholder with a one-paragraph description of what
+the pipeline did (e.g., searched literature databases, extracted evidence from N
+candidate papers, drafted M sections and Methods, produced K figures, ran actor-critic
+separation across the 20-phase pipeline).
+:::
 
-**What the human did:** [PIPELINE OR AUTHOR FILLS THIS — one-paragraph description of
-the human contributions, e.g., conceived the review, designed the scope, reviewed
-outputs at each phase gate, directed iterative refinement.]
+:::{warning}
+**What the human did:** Replace this placeholder with a one-paragraph description of
+the human contributions (e.g., conceived the review, designed the scope, reviewed
+outputs at each phase gate, directed iterative refinement).
+:::
 
 **All evidence is traceable:** Every factual claim links to a specific paper via DOI,
-verified against CrossRef. See [Methods](./sec-methods.md) for the full protocol and
-the [Evidence Database](./sec-evidence.md) for per-section interactive access to all
-extracted findings.
+verified against CrossRef. See the Methods section for the full protocol and the
+Evidence Database for per-section interactive access to all extracted findings.
 :::
 
 ## Abstract
 
-*Abstract will be written by the pipeline in Phase 11 (250–400 words, single paragraph
-or at most four paragraphs, avoiding citations).*
+:::{warning}
+Abstract will be written by the pipeline in Phase 11 (250-400 words). Replace this
+warning block with the actual abstract.
+:::
 
-**Keywords:** [PIPELINE FILLS THIS — 4–8 topic keywords]
+:::{warning}
+**Keywords:** Replace with 4-8 topic keywords.
+:::

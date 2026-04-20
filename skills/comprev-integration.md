@@ -33,7 +33,9 @@ Consistent terminology throughout. Fix terms used differently across sections. A
 Does the argument build as scaffold intended? Where does the logical chain break? Does conclusion follow from what sections actually contain?
 
 #### 6e. Figure Consistency
-Consistent color palette, fonts, line weights across all figures. No duplicate labels. All \ref{} resolve. Caption depth consistent.
+Consistent color palette, fonts, line weights across all figures. No duplicate labels. All {numref} and {ref} resolve. Caption depth consistent.
+
+**CRITICAL — Duplicate :name: prevention:** Before adding a `:name:` directive to any figure block, CHECK if one already exists. If the figure already contains a `:name:` line, do NOT add another. Duplicate `:name:` directives cause MyST to silently fail rendering the entire figure — no error, no warning, just a missing image. When standardising figure labels, REPLACE existing `:name:` values if needed, never append a second one.
 - **File existence audit:** Verify every `\includegraphics{}` path corresponds to an actual figure file produced during Phase 7. Report any mismatches as a `filename_mismatches` list in the integration log.
 
 #### 6f. Structural Hygiene
