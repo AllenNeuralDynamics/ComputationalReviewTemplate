@@ -1,0 +1,42 @@
+name: "🔭 Scope Expansion"
+description: Suggest a new topic or section that should be added to the review
+labels: ["scope-expansion", "needs-triage"]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Proposed topic
+      description: What topic should be added?
+      placeholder: "PV interneurons in the retina"
+    validations:
+      required: true
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Why should this topic be included?
+      description: Explain why this topic is relevant to the review's scope and what it would add.
+    validations:
+      required: true
+
+  - type: textarea
+    id: key-papers
+    attributes:
+      label: Key papers on this topic
+      description: List 3-5 important papers (with DOIs if possible) that would form the evidence base.
+      placeholder: |
+        1. Smith et al. 2024 (DOI: 10.xxxx/...)
+        2. Jones et al. 2023 (DOI: 10.xxxx/...)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Suggested scope
+      options:
+        - "New section (major topic)"
+        - "New subsection within an existing section"
+        - "Brief mention / paragraph addition"
+    validations:
+      required: true

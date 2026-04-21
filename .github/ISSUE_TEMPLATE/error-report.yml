@@ -1,0 +1,68 @@
+name: "🐛 Error Report"
+description: Report an error in the review — wrong citation, incorrect claim, or factual mistake
+labels: ["error-report", "needs-triage"]
+body:
+  - type: dropdown
+    id: section
+    attributes:
+      label: Which section?
+      options:
+        - "01 — Introduction"
+        - "02 — Molecular Identity and Transcriptomic Taxonomy"
+        - "03 — Developmental Origins"
+        - "04 — Morphological Diversity"
+        - "05 — Intrinsic Electrophysiology"
+        - "06 — Synaptic Physiology"
+        - "07 — Local Circuit Motifs"
+        - "08 — In Vivo Dynamics"
+        - "09 — Brain Region and Layer Context"
+        - "10 — Oscillations and Network Dynamics"
+        - "11 — Species Translation and Disease"
+        - "12 — Computational Models"
+        - "13 — Cross-Cluster Synthesis"
+        - "14 — Conclusion"
+        - "Methods"
+        - "Other / Multiple sections"
+    validations:
+      required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: What does the review currently say?
+      description: Copy the specific sentence or paragraph that contains the error.
+      placeholder: "The review states: '...'"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: error-type
+    attributes:
+      label: Type of error
+      options:
+        - "Wrong citation — paper doesn't support the claim"
+        - "Wrong author name — attributed to wrong person"
+        - "Factual error — the stated finding is incorrect"
+        - "Missing context — claim is technically true but misleading"
+        - "Outdated — newer evidence changes the conclusion"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: What should it say instead?
+      description: If you know the correct information, provide it here. Include DOIs if possible.
+      placeholder: "The correct finding is... (DOI: 10.xxxx/...)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: DOIs, links, or references that support the correction.
+      placeholder: "See Smith et al. 2025 (DOI: 10.xxxx/...)"
+    validations:
+      required: false

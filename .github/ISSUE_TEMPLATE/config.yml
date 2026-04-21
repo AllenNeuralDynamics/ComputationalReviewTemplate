@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "💬 General feedback"
+    url: https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate/discussions
+    about: For general comments, questions, or discussion about the review.

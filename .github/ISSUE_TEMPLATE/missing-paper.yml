@@ -1,0 +1,64 @@
+name: "📄 Missing Paper"
+description: Suggest a paper that should be included in the review
+labels: ["missing-paper", "needs-triage"]
+body:
+  - type: input
+    id: doi
+    attributes:
+      label: Paper DOI
+      description: The DOI of the paper you think is missing.
+      placeholder: "10.1038/s41586-024-..."
+    validations:
+      required: true
+
+  - type: input
+    id: citation
+    attributes:
+      label: Paper reference
+      description: Author(s), year, title, journal — however much you know.
+      placeholder: "Smith et al. 2025, Nature Neuroscience"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: section
+    attributes:
+      label: Which section should cite this paper?
+      options:
+        - "02 — Molecular Identity and Transcriptomic Taxonomy"
+        - "03 — Developmental Origins"
+        - "04 — Morphological Diversity"
+        - "05 — Intrinsic Electrophysiology"
+        - "06 — Synaptic Physiology"
+        - "07 — Local Circuit Motifs"
+        - "08 — In Vivo Dynamics"
+        - "09 — Brain Region and Layer Context"
+        - "10 — Oscillations and Network Dynamics"
+        - "11 — Species Translation and Disease"
+        - "12 — Computational Models"
+        - "13 — Cross-Cluster Synthesis"
+        - "Not sure / Multiple sections"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: How does this paper affect the review?
+      options:
+        - "Supports an existing claim (additional evidence)"
+        - "Contradicts an existing claim (new conflict)"
+        - "Resolves an existing conflict"
+        - "Covers a topic not currently discussed"
+        - "Updates findings with newer/better data"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Why should this paper be included?
+      description: Brief explanation of what the paper found and why it matters for this review.
+      placeholder: "This paper shows that... which is relevant because..."
+    validations:
+      required: true
