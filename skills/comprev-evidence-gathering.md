@@ -106,6 +106,34 @@ text, source = retrieve_fulltext(
 
 **Coordinator enforcement obligation:** These are gates, not advisories. Send back non-compliant clusters via `send_message`.
 
+**Source sentence self-validation (MANDATORY before final save):**
+
+After extracting all findings and before saving the evidence JSON, run this validation on EVERY finding:
+
+1. For each finding, retrieve the paper's abstract from Europe PMC using the DOI:
+   ```
+   https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:{doi}&format=json&resultType=core
+   ```
+2. Check whether `claim_source_sentence` is a verbatim substring of the retrieved abstract text. Use the FULL sentence for matching — not the first 30-50 characters.
+3. For findings with `text_access = "fulltext"`, the source sentence may come from the paper body rather than the abstract. These pass validation IF the fulltext was genuinely retrieved (>15KB with `<body>` tag).
+4. For ANY finding where the source sentence is NOT found in the abstract AND no genuine fulltext was retrieved: **re-extract the finding from the actual abstract text.** Read the abstract, find the most relevant sentence, and copy it verbatim.
+5. Report validation results in the structured output:
+   - `total_checked`: number of findings validated
+   - `source_in_abstract`: exact substring match in abstract
+   - `source_in_fulltext`: source from fulltext body (fulltext verified >15KB)
+   - `source_not_found`: not found in any retrieved text (these are protocol violations)
+   - `re_extracted`: findings that were re-extracted after failing validation
+
+**What counts as a violation:**
+- Paper title used as `claim_source_sentence` (titles are not findings)
+- Paraphrased sentence that doesn't appear verbatim in the abstract
+- Source sentence manufactured from memory without retrieval
+- `text_access = "fulltext"` when no >15KB document was retrieved for this DOI
+
+**Anti-gaming rule:** The validation must use the FULL `claim_source_sentence` as the search string, not a truncated prefix. Matching on the first 30-50 characters is insufficient — it passes paraphrases that diverge after the opening words. Use `source_sentence in abstract_text` (full string containment), not `source_sentence[:50] in abstract_text`.
+
+The coordinator will independently re-run this validation on a random sample after receiving the evidence. Discrepancies between the agent's self-reported numbers and the coordinator's verification will trigger a full re-validation and send-back.
+
 **Compliance checklist (each returning cluster):**
 - [ ] `conflicts` non-empty? If empty → send back.
 - [ ] `weakest_evidence_cited` substantive? If "all strong" → send back.
