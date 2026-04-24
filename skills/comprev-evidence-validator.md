@@ -10,8 +10,9 @@
 ## Per-Finding Checks (every finding, no sampling)
 
 1. **DOI_RESOLVES**: Europe PMC returns ≥1 result for this DOI? **pass/fail**
-2. **SOURCE_IN_ABSTRACT**: `claim_source_sentence` is a substring of the abstract (full string, case-insensitive)? **pass/fail**
-   - WAIVED only if `text_access = "fulltext"` AND a retrieved document >15KB exists for this DOI.
+2. **SOURCE_PROVENANCE**: Check where the source sentence actually came from:
+   - If `text_access = "abstract_only"`: `claim_source_sentence` IS a substring of the abstract? **pass/fail**
+   - If `text_access = "fulltext"`: `claim_source_sentence` is NOT a substring of the abstract? **pass/fail** (fulltext findings must come from the paper body, not the abstract. If found in abstract, the actor extracted lazily.)
 3. **SOURCE_NOT_TITLE**: `claim_source_sentence` ≠ paper title? **pass/fail**
 4. **SOURCE_LENGTH**: `claim_source_sentence` > 50 characters? **pass/fail**
 5. **FULLTEXT_HONEST**: If `text_access = "fulltext"`, retrieved doc >15KB with `<body>` tag? **pass/fail**

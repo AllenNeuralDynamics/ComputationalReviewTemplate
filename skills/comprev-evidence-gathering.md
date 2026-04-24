@@ -90,6 +90,15 @@ The retrieval protocol (API tiers, size validation) is defined in the comprev-re
 - Response < 15KB → metadata-only or abstract-only → `text_access = "abstract_only"` regardless of HTTP status code
 - PMC frequently returns HTTP 200 with a valid XML envelope containing only the abstract. The size check catches this (Failure Mode #23).
 
+**Fulltext extraction rule (MANDATORY):**
+When fulltext is genuinely retrieved (>15KB with `<body>` tag), the `claim_source_sentence` MUST come from the paper body — NOT from the abstract. Extract findings from the Results, Discussion, or other body sections. If you can only find a relevant sentence in the abstract, set `text_access = "abstract_only"` even if you have the fulltext available. The `text_access` field indicates where the SOURCE SENTENCE came from, not whether you had access to the paper.
+
+This means:
+- `text_access = "fulltext"` → source sentence is from the paper body, not findable in the abstract
+- `text_access = "abstract_only"` → source sentence is from the abstract
+
+The validator will check this: if `text_access = "fulltext"` but the source sentence IS found in the abstract, the finding fails validation. Extract deeper or label honestly.
+
 **Coordinator full-text fallback tiers** remain as before, but agents now use `retrieve_fulltext()` instead of `fetch_article_fulltext` for their initial retrieval pass. Call with explicit keys:
 
 ```python
