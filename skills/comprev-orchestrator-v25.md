@@ -12,11 +12,18 @@ Coordinator-level skill governing how specialist agents compose outputs into uni
 COORDINATOR
     Orchestration only: delegate, check gates, inspect, send back.
     NEVER enters a for-loop or makes >5 API calls in a single python cell.
+    Delegates ALL gate validation to DATAML validator agents.
 
-DATAML
+DATAML (actor)
     Mechanical work: metadata queries, evidence curation, bibliography,
     document assembly, citation triple extraction, diff application, 
     repository push. Receives task + input artifacts, returns output artifacts.
+
+DATAML (validator)
+    Binary gate validation: runs pass/fail checks on actor output.
+    Loads comprev-*-validator skills. Makes unlimited API calls to
+    Europe PMC, CrossRef, myst build. Returns structured pass/fail results.
+    MUST be a separate agent from the actor — never the same child frame.
 
 LITREVIEW
     Scientific work: evidence gathering, section writing, blinded criticism,
@@ -425,4 +432,60 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 10 | MUST_FIX deferral — advancing past unresolved critic findings | Hard block assertion before Phase 9 | `assert total_must_fix == 0` |
 | 11 | Blind metadata resolution — guessing papers from author + year | Prohibition in Phase 14 | Unresolvable keys → send back to writers, never guess |
 | 12 | Conflict suppression — presenting contested findings as resolved | Phase 8 conflict survival pre-check + Phase 8 critic Track 3 | Mechanical pre-check: both DOIs from each conflict must appear |
-| 13 | Bookend citation misattribution — intro/conclusion attaches existing bib keys to unsupported claims | Phase 12 bookend critic Track 1 | Novel claim-citation pairs checked against abstracts; inherited pairs skipped |
+| 13 | Bookend citation misattribution — intro/conclusion attaches existing bib keys to unsupported claims | Phase 12 bookend critic Track 1 | Novel claim-citation pairs checked against abstracts; inherited pairs skipped |### Gate Validation Protocol (v26)
+
+The coordinator MUST NOT run gate validation checks inline. The coordinator's ≤5 API call limit prevents it from verifying evidence, citations, or build integrity across hundreds of findings. Instead, the coordinator DELEGATES gate validation to a separate DATAML agent.
+
+**Pattern for every phase transition:**
+
+```
+Actor finishes Phase N
+  → Coordinator delegates to DATAML validator agent:
+    "Load skill [validator-skill]. Validate Phase N output. Input: [artifacts]."
+  → Validator runs ALL binary checks (can loop, can make unlimited API calls)
+  → Validator returns: {gate: "pass"|"fail", failures: [...]}
+  → If PASS: Coordinator saves gate artifact, advances to Phase N+1
+  → If FAIL: Coordinator sends failure list to Actor via send_message
+    → Actor fixes specific failures
+    → Coordinator re-delegates to Validator (re-check only failed items)
+    → Loop until PASS or max 3 iterations (then block for human review)
+```
+
+**CRITICAL: The validator MUST be a separate DATAML agent from the actor.** The validator cannot be the same agent that produced the output, and cannot be the coordinator running checks inline. This ensures independence — the validator has no incentive to pass its own work.
+
+**Validator skill assignments:**
+
+| Phase gate | Validator skill | Key checks |
+|------------|----------------|------------|
+| 2 → 3 | `comprev-evidence-validator` | Source sentences in abstracts, DOI resolution, fulltext honesty |
+| 3 → 4 | `comprev-citation-validator` | CrossRef matching, key format, uniqueness |
+| 5 → 6 | `comprev-curation-validator` | No duplicates, anti-compression, conflict assignment |
+| 7 → 8 | `comprev-myst-validator` | MyST syntax: :name:, dropdowns, cite keys, no process language |
+| 9 → 10 | `comprev-citation-validator` | Bib entries match CrossRef, all keys present |
+| 14 → 15 | `comprev-myst-validator` | `myst build --html` passes, structural checks |
+| 15 → 16 | `comprev-triples-validator` | Exhaustive count, sentences in files |
+| 17 → 18 | `comprev-triples-validator` | Fix coverage, context exists |
+| 19 → 20 | `comprev-myst-validator` | Build still passes after fixes |
+| 20 (final) | `comprev-myst-validator` | Fresh clone builds, all files present |
+
+**Phases with LLM judgment critics (existing pattern, unchanged):**
+
+| Phase gate | Critic skill | Why LLM needed |
+|------------|-------------|----------------|
+| 4 → 5 | (coordinator inspection) | Scaffold quality is subjective |
+| 6 → 7 | `comprev-figure-audit` | Data comparability requires judgment |
+| 8 → 9 | `comprev-critic` | Evidence fidelity, conflict representation |
+| 10 → 11 | (coordinator inspection) | Integration quality |
+| 11 → 12 | (coordinator inspection) | Intro/conclusion basic checks |
+| 12 → 13 | `comprev-critic` | Bookend novel claim verification |
+| 16 → 17 | `comprev-verification` | Claim-paper support judgment |
+| 18 → 19 | (coordinator inspection) | Fix quality |
+
+**Delegation template for validator:**
+
+> "Load skill `comprev-[validator-name]` and validate Phase N output.
+> Your inputs: [artifact references for Phase N output].
+> Run ALL checks defined in the skill. Return the structured output schema
+> defined in the skill. Do NOT skip any check. Do NOT use truncated matching."
+
+
