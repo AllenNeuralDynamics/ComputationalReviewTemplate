@@ -298,7 +298,7 @@ Strategy`:
 
 ```markdown
 :::{figure} ../figures/fig_methods_pipeline.png
-:label: fig-methods-pipeline
+:name: fig-methods-pipeline
 :width: 100%
 **Pipeline architecture.** Twenty-phase orchestrator for computational reviews.
 Green: coordinator-owned mechanical phases. Orange: agent delegations. Purple: blinded
@@ -306,7 +306,7 @@ critic phases. Numbers show actual execution metrics from this run.
 :::
 ```
 
-Note: use `:label:` not `:name:` (MyST canonical; `{numref}` resolves labels first).
+Note: use `:name:` not `:name:` (MyST canonical; `{numref}` resolves labels first).
 The caption MUST start with a short bold title phrase — this is a global template rule,
 audited at the Phase 8 gate.
 

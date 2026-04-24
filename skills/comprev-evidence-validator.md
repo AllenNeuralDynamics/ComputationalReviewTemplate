@@ -17,6 +17,7 @@
 4. **SOURCE_LENGTH**: `claim_source_sentence` > 50 characters? **pass/fail**
 5. **FULLTEXT_HONEST**: If `text_access = "fulltext"`, retrieved doc >15KB with `<body>` tag? **pass/fail**
 6. **CLAIM_DIFFERS_FROM_SOURCE**: `claim` ≠ `claim_source_sentence`? **pass/fail**
+7. **HAS_CITE_KEY**: Finding has non-empty `cite_key` field (assigned during Phase 5, but if present in Phase 2 output, must be valid)? **pass/fail**
 
 ## Aggregate Gates
 - **PAPER_COUNT**: Unique DOIs ≥ target? **pass/fail**
