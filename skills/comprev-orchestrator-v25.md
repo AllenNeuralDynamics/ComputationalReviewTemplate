@@ -330,42 +330,60 @@ Define: central question/thesis, audience, length target, section count, sub-top
 
 The coordinator uses this table to delegate each phase. The full delegation template for each phase lives in a role-specific sub-skill loaded by the sub-agent — NOT in this file.
 
-| Phase | Agent | Batching | Skills to load | Gate artifact | Key checks |
-|-------|-------|----------|----------------|---------------|------------|
-| 1 | Coordinator | — | — | `gate_scope.json` | clusters defined, all TOC topics covered |
-| 2 | EXPERT | ×4 batches | `comprev-evidence-gathering` + `comprev-reviewer-agent` | `gate_evidence_compliance.json` | papers≥target, fulltext≥50%, conflicts>0, figure_data≥2/cluster |
-| 3 | DATAML | single | `comprev-dataml-phases` | `gate_citation_infrastructure.json` | citation_key_map VID not null, ≥95% DOIs mapped |
-| 4 | EXPERT | single | `comprev-scaffold` + `comprev-reviewer-agent` | `gate_scaffold_approved.json` | ≥2 figs/section, cross-refs between non-adjacent sections |
-| 5 | DATAML | single | `comprev-dataml-phases` | `gate_evidence_curated.json` | coverage≥75%, cite_keys assigned, conflicts normalized |
-| 6 | EXPERT | ×4 batches | `comprev-figure-audit` + `comprev-reviewer-agent` | `gate_figure_audit.json` | 0 REDESIGN remaining |
-| 7 | EXPERT | ×4 batches | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | `gate_sections_drafted.json` | cites/para≥4.0, `:::{dropdown}` count = `:::{figure}` count |
-| 8 | EXPERT | ×4 batches | `comprev-critic` + `comprev-reviewer-agent` | `gate_critic_complete.json` | MUST_FIX=0 after send-back |
-| 9 | DATAML | single | `comprev-dataml-phases` | `gate_bibliography.json` | entries=unique cite_keys, 0 Bhatt hits |
-| 10 | EXPERT | single | `comprev-integration` + `comprev-reviewer-agent` | `gate_integration.json` | 6 passes documented, diffs in transitions |
-| 11 | EXPERT | single | `comprev-integration` + `comprev-reviewer-agent` | `gate_intro_conclusion.json` | no new citations, abstract written |
-| 12 | EXPERT | parallel | `comprev-critic` + `comprev-reviewer-agent` | `gate_bookend_critic.json` | MUST_FIX = 0, novel pairs verified |
-| 13 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
-| 14 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
-| 15 | DATAML | single | `comprev-dataml-phases` | — | exhaustive triples extracted into batches of 18 |
-| 16 | EXPERT | ×8 batches | `comprev-verification` + `comprev-reviewer-agent` | — | ALL triples deep-checked, no tiering or sampling |
-| 17 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
-| 18 | EXPERT | ×4 batches | `comprev-fix-execution` + `comprev-reviewer-agent` | — | fixes executed with DB-verified replacements |
-| 19 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
-| 20 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
+| Step | Role | Agent | Skills to load | Output | Key checks |
+|------|------|-------|----------------|--------|------------|
+| 1 | scope | Coordinator | — | `gate_scope.json` | clusters defined, TOC topics covered |
+| 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs | papers≥target, conflicts>0, figure_data≥2/cluster |
+| 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
+| 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |
+| 3V | **validator** | DATAML | `comprev-citation-validator` | `gate_citation_infrastructure.json` | CrossRef matching, key uniqueness, author match |
+| 4 | actor | LITREVIEW | `comprev-scaffold` + `comprev-reviewer-agent` | scaffold JSON | `gate_scaffold_approved.json`: ≥2 figs/section, cross-refs |
+| 5 | **actor** | DATAML | `comprev-dataml-phases` | section evidence packages | findings assigned, cite keys attached |
+| 5V | **validator** | DATAML | `comprev-curation-validator` | `gate_evidence_curated.json` | no duplicates, anti-compression ≥75%, conflicts assigned |
+| 6 | actor | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining |
+| 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
+| 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, figure-dropdown match, cite keys exist |
+| 8 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back |
+| 9 | **actor** | DATAML | `comprev-dataml-phases` | references.bib | bib entries built from CrossRef |
+| 9V | **validator** | DATAML | `comprev-citation-validator` | `gate_bibliography.json` | bib matches CrossRef, all keys present, 0 contamination |
+| 10 | actor | LITREVIEW | `comprev-integration` + `comprev-reviewer-agent` | integrated sections | `gate_integration.json`: 6 passes documented |
+| 11 | actor | LITREVIEW | `comprev-integration` + `comprev-reviewer-agent` | intro + conclusion | `gate_intro_conclusion.json`: no new citations |
+| 12 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | bookend critic report | `gate_bookend_critic.json`: MUST_FIX=0 |
+| 13 | actor | DATAML | `comprev-dataml-phases` | M_methods.md | `gate_methods.json`: 8 subsections |
+| 14 | **actor** | DATAML | `comprev-dataml-phases` | assembled manuscript | all files collected, toc updated |
+| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, evidence JSONs exist |
+| 15 | **actor** | DATAML | `comprev-dataml-phases` | citation_triples.json | all triples extracted |
+| 15V | **validator** | DATAML | `comprev-triples-validator` | validation report | exhaustive count, sentences in files, keys in bib |
+| 16 | critic | LITREVIEW | `comprev-verification` + `comprev-reviewer-agent` | verification results | ALL triples deep-checked |
+| 17 | **actor** | DATAML | `comprev-dataml-phases` | fix_requests.json | fix requests for non-VERIFIED triples |
+| 17V | **validator** | DATAML | `comprev-triples-validator` | validation report | full coverage, context exists |
+| 18 | actor | LITREVIEW | `comprev-fix-execution` + `comprev-reviewer-agent` | fix diffs | fixes executed |
+| 19 | **actor** | DATAML | `comprev-dataml-phases` | updated files | diffs applied |
+| 19V | **validator** | DATAML | `comprev-myst-validator` | validation report | build passes, zero orphans |
+| 20 | **actor** | DATAML | `comprev-dataml-phases` | pushed repo | git push |
+| 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match |
 
 ### Delegation Pattern
 
-**For EXPERT phases**, the coordinator's delegation task says:
+There are THREE distinct delegation types. Never combine them in a single delegation.
 
-> "Load skills `comprev-[role-skill]` and `comprev-reviewer-agent`. [For Phase 7 also: `comprev-figure-construction`.] Execute Phase N. Your inputs: [artifact references]."
+**1. Actor delegation (LITREVIEW):**
+> "Load skills `comprev-[role-skill]` and `comprev-reviewer-agent`. Execute Phase N. Your inputs: [artifact references]."
+The actor produces the phase output. The coordinator waits for completion.
 
-The role-specific skill contains the phase template (what to do). The reviewer-agent contains universal principles (epistemic skepticism, DOI provenance, fulltext protocol). The agent needs both.
-
-**For DATAML phases**, the coordinator says:
-
+**2. Actor delegation (DATAML):**
 > "Load skill `comprev-dataml-phases` and execute Phase N. Your inputs: [artifact references]."
+Or use `send_message` to resume an existing DATAML child.
 
-Or uses `send_message` to resume an existing DATAML child.
+**3. Validator delegation (DATAML — ALWAYS a separate agent from the actor):**
+> "Load skill `comprev-[validator-skill]`. Validate the output of Phase N. Your inputs: [Phase N output artifacts]. Run ALL checks. Return structured pass/fail."
+The validator MUST be a NEW `delegate_to` call — never `send_message` to the actor. Never load a validator skill and an actor skill in the same delegation. The validator agent has one job: check and report.
+
+**Sequence for every phase with a validator (steps 2V, 3V, 5V, 7V, 9V, 14V, 15V, 17V, 19V, 20V):**
+1. Delegate to actor → wait for completion
+2. Delegate to validator (new agent) → wait for completion
+3. If validator returns `gate: "fail"`: send failures to actor via `send_message` → actor fixes → re-delegate to validator
+4. If validator returns `gate: "pass"`: save gate artifact → advance
 
 **The coordinator does NOT copy phase templates into the task description.** The sub-agent reads its own template from its loaded skills.
 
@@ -382,36 +400,11 @@ Define: central question/thesis, audience, length target, section count, sub-top
 
 The coordinator uses this table to delegate each phase. The full delegation template for each phase lives in a role-specific sub-skill loaded by the sub-agent — NOT in this file.
 
-| Phase | Agent | Batching | Sub-skill to load | Gate artifact | Key checks |
-|-------|-------|----------|-------------------|---------------|------------|
-| 1 | Coordinator | — | — | `gate_scope.json` | clusters defined, all TOC topics covered |
-| 2 | EXPERT | ×4 batches | `comprev-evidence-gathering` | `gate_evidence_compliance.json` | papers≥target, fulltext≥50%, conflicts>0, figure_data≥2/cluster |
-| 3 | DATAML | single | `comprev-dataml-phases` | `gate_citation_infrastructure.json` | citation_key_map VID not null, ≥95% DOIs mapped |
-| 4 | EXPERT | single | `comprev-scaffold` | `gate_scaffold_approved.json` | ≥2 figs/section, cross-refs between non-adjacent sections |
-| 5 | DATAML | single | `comprev-dataml-phases` | `gate_evidence_curated.json` | coverage≥75%, cite_keys assigned, conflicts normalized |
-| 6 | EXPERT | ×4 batches | `comprev-figure-audit` | `gate_figure_audit.json` | 0 REDESIGN remaining |
-| 7 | EXPERT | ×4 batches | `comprev-section-writing` | `gate_sections_drafted.json` | cites/para≥4.0, `:::{dropdown}` count = `:::{figure}` count |
-| 8 | EXPERT | ×4 batches | `comprev-critic` | `gate_critic_complete.json` | MUST_FIX=0 after send-back |
-| 9 | DATAML | single | `comprev-dataml-phases` | `gate_bibliography.json` | entries=unique cite_keys, 0 Bhatt hits |
-| 10 | EXPERT | single | `comprev-integration` | `gate_integration.json` | 6 passes documented, diffs in transitions |
-| 11 | EXPERT | single | `comprev-integration` | `gate_intro_conclusion.json` | no new citations, abstract written |
-| 12 | EXPERT | parallel | `comprev-critic` | `gate_bookend_critic.json` | MUST_FIX = 0, novel pairs verified |
-| 13 | DATAML | single | `comprev-dataml-phases` | `gate_methods.json` | 8 subsections present |
-| 14 | DATAML | single | `comprev-dataml-phases` | `gate_assembly.json` | 0 broken refs, toc=file count, plugins deployed |
-| 15 | DATAML | single | `comprev-dataml-phases` | — | exhaustive triples extracted into batches of 18 |
-| 16 | EXPERT | ×8 batches | `comprev-verification` | — | ALL triples deep-checked, no tiering or sampling |
-| 17 | DATAML | single | `comprev-dataml-phases` | — | fix requests prepared |
-| 18 | EXPERT | ×4 batches | `comprev-fix-execution` | — | fixes executed with DB-verified replacements |
-| 19 | DATAML | single | `comprev-dataml-phases` | — | fixes applied, integrity verified |
-| 20 | DATAML | single | `comprev-dataml-phases` | `gate_repository_push.json` | myst build passes, toc complete |
+*(See the unified phase table above. The Step column uses N for actor phases, NV for validator phases, and "critic" for LLM judgment phases.)*
 
 ### Delegation Pattern
 
-For EXPERT phases: `"Load skill [sub-skill-name] and execute Phase N. Also load comprev-reviewer-agent. Your inputs: [artifact references]."`
-
-For DATAML phases: `"Load skill comprev-dataml-phases and execute Phase N. Your inputs: [artifact references]."` Or use `send_message` to resume an existing DATAML child.
-
-The coordinator does NOT copy the phase template into the task description. The sub-agent reads it from its own skill.
+*(See the delegation pattern above. Three types: actor-LITREVIEW, actor-DATAML, validator-DATAML. Never combine actor and validator skills in a single delegation.)*
 
 
 ## Failure Modes
