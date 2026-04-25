@@ -5,10 +5,10 @@ subtitle: A Reproducible Computational Review
 
 # REVIEW TITLE
 
-```{authorship-explorer}
+:::{authorship-explorer}
 :authors: ./authors.yml
 :height: 600px
-```
+:::
 
 :::{admonition} AI-Generated Content Disclosure
 :class: danger

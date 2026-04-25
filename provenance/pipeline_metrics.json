@@ -1,0 +1,13 @@
+{
+  "pipeline_version": "comprev-orchestrator-v25",
+  "title": "Computational Review (template scaffold)",
+  "scope": {
+    "section_count": null,
+    "n_body_sections": null,
+    "n_bookend_sections": 3,
+    "clusters": null,
+    "github_repo": "AllenNeuralDynamics/ComputationalReviewTemplate"
+  },
+  "phases": [],
+  "_note": "Template scaffold. The pipeline rewrites this file at Phase 13 (initial methods rendering) and again at Phase 20a (final ledger refresh) with one entry per phase under the 'phases' key."
+}

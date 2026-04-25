@@ -36,12 +36,11 @@ jobs:
           npm install yaml
 
       - name: Execute figure notebooks
-        continue-on-error: true
         run: |
           if ls figures/notebooks/*.ipynb 1>/dev/null 2>&1; then
             for nb in figures/notebooks/*.ipynb; do
               echo "Executing $nb..."
-              jupyter execute "$nb" --timeout=120 || echo "Warning: $nb failed"
+              jupyter execute "$nb" --timeout=120
             done
           else
             echo "No figure notebooks found"

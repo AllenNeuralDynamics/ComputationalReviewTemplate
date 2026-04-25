@@ -96,13 +96,15 @@ Figure generation notebooks are preserved in `figures/notebooks/` and can be re-
 (sec-methods-skills)=
 ## M.8 Pipeline Skills
 
-The full pipeline is encoded as twelve version-controlled skill files committed to
-this repository under [`skills/`](./skills). Each skill is a markdown specification
-that was loaded by the relevant agent at the relevant phase — re-running a phase
-from scratch requires only the skill plus the upstream artifacts. Information
-barriers are enforced by *omission*: writer agents cannot see critic rubrics,
-figure auditors cannot see the argument arc, and citation verifiers cannot see the
-fix protocol.
+The full pipeline is encoded as seventeen version-controlled skill files committed
+to this repository under [`skills/`](./skills): twelve worker skills that produce
+content and five validator skills that gate each phase with named pass/fail checks.
+Each skill is a markdown specification that was loaded by the relevant agent at the
+relevant phase — re-running a phase from scratch requires only the skill plus the
+upstream artifacts. Information barriers are enforced by *omission*: writer agents
+cannot see critic rubrics, figure auditors cannot see the argument arc, and
+citation verifiers cannot see the fix protocol. Validator skills are loaded only
+by their gate frames and never by the actor frames they evaluate.
 
 | Skill | Role | Phase(s) |
 |---|---|---|
@@ -118,10 +120,15 @@ fix protocol.
 | `comprev-verification.md` | Citation-triple verification against CrossRef and full-text sources | 15–17 |
 | `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 18 |
 | `comprev-dataml-phases.md` | Worker protocol for DATAML agents — citation infrastructure, BibTeX, CrossRef | 3, 5, 9, 13–15, 17, 19–20 |
+| `comprev-evidence-validator.md` | Evidence-package schema and coverage gate | 2V, 5V |
+| `comprev-curation-validator.md` | Per-section evidence package size and content gate | 5V |
+| `comprev-citation-validator.md` | BibTeX well-formedness, DOI resolution, key-uniqueness gate | 9V |
+| `comprev-triples-validator.md` | Citation-triples extraction-completeness gate | 15V |
+| `comprev-myst-validator.md` | MyST build, structural, figure, heading, plugin-directive, and evidence-population gate | 7V, 14V, 19V, 20V |
 
 To re-run this pipeline against a different topic, clone the
 [ComputationalReviewTemplate](https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate)
-repository (which ships these same twelve skills), update `myst.yml` with a new title
+repository (which ships these same seventeen skills), update `myst.yml` with a new title
 and table of contents, and issue a single coordinator prompt — the orchestrator skill
 then drives all twenty phases to completion.
 

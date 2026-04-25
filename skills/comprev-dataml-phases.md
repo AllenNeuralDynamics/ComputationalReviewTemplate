@@ -739,6 +739,17 @@ M.6 and replaces any draft-time placeholder paragraphs in M.5.
 
 **Procedure:**
 
+> **Wholesale-replacement contract.** The template ships §M.6 as a 13-row
+> placeholder ledger ending with one combined `14–20 | Remaining phases |
+> Pending` row. Phase 20a does NOT patch this in place — it **replaces the
+> entire M.6 block** (everything between `## M.6 Pipeline Execution` and
+> `## M.7`) with a fully-rendered ledger that has **20 individual rows**,
+> one per phase, each carrying its real status and key outputs from the
+> corresponding gate artifact. Validator check `METHODS_LEDGER_FRESH` (see
+> `comprev-myst-validator.md` #19) asserts: (a) zero rows in §M.6 contain
+> the literal word `Pending`, (b) the row count equals 20, and (c) no
+> row spans a phase range like `14–20`.
+
 ```python
 import re, json, pathlib
 from datetime import datetime, timezone

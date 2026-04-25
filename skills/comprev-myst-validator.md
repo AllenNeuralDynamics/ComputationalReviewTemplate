@@ -64,6 +64,15 @@
        that `figures/fig_methods_pipeline.png` mtime is later than the
        Phase 13 gate artifact's `created_at`. (The figure is regenerated
        by Phase 20a step (4); this sub-check verifies it ran.)
+    5. **§M.6 ledger has 20 individual rows, no combined ranges.**
+       Parse the markdown table immediately under `## M.6 Pipeline
+       Execution` and assert: (a) exactly 20 data rows; (b) no row's
+       Phase column contains a range delimiter (`–`, `-`, `to`, `,`)
+       — every phase number is a single integer 1..20; (c) zero rows
+       carry the literal token `Pending` in any column. Catches the
+       failure mode where Phase 20a patches the placeholder ledger
+       in place instead of replacing it wholesale (the template ships
+       a 13-row placeholder with one combined `14–20` row).
 
     Block check that catches the failure mode where M_methods.md or
     fig_methods_pipeline.png were rendered at Phase 13 with provisional

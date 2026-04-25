@@ -45,9 +45,11 @@ N. Conclusion
 
 ## What's Included
 
-### Skills (12 files in `skills/`)
+### Skills (17 files in `skills/`)
 
-The pipeline is split into role-specific skills with **information barriers** to enforce actor-critic separation:
+The pipeline is split into role-specific skills with **information barriers** to enforce actor-critic separation. Worker skills produce content; validator skills run after each phase as blinded gates that emit named pass/fail checks into the gate JSON.
+
+**Worker skills (12):**
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
@@ -57,20 +59,31 @@ The pipeline is split into role-specific skills with **information barriers** to
 | `comprev-figure-audit` | 6 | EXPERT | Blinded — no scaffold or argument arc |
 | `comprev-section-writing` | 7 | EXPERT | Cannot see critic criteria |
 | `comprev-critic` | 8, 12 | EXPERT | Blinded — no scaffold or writing template |
-| `comprev-integration` | 10-11 | EXPERT | Full visibility (integration role) |
+| `comprev-integration` | 10–11 | EXPERT | Full visibility (integration role) |
 | `comprev-verification` | 15–17 | EXPERT | Cannot see fix protocol |
 | `comprev-fix-execution` | 18 | EXPERT | Cannot see verification criteria |
-| `comprev-dataml-phases` | 3,5,9,13–15,17,19–20 | DATAML | No barriers (mechanical work) |
-| `comprev-reviewer-agent` | 2,4,6–8,10–12,16,18 | EXPERT | Evidence & writing procedures |
+| `comprev-dataml-phases` | 3, 5, 9, 13–15, 17, 19–20 | DATAML | No barriers (mechanical work) |
+| `comprev-reviewer-agent` | 2, 4, 6–8, 10–12, 16, 18 | EXPERT | Evidence & writing procedures |
 | `comprev-figure-construction` | 7 | EXPERT | Figure production |
 
-### Plugins (3 files in `plugins/`)
+**Validator skills (5):**
+
+| Skill | Phase | Role | What it gates |
+|-------|-------|------|---------------|
+| `comprev-evidence-validator` | 2V, 5V | DATAML | Evidence-package schema, per-cluster coverage, fulltext rate |
+| `comprev-curation-validator` | 5V | DATAML | Per-section evidence package size, conflict and figure-data presence |
+| `comprev-citation-validator` | 9V | DATAML | BibTeX entry well-formedness, DOI resolution, key uniqueness |
+| `comprev-triples-validator` | 15V | DATAML | One triple per `{cite:p}`/`{cite:t}` occurrence, no sampling |
+| `comprev-myst-validator` | 7V, 14V, 19V, 20V | DATAML | MyST build, structural checks, figure/heading consistency, plugin-directive invocation, evidence-package population |
+
+### Plugins (4 files in `plugins/`)
 
 | Plugin | What it does |
 |--------|-------------|
 | `authorship-plugin.mjs` | Renders interactive CRediT authorship widget |
 | `evidence-explorer-plugin.mjs` | Loads evidence packages into interactive browser |
 | `citation-annotation-plugin.mjs` | Adds CiTO annotation tooltips on citation hover |
+| `figure-lightbox-plugin.mjs` | Click-to-zoom lightbox for inline figures |
 
 ### Content placeholders (`content/`)
 
@@ -86,15 +99,15 @@ Pre-configured pages that the pipeline populates:
 - `myst.yml` — MyST configuration with top-bar navigation (Review | Methods | Evidence | Provenance | GitHub)
 - `.github/workflows/deploy.yml` — Auto-builds MyST site and deploys to GitHub Pages
 - `scripts/shared_style.py` — Common figure style (colors, fonts, 300 DPI)
-- `authors.yml` — Author metadata for the authorship widget
+- `content/authors.yml` — Author metadata for the authorship widget (extended into `myst.yml`)
 
 ## Pipeline Architecture
 
-**Act 1 — Evidence & Infrastructure** (Phases 1-6): Define scope, gather evidence from literature databases (PubMed, OpenAlex, bioRxiv), build citation infrastructure from CrossRef, construct the review scaffold, curate per-section evidence packages, and audit figure comparisons for methodological validity.
+**Act 1 — Evidence & Infrastructure** (Phases 1–6): Define scope, gather evidence from literature databases (PubMed, OpenAlex, bioRxiv), build citation infrastructure from CrossRef, construct the review scaffold, curate per-section evidence packages, and audit figure comparisons for methodological validity.
 
-**Act 2 — Drafting & Criticism** (Phases 7-14): Draft sections in parallel (max 4 agents), run blinded 6-track criticism, build bibliography from CrossRef, perform 6-pass integration for consistency, write introduction/conclusion/abstract, run blinded bookend critic on intro/conclusion, generate methods section, and assemble the complete document.
+**Act 2 — Drafting & Criticism** (Phases 7–13): Draft sections in parallel (max 4 agents), run blinded 6-track criticism, build bibliography from CrossRef, perform 6-pass integration for consistency, write introduction/conclusion/abstract, run blinded bookend critic on intro/conclusion, and generate the methods section.
 
-**Act 3 — Verification & Deploy** (Phases 15-20): Exhaustively extract citation triples (every citation occurrence), verify ALL citations with full-text-first claim checking (DOI resolution, title/author/metadata match, full-text claim verification with supporting passage audit trail), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
+**Act 3 — Assembly, Verification & Deploy** (Phases 14–20): Assemble the complete document, exhaustively extract citation triples (every citation occurrence), verify ALL citations with full-text-first claim checking (DOI resolution, title/author/metadata match, full-text claim verification with supporting passage audit trail), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
 
 ### Key Design Principles
 
@@ -108,7 +121,7 @@ Pre-configured pages that the pipeline populates:
 ## Customization
 
 - **Title and metadata**: Edit `myst.yml` project title, description, and keywords
-- **Authors**: Edit `authors.yml` to add human contributors alongside the AI author
+- **Authors**: Edit `content/authors.yml` to add human contributors alongside the AI author
 - **Figure style**: Edit `scripts/shared_style.py` to change colors, fonts, and figure aesthetics
 - **Navigation**: The top bar (Review | Methods | Evidence | Provenance | GitHub) is configured in `myst.yml` site.nav
 
