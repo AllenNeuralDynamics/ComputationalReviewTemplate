@@ -140,6 +140,26 @@
     `:width:` is a fail. **pass/fail** with `figures_missing_width`
     listing offenders as `path:line`.
 
+
+24. **EVIDENCE_PARAMETERS_HONORED** *(Phase 2V, 14V)*:
+    Read `evidence_parameters` from `gate_scope.json`. For each cluster
+    evidence package (`evidence/section_*_evidence_package.json`):
+
+    - If `min_papers_per_cluster` is set and non-null: verify
+      `unique_paper_count` (or `len(set(f['doi'] for f in findings))`)
+      ≥ `min_papers_per_cluster`. **HARD FAIL** if any cluster is below.
+    - If `saturation_criterion` is set and non-null: verify that a
+      `saturation_log.json` artifact exists for each cluster AND that the
+      log shows the criterion firing in two consecutive passes. **HARD FAIL**
+      if the log is missing or the criterion never fired.
+    - If `total_bibliography_target` is set and non-null: verify that the
+      sum of unique DOIs across all clusters ≥ `total_bibliography_target`.
+      **HARD FAIL** if below.
+    - If `evidence_parameters` is absent from `gate_scope.json` or all
+      fields are null/default: emit `"EVIDENCE_PARAMETERS_HONORED": "n/a"`
+      with reason "no custom evidence parameters set" (backward
+      compatibility with v24/v25 pipelines).
+
 ## Output Schema
 
 The validator's gate JSON (e.g. `gate_assembly.json`, `gate_post_publish.json`) MUST be a single JSON object containing — at minimum — these keys:
@@ -162,6 +182,7 @@ The validator's gate JSON (e.g. `gate_assembly.json`, `gate_post_publish.json`) 
     "EVIDENCE_PACKAGES_POPULATED": "pass|fail",
     "PLUGIN_DIRECTIVES_INVOKED": "pass|fail",
     "FIGURE_WIDTH_DECLARED": "pass|fail",
+    "EVIDENCE_PARAMETERS_HONORED": "pass|fail|n/a",
     "...": "every other check in this skill, by exact NAME"
   },
   "gate_passed": bool

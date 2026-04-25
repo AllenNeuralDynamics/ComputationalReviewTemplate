@@ -1,6 +1,6 @@
-# Expert Review Orchestrator v25
+# Expert Review Orchestrator v26
 
-# Expert Review Orchestrator v25
+# Expert Review Orchestrator v26
 
 ## Purpose
 Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages).
@@ -40,7 +40,7 @@ Before any execution, the coordinator MUST build a complete execution plan using
 
 ### How to Build the Plan
 
-1. **Read the user's task description.** This is Phase 1 (Scope): the title, table of contents, section structure, target paper count, and any domain-specific instructions.
+1. **Read the user's task description.** This is Phase 1 (Scope): the title, table of contents, section structure, evidence parameters (paper density, saturation criteria, snowball depth — see Evidence Parameters), and any domain-specific instructions.
 
 2. **Call `generate_plan` with ALL 20 phases as separate plan phases.** Each phase maps to one `generate_plan` phase with `depends_on` chains enforcing sequential execution. Include the agent, the key steps, and the compliance checks for each phase.
 
@@ -69,7 +69,7 @@ delegations:
 | Phase | Title | Agent | Key Steps |
 |-------|-------|-------|-----------|
 | 1 | Scope and Thesis | Coordinator | Define clusters, sections, targets from user TOC |
-| 2 | Evidence Gathering | EXPERT (parallel) | Search databases, extract findings, ≥70 papers/cluster, ≥50% fulltext |
+| 2 | Evidence Gathering | EXPERT (parallel) | Search databases, extract findings, papers ≥ min_papers_per_cluster (from evidence_parameters), ≥50% fulltext |
 | 3 | Citation Infrastructure | DATAML | CrossRef queries → citation_key_map + author_name_table |
 | 4 | Scaffold Construction | EXPERT | Argument arc, section plans, figure specs, style guide |
 | 5 | Evidence Curation | DATAML | Cluster→section assignment, per-section packages, scaffold extracts |
@@ -337,6 +337,31 @@ Define: central question/thesis, audience, length target, section count, sub-top
 
 The template ships scaffold versions of both files containing `[PIPELINE FILLS THIS]` placeholders. Validator check `REVIEW_REQUEST_CAPTURED` (Phase 14V) hard-fails if those placeholders are still present at assembly time.
 
+### Evidence Parameters
+
+The coordinator extracts evidence-density parameters from the user's prompt and writes them into `gate_scope.json` under an `evidence_parameters` key. If the user's prompt does not specify a parameter, use the default. These parameters govern Phase 2 evidence gathering and Phase 2V/14V validation.
+
+```yaml
+evidence_parameters:
+  min_papers_per_cluster: 70        # minimum unique papers per topic cluster
+                                    # user may set higher (e.g. 200, 500)
+  saturation_criterion: null        # optional stopping rule, e.g. "<2% new unique in last 100"
+                                    # when set, agents continue searching until this fires
+                                    # AND min_papers_per_cluster is met (whichever is later)
+  snowball_rounds: 0                # citation-chasing rounds (forward + backward via OpenAlex)
+                                    # 0 = keyword search only; 1+ = snowball after initial search
+  total_bibliography_target: null   # optional floor for the total bibliography across all clusters
+                                    # when set, coordinator redistributes shortfalls across clusters
+```
+
+**Parsing rules:**
+- If the user says "saturate the literature" or "cover all papers" without a number, set `min_papers_per_cluster: null` (no floor — saturation criterion alone governs), `saturation_criterion: "<2% new unique in last 100"`, `snowball_rounds: 2`.
+- If the user gives a number ("≥200 papers per section"), set `min_papers_per_cluster: 200`, leave `saturation_criterion: null`.
+- If the user gives both, both apply: the agent must meet the floor AND the saturation criterion.
+- `snowball_rounds` defaults to 0 for backward compatibility. Any `saturation_criterion` implies `snowball_rounds: 1` at minimum (saturation without snowballing is meaningless).
+
+The coordinator passes `evidence_parameters` verbatim in every Phase 2 delegation task description. The evidence-gathering agent reads it and adapts its search depth accordingly.
+
 
 
 
@@ -346,7 +371,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 
 | Step | Role | Agent | Skills to load | Output | Key checks |
 |------|------|-------|----------------|--------|------------|
-| 1 | scope | Coordinator | — | `provenance/review_request.{md,txt}` + `gate_scope.json` | prompt captured verbatim, scaffold placeholders gone, clusters defined, TOC topics covered |
+| 1 | scope | Coordinator | — | `provenance/review_request.{md,txt}` + `gate_scope.json` | prompt captured verbatim, scaffold placeholders gone, clusters defined, TOC topics covered, `evidence_parameters` present with defaults filled |
 | 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs | papers≥target, conflicts>0, figure_data≥2/cluster |
 | 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |
@@ -421,6 +446,31 @@ Define: central question/thesis, audience, length target, section count, sub-top
 3. **`gate_scope.json`** — As before. Add a top-level `"review_request_path": "provenance/review_request.md"` field so downstream phases can find it.
 
 The template ships scaffold versions of both files containing `[PIPELINE FILLS THIS]` placeholders. Validator check `REVIEW_REQUEST_CAPTURED` (Phase 14V) hard-fails if those placeholders are still present at assembly time.
+
+### Evidence Parameters
+
+The coordinator extracts evidence-density parameters from the user's prompt and writes them into `gate_scope.json` under an `evidence_parameters` key. If the user's prompt does not specify a parameter, use the default. These parameters govern Phase 2 evidence gathering and Phase 2V/14V validation.
+
+```yaml
+evidence_parameters:
+  min_papers_per_cluster: 70        # minimum unique papers per topic cluster
+                                    # user may set higher (e.g. 200, 500)
+  saturation_criterion: null        # optional stopping rule, e.g. "<2% new unique in last 100"
+                                    # when set, agents continue searching until this fires
+                                    # AND min_papers_per_cluster is met (whichever is later)
+  snowball_rounds: 0                # citation-chasing rounds (forward + backward via OpenAlex)
+                                    # 0 = keyword search only; 1+ = snowball after initial search
+  total_bibliography_target: null   # optional floor for the total bibliography across all clusters
+                                    # when set, coordinator redistributes shortfalls across clusters
+```
+
+**Parsing rules:**
+- If the user says "saturate the literature" or "cover all papers" without a number, set `min_papers_per_cluster: null` (no floor — saturation criterion alone governs), `saturation_criterion: "<2% new unique in last 100"`, `snowball_rounds: 2`.
+- If the user gives a number ("≥200 papers per section"), set `min_papers_per_cluster: 200`, leave `saturation_criterion: null`.
+- If the user gives both, both apply: the agent must meet the floor AND the saturation criterion.
+- `snowball_rounds` defaults to 0 for backward compatibility. Any `saturation_criterion` implies `snowball_rounds: 1` at minimum (saturation without snowballing is meaningless).
+
+The coordinator passes `evidence_parameters` verbatim in every Phase 2 delegation task description. The evidence-gathering agent reads it and adapts its search depth accordingly.
 
 
 

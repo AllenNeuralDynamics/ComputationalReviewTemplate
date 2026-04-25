@@ -1,6 +1,14 @@
 # Evidence Gathering Protocol
 
-Phase 2 delegation template for EXPERT evidence-gathering agents. Each agent searches databases and returns structured evidence for one topic cluster.
+Phase 2 delegation template for evidence-gathering agents. Each agent searches databases and returns structured evidence for one topic cluster.
+
+**Evidence Parameters:** The coordinator's delegation task includes an `evidence_parameters` block (defined in the orchestrator skill, Phase 1). Read it to determine:
+- `min_papers_per_cluster` — minimum unique papers to return (default 70)
+- `saturation_criterion` — optional stopping rule (e.g., "<2% new unique in last 100")
+- `snowball_rounds` — how many citation-chasing rounds to run (default 0)
+- `total_bibliography_target` — optional total across all clusters
+
+If `evidence_parameters` is absent from the delegation task, use defaults (70 papers, no saturation, no snowball).
 
 **Information barrier:** This skill contains ONLY evidence-gathering instructions. You cannot see how sections are written (Phase 7), how they are critiqued (Phase 8), or how figures are audited (Phase 6). This is intentional.
 
@@ -147,7 +155,7 @@ The coordinator will independently re-run this validation on a random sample aft
 - [ ] `conflicts` non-empty? If empty → send back.
 - [ ] `weakest_evidence_cited` substantive? If "all strong" → send back.
 - [ ] `figure_data` present? If empty → send back.
-- [ ] `papers_reviewed_count` ≥ 70 per major topic? If below → send back with specific undertreated subtopics.
+- [ ] `papers_reviewed_count` ≥ `min_papers_per_cluster` (from `evidence_parameters` in the delegation task)? If below → send back with specific undertreated subtopics.
 - [ ] Cross-cluster unique DOI count ≥ 80% of target? If below → send back thinnest clusters for additional citation chaining.
 - [ ] Every paper has a DOI (starts with `10.`)? If not → send back.
 - [ ] `search_failures` present for papers mentioned in delegation but not found in databases? If unfound papers appear in `findings` without database-verified DOI → send back.
@@ -233,6 +241,50 @@ The coordinator will independently re-run this validation on a random sample aft
 For each DOI, DATAML compares CrossRef title word overlap with claim_source_sentence. Overlap < 0.2 → flag as WRONG_DOI. >10% flag rate per cluster → send cluster back for rebuild. Individual flags → search by reported title for correct DOI.
 
 
+## Snowball Protocol
+
+When `evidence_parameters.snowball_rounds` ≥ 1 (passed in the delegation task), execute citation chasing AFTER the initial keyword search pass:
+
+**Per round:**
+1. **Rank** the current result set by citation count (OpenAlex `cited_by_count`).
+2. **Select** the top 50 most-cited papers (or all papers if fewer than 50).
+3. **Backward snowball:** For each selected paper, retrieve its reference list via OpenAlex (`referenced_works`). Add any DOI not already in the result set.
+4. **Forward snowball:** For each selected paper, retrieve its cited-by list via OpenAlex (`cited_by` endpoint, paginated). Add any DOI not already in the result set.
+5. **Screen** newly added DOIs by title/abstract against the cluster's inclusion criteria. Remove irrelevant additions.
+6. **Log** the round: `{"round": N, "seed_papers": 50, "backward_added": X, "forward_added": Y, "after_screen": Z, "cumulative_unique": W}`.
+
+Repeat for `snowball_rounds` iterations. Each round uses the expanded set (including previous round's additions) as the seed, so citation chains propagate.
+
+**Important:** Snowball rounds will surface papers that don't contain the original search keywords but are cited by / cite papers that do. This is the primary mechanism for escaping keyword-search blind spots. Do NOT filter snowball additions by keyword match — screen them by topical relevance to the cluster.
+
+
+## Saturation Protocol
+
+When `evidence_parameters.saturation_criterion` is set (e.g., `"<2% new unique in last 100"`), the agent must track per-pass yield and stop only when the criterion fires:
+
+**Tracking:**
+After each search pass (initial keyword search, each snowball round, each query expansion), record:
+```json
+{
+  "pass_type": "keyword | snowball_round_N | expansion_N",
+  "query_or_method": "the search string or 'forward snowball on top-50'",
+  "records_examined": 100,
+  "new_unique_relevant": 3,
+  "new_unique_rate": 0.03,
+  "cumulative_unique": 287,
+  "cumulative_screened_in": 245
+}
+```
+
+**Stopping rule:**
+- Parse the criterion string. Example: `"<2% new unique in last 100"` means: in the most recent pass of 100 records, fewer than 2% were new unique relevant papers not already in the result set.
+- The criterion must fire in **two consecutive passes** to trigger a stop. A single low-yield pass could be a database-specific gap, not true saturation.
+- `min_papers_per_cluster` (if set) acts as a hard floor: even if the saturation criterion fires early, do not stop until the floor is met.
+
+**Output:**
+Save `saturation_log.json` as an artifact alongside the evidence package. This log is consumed by the validator (check `EVIDENCE_SATURATION_REPORTED`) and by the Methods section (Phase 13) to document the search strategy.
+
+
 ## Evidence Schema
 
 Every evidence-gathering agent returns a JSON matching this schema. The coordinator validates compliance on return.
@@ -289,7 +341,7 @@ Every evidence-gathering agent returns a JSON matching this schema. The coordina
 ## Part III: How to Work
 
 ### Coverage and Search
-- ≥70 papers per major topic, 800–1,200 total for comprehensive reviews targeting literature saturation
+- ≥ `min_papers_per_cluster` papers per major topic (from `evidence_parameters`). If `total_bibliography_target` is set, redistribute effort across clusters to meet it. If `saturation_criterion` is set, continue searching until the criterion fires (see Saturation Protocol below)
 - Seed papers → citation chains (3 iterations) → systematic database search
 - ≥6 distinct targeted queries per topic across domain-appropriate databases (e.g., PubMed, bioRxiv, Europe PMC, OpenAlex for biomedical; ADS, arXiv for physics; DBLP, Semantic Scholar for CS)
 - Search must extend beyond landmark papers to include: replication studies, negative results, methodological variants, cross-domain extensions, and cross-system comparison studies
@@ -448,7 +500,7 @@ When gathering evidence (Phase 2 of orchestrator), produce STRUCTURED output —
 
 5. **Replication status.** To mark a finding as `independently_replicated`, you must have found ≥2 papers from different labs (different last authors) reporting the same result. List their DOIs in `replication_evidence_dois`. For `contested`, list the conflicting DOIs. If you cannot identify specific replicating or conflicting papers from your searches, use `replication_unknown`.
 
-6. **Before saving, verify your count.** `len(set(f['doi'] for f in findings))` must be ≥70 per section covered. If below 70, you are over-filtering — go back and include replication studies, negative results, and cross-area extensions.
+6. **Before saving, verify your count.** `len(set(f['doi'] for f in findings))` must be ≥ `min_papers_per_cluster` per section covered (read this value from the `evidence_parameters` in your delegation task; default 70). If below target, you are over-filtering — go back and include replication studies, negative results, and cross-area extensions.
 
 7. **Before saving, verify extraction rates.** The orchestrator will reject clusters that fall below these thresholds:
    - **Effect size rate:** ≥30% of findings must have a non-empty, non-null `effect_size` (excluding "not reported", "N/A", "qualitative"). If below 30%, return to abstracts/full text for your top 50 papers and extract any reported numbers.
