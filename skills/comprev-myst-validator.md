@@ -25,8 +25,13 @@
 
 13. **TOC_MATCHES_FILES**: Every myst.yml toc file exists on disk? **pass/fail**
 14. **EVIDENCE_JSONS_EXIST**: `evidence/section_XX_evidence_package.json` for XX=02-13? **pass/fail**
-15. **AUTHORS_YML_EXISTS**: `content/authors.yml` exists? **pass/fail**
-16. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
+15. **FIGURE_NOTEBOOK_MATCH**: Every `:::{figure} ../figures/<name>.png` referenced in any
+    `content/*.md` has a corresponding `figures/notebooks/<name>.ipynb` on disk, AND every
+    such notebook contains ≥1 non-empty code cell (i.e., is not a stub)? **pass/fail**
+    (Block check that catches the failure mode where Phase 6 saved PNGs without notebooks
+    and Phase 14 had nothing to embed in dropdowns.)
+16. **AUTHORS_YML_EXISTS**: `content/authors.yml` exists? **pass/fail**
+17. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
 
 ## Output Schema
 ```json

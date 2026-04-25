@@ -32,14 +32,28 @@ notebook saved to `figures/notebooks/`. The notebook:
 
 This enables full figure reproducibility from the evidence data.
 
-**Notebook completeness (MANDATORY):**
+**Notebook completeness (MANDATORY — hard fail at Phase 14V):**
 Every notebook MUST contain the actual figure generation code — not a placeholder.
-- MUST have ≥1 code cell with `plt.subplots`, `fig =`, or `ax.` 
+- MUST have ≥1 code cell with `plt.subplots`, `fig =`, or `ax.`
 - MUST NOT contain only comments like "see main workspace" or "see main generation code"
 - The notebook must be self-contained: running all cells in order must reproduce the figure
 - Include ALL code: imports, data definition, plotting, and save_figure call
-- If the figure was generated in the agent's kernel workspace, capture that code into the 
+- If the figure was generated in the agent's kernel workspace, capture that code into the
   notebook before saving — do not save a stub
+
+**Artifact promotion is required (MANDATORY).** The PNG, the `.py` source script, AND the
+`.ipynb` notebook MUST all be saved as project artifacts via `save_artifacts(...)` before
+this skill's worker phase signals completion. Saving only the PNG (or PNG + `.py`) is a
+skill violation. Phase 14 (`comprev-dataml-phases`) reads the notebooks back from artifacts
+to construct the `:::{dropdown} 📓 Figure code` blocks — if the notebook is missing,
+Phase 14 has nothing to embed and Phase 14V (`comprev-myst-validator`,
+`FIGURE_DROPDOWN_MATCH`) will fail.
+
+**No-stub rule.** If the worker cannot produce a complete, executable notebook for a
+given figure (e.g., the generation code lives only in a deleted kernel session), the
+worker MUST raise an explicit error with the figure's intended `name` and `figure_data`
+comparison_id rather than save a stub or skip the notebook. Stubs and skips silently
+break Phase 14 dropdown embedding and ship a non-reproducible repository.
 
 
 ## MyST Figure Integration 
@@ -346,7 +360,10 @@ Caption text here.
 ```
 Note: `../figures/` prefix (content files are in content/ subdirectory).
 Note: dashes in `:name:` (fig-secN not fig:secN).
-Do NOT add dropdown code blocks — Phase 14 assembly will do this mechanically from notebooks.
+Do NOT add dropdown code blocks in the section .md files — Phase 14 assembly will do this
+mechanically from the notebooks you save. Your responsibility ends when the figure PNG,
+the figure `.py` source, AND the matching `figures/notebooks/<fig>.ipynb` are all saved
+as artifacts. If any of the three is missing, Phase 14 will fail.
  The [H] specifier (from the float package) prevents LaTeX from deferring figure placement, ensuring figures appear inline with the text that references them.
 
 ### Checklist

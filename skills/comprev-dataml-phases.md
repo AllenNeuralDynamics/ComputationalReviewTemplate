@@ -454,17 +454,32 @@ If any assertions fail, return the specific warnings. The coordinator routes fix
 appropriate agent (citation issues → Phase 9 rebuild, cross-ref issues → Phase 7 writers, 
 image issues → path fixes).
 
-**Mechanical Notebook→Dropdown Embedding:**
+**Mechanical Notebook→Dropdown Embedding (HARD GATE — must not be downgraded to a note):**
 Section writers do NOT embed dropdown code. Phase 14 DATAML does it mechanically:
-1. For each figure PNG, find the matching .ipynb in figures/notebooks/
-2. Read the notebook JSON, extract ALL code cells (not just one)
-3. For each cell, join source lines: `'\n'.join(line.rstrip('\n') for line in cell['source'])`
-4. Combine cells with `'\n\n# ---\n\n'` separator
-5. Insert after the figure directive as: `:::{dropdown} 📓 Figure code` followed by a python code block and `:::`
-6. Validate: no single line > 200 chars (catches concatenation bugs)
+1. For each figure PNG, find the matching `.ipynb` in `figures/notebooks/`.
+2. Read the notebook JSON, extract ALL code cells (not just one).
+3. For each cell, join source lines: `'\n'.join(line.rstrip('\n') for line in cell['source'])`.
+4. Combine cells with `'\n\n# ---\n\n'` separator.
+5. Insert immediately after the figure directive as `:::{dropdown} 📓 Figure code` followed
+   by a python code block and a closing `:::`.
+6. Validate: no single line > 200 chars (catches concatenation bugs).
+7. Validate: in every section .md file, `count(':::{figure}') == count(':::{dropdown} 📓 Figure code')`.
 
-If notebooks are stubs ("see main workspace"), build them from `pipeline.lineage[figure_vid]`:
-extract the generation code, clean workspace-specific paths, create proper .ipynb.
+**Missing-notebook policy (MANDATORY).** If `figures/notebooks/<fig>.ipynb` is missing for
+any figure referenced in a section .md:
+  a. FIRST attempt to reconstruct the notebook from `pipeline.lineage[figure_vid]` — extract
+     the generation code, clean workspace-specific paths, write a proper `.ipynb` to
+     `figures/notebooks/`, and re-run the embedding step for that figure.
+  b. If lineage reconstruction fails (no recorded code, or the code does not produce the
+     PNG), FAIL the phase by writing `gate_assembly.json` with `gate_passed: false` and
+     `missing_notebooks: [<fig_name>, ...]`. The coordinator must route the failure back
+     to Phase 6 (figure construction) for the named figures before Phase 14 is retried.
+  c. Do NOT mark the phase as passed with a `note` field describing the absence — that
+     pattern silently ships a non-reproducible repository and was the failure mode
+     observed in pipeline runs prior to this revision.
+
+If notebooks exist but are stubs (e.g., contain only "see main workspace" or no code
+cells), treat them as missing and apply the missing-notebook policy above.
 
 **myst.yml Preservation:**
 Phase 14 MUST NOT rewrite myst.yml from scratch. Instead:

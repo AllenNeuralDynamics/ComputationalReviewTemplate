@@ -173,7 +173,7 @@ phase7_text = ''.join(orch_lines[855:1126])
 print("Phase 7 checklist:")
 print("  □ MyST colon fences: :::{figure} not ```{figure}")
 print("  □ Citations: {cite:p}`Key` and {cite:t}`Key`")
-print("  □ :::{dropdown} with REAL code after EVERY figure")
+print("  □ figures/notebooks/<fig>.ipynb saved per figure (Phase 6 deliverable; Phase 14 will embed dropdowns from these notebooks)")
 print("  □ NO {authorship-explorer} (frontmatter only)")
 print("  □ ≥4.0 citations per synthesis paragraph")
 print("  □ Gate: word_count, citation_count, citations_per_paragraph, figures")
@@ -342,7 +342,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 5V | **validator** | DATAML | `comprev-curation-validator` | `gate_evidence_curated.json` | no duplicates, anti-compression ≥75%, conflicts assigned |
 | 6 | actor | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining |
 | 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
-| 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, figure-dropdown match, cite keys exist |
+| 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, cite keys exist (dropdowns are NOT yet present — they are added at Phase 14) |
 | 8 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back |
 | 9 | **actor** | DATAML | `comprev-dataml-phases` | references.bib | bib entries built from CrossRef |
 | 9V | **validator** | DATAML | `comprev-citation-validator` | `gate_bibliography.json` | bib matches CrossRef, all keys present, 0 contamination |
@@ -351,7 +351,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 12 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | bookend critic report | `gate_bookend_critic.json`: MUST_FIX=0 |
 | 13 | actor | DATAML | `comprev-dataml-phases` | M_methods.md | `gate_methods.json`: 8 subsections |
 | 14 | **actor** | DATAML | `comprev-dataml-phases` | assembled manuscript | all files collected, toc updated |
-| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, evidence JSONs exist |
+| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, evidence JSONs exist, **`FIGURE_DROPDOWN_MATCH`** (`:::{dropdown} 📓 Figure code` count == `:::{figure}` count per section), **`FIGURE_NOTEBOOK_MATCH`** (every figure has a non-stub `.ipynb`). HARD FAIL — never downgrade to a `note`. |
 | 15 | **actor** | DATAML | `comprev-dataml-phases` | citation_triples.json | all triples extracted |
 | 15V | **validator** | DATAML | `comprev-triples-validator` | validation report | exhaustive count, sentences in files, keys in bib |
 | 16 | critic | LITREVIEW | `comprev-verification` + `comprev-reviewer-agent` | verification results | ALL triples deep-checked |
