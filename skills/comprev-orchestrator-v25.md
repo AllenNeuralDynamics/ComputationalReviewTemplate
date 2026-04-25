@@ -324,6 +324,19 @@ See the template repo README for the full file inventory.
 
 Define: central question/thesis, audience, length target, section count, sub-topics. The user's initial task description (including the table of contents) serves as Phase 1 approval — do NOT use `ask_user` here.
 
+**Required outputs (BOTH must be written before any other phase runs):**
+
+1. **`provenance/review_request.txt`** — The user's task description, byte-for-byte, exactly as submitted. No reflow, no reformatting, no annotation. This is the legally-canonical record of the request.
+
+2. **`provenance/review_request.md`** — A human-readable rendering of the same request, structured into three labelled sections:
+   - A short header naming the project ID, capture timestamp, and pipeline version
+   - A `## Verbatim user prompt` section presenting the request as a blockquote, with light mechanical reflow permitted (split a chat-collapsed TOC into a numbered list; split a chat-collapsed bullet list into bullets) but no edits to wording, ordering, or punctuation
+   - An `## Editorial note` section that documents every mechanical reflow applied above, or states "No edits applied" if the rendering is byte-identical to `.txt`
+
+3. **`gate_scope.json`** — As before. Add a top-level `"review_request_path": "provenance/review_request.md"` field so downstream phases can find it.
+
+The template ships scaffold versions of both files containing `[PIPELINE FILLS THIS]` placeholders. Validator check `REVIEW_REQUEST_CAPTURED` (Phase 14V) hard-fails if those placeholders are still present at assembly time.
+
 
 
 
@@ -333,7 +346,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 
 | Step | Role | Agent | Skills to load | Output | Key checks |
 |------|------|-------|----------------|--------|------------|
-| 1 | scope | Coordinator | — | `gate_scope.json` | clusters defined, TOC topics covered |
+| 1 | scope | Coordinator | — | `provenance/review_request.{md,txt}` + `gate_scope.json` | prompt captured verbatim, scaffold placeholders gone, clusters defined, TOC topics covered |
 | 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs | papers≥target, conflicts>0, figure_data≥2/cluster |
 | 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |
@@ -352,7 +365,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 12 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | bookend critic report | `gate_bookend_critic.json`: MUST_FIX=0 |
 | 13 | actor | DATAML | `comprev-dataml-phases` | Methods.md | `gate_methods.json`: 8 subsections |
 | 14 | **actor** | DATAML | `comprev-dataml-phases` | assembled manuscript | all files collected, toc updated |
-| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, **`EVIDENCE_PACKAGES_POPULATED`** (each `evidence/section_XX_evidence_package.json` ≥1 KB and parses with `section_title` key), **`PLUGIN_DIRECTIVES_INVOKED`** (every plugin directive registered in `myst.yml` has ≥1 `:::{name}` invocation in `content/*.md` and zero bare-`{name}` role-syntax mis-invocations), **`FIGURE_DROPDOWN_MATCH`** (`:::{dropdown} 📓 Figure code` count == `:::{figure}` count per section), **`FIGURE_NOTEBOOK_MATCH`** (every figure has a non-stub `.ipynb`), **`HEADING_STYLE_CONSISTENT`** (zero problems from `audit_headings`: no manual number prefixes, no wrapped headings, no en-/em-dashes, H1 and H2 styles match within each section, body sections share one H1 style). `structural_results` MUST contain a key for every check defined in the validator skill — missing key ⇒ fail. HARD FAIL — never downgrade to a `note`. |
+| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, **`EVIDENCE_PACKAGES_POPULATED`** (each `evidence/section_XX_evidence_package.json` ≥1 KB and parses with `section_title` key), **`REVIEW_REQUEST_CAPTURED`** (`provenance/review_request.{md,txt}` exist, no scaffold placeholders remain, `gate_scope.json` carries `review_request_path`, `content/Methods.md` includes the prompt block), **`PLUGIN_DIRECTIVES_INVOKED`** (every plugin directive registered in `myst.yml` has ≥1 `:::{name}` invocation in `content/*.md` and zero bare-`{name}` role-syntax mis-invocations), **`FIGURE_DROPDOWN_MATCH`** (`:::{dropdown} 📓 Figure code` count == `:::{figure}` count per section), **`FIGURE_NOTEBOOK_MATCH`** (every figure has a non-stub `.ipynb`), **`HEADING_STYLE_CONSISTENT`** (zero problems from `audit_headings`: no manual number prefixes, no wrapped headings, no en-/em-dashes, H1 and H2 styles match within each section, body sections share one H1 style). `structural_results` MUST contain a key for every check defined in the validator skill — missing key ⇒ fail. HARD FAIL — never downgrade to a `note`. |
 | 15 | **actor** | DATAML | `comprev-dataml-phases` | citation_triples.json | all triples extracted |
 | 15V | **validator** | DATAML | `comprev-triples-validator` | validation report | exhaustive count, sentences in files, keys in bib |
 | 16 | critic | LITREVIEW | `comprev-verification` + `comprev-reviewer-agent` | verification results | ALL triples deep-checked |
@@ -395,6 +408,19 @@ The validator MUST be a NEW `delegate_to` call — never `send_message` to the a
 **Agent:** Coordinator
 
 Define: central question/thesis, audience, length target, section count, sub-topics. The user's initial task description (including the table of contents) serves as Phase 1 approval — do NOT use `ask_user` here.
+
+**Required outputs (BOTH must be written before any other phase runs):**
+
+1. **`provenance/review_request.txt`** — The user's task description, byte-for-byte, exactly as submitted. No reflow, no reformatting, no annotation. This is the legally-canonical record of the request.
+
+2. **`provenance/review_request.md`** — A human-readable rendering of the same request, structured into three labelled sections:
+   - A short header naming the project ID, capture timestamp, and pipeline version
+   - A `## Verbatim user prompt` section presenting the request as a blockquote, with light mechanical reflow permitted (split a chat-collapsed TOC into a numbered list; split a chat-collapsed bullet list into bullets) but no edits to wording, ordering, or punctuation
+   - An `## Editorial note` section that documents every mechanical reflow applied above, or states "No edits applied" if the rendering is byte-identical to `.txt`
+
+3. **`gate_scope.json`** — As before. Add a top-level `"review_request_path": "provenance/review_request.md"` field so downstream phases can find it.
+
+The template ships scaffold versions of both files containing `[PIPELINE FILLS THIS]` placeholders. Validator check `REVIEW_REQUEST_CAPTURED` (Phase 14V) hard-fails if those placeholders are still present at assembly time.
 
 
 

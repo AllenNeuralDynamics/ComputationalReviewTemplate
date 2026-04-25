@@ -11,6 +11,16 @@ Overview of the 20-phase Expert Review Pipeline v25. Green boxes indicate EXPERT
 
 This review was produced through a structured, multi-phase computational pipeline. All claims in this section are derived from recorded pipeline metadata and gate artifacts; no post-hoc characterizations have been added.
 
+(sec-methods-review-request)=
+## Review Request
+
+This review was initiated by a single user request that fixed the topic, scope, and high-level argument arc. The full text of that request is preserved verbatim in [`provenance/review_request.md`](../provenance/review_request.md) and quoted below. Phase 1 (Scope and Thesis) translated this request into the structured `gate_scope.json` (title, audience, target paper count, cluster definitions, and table of contents) that drove all subsequent phases.
+
+```{include} ../provenance/review_request.md
+:start-after: ## Verbatim user prompt
+:end-before: ## Editorial note
+```
+
 (sec-methods-search)=
 ## Search Strategy
 

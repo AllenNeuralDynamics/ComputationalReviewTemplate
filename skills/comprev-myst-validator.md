@@ -108,6 +108,26 @@
     only the `.gitkeep` placeholder and the evidence-explorer widget had
     nothing to load. **pass/fail**.
 
+22. **REVIEW_REQUEST_CAPTURED** *(Phase 14V, 20V)*: The Coordinator MUST
+    have written the user's task description verbatim to provenance at
+    Phase 1. All five sub-checks must pass:
+    1. **`provenance/review_request.txt` exists.** Non-empty, plain UTF-8.
+    2. **`provenance/review_request.md` exists.** Non-empty, contains the
+       three required H2 headings: `## Verbatim user prompt`, `## Editorial
+       note`, and a top-level `# Original Review Request` H1.
+    3. **No scaffold placeholders remain.** Grep both files for any of
+       `[PIPELINE FILLS THIS]`, `[PIPELINE INSERTS`, `[PIPELINE OVERWRITES`,
+       `[Document each mechanical reformat`. Zero matches required.
+    4. **`gate_scope.json` references the prompt.** Must contain key
+       `review_request_path` whose value is `provenance/review_request.md`
+       and resolves to an existing file.
+    5. **Methods.md includes the prompt.** `content/Methods.md` must contain
+       a literal `{include} ../provenance/review_request.md` directive (in
+       a `## Review Request` subsection placed before the first body H2).
+    Catches the failure mode where the prompt — the upstream provenance
+    of the entire review — exists only in the conversation transcript
+    and is lost when the session ends. **pass/fail**.
+
 ## Output Schema
 
 The validator's gate JSON (e.g. `gate_assembly.json`, `gate_post_publish.json`) MUST be a single JSON object containing — at minimum — these keys:
