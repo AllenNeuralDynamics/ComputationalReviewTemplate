@@ -234,6 +234,35 @@ After plan approval, execute all phases continuously. No `ask_user` between phas
 
 "Continuous" means no unnecessary pauses — NOT skip enforcement. Every compliance check, gate script, and send-back loop is part of the continuous pipeline.
 
+### Plan Step Status Protocol (CRITICAL)
+
+**The plan UI shows step statuses to the user in real time.** Incorrect status updates cause the user to see "all phases complete" while agents are still running — a confirmed failure mode from prior runs.
+
+**Rules:**
+1. Call `update_step_status(step=..., status="in_progress")` when you **delegate** the step (issue the `delegate_to` or `send_message`).
+2. Call `update_step_status(step=..., status="completed")` ONLY after `wait_for_notification` returns AND you have verified the output (gate check passed, or no gate required).
+3. Never mark a step "completed" at delegation time. Never mark a step "completed" before its child frame has finished.
+4. If a child fails: mark the step "blocked", re-delegate, and only mark "completed" when the retry succeeds.
+5. For batched phases (Phase 2, 7, 8, 16): mark the FIRST batch step "in_progress" when the first batch launches. Mark it "completed" only when ALL batches in that step have returned. Do not mark batch 1 "completed" and batch 2 "in_progress" simultaneously — the plan step granularity is per-step, not per-batch.
+
+**Anti-pattern (caused the v1 astrocyte bug):**
+```python
+# WRONG — marks completed before children finish
+update_step_status(step="Gather evidence batch 1", status="completed")  # ← too early!
+delegate_to(agent="LITREVIEW", task=batch_2_task)
+```
+
+**Correct pattern:**
+```python
+update_step_status(step="Gather evidence batch 1", status="in_progress")
+delegate_to(agent="LITREVIEW", task=batch_1_task)
+# ... wait_for_notification for all batch 1 children ...
+# ... verify outputs ...
+update_step_status(step="Gather evidence batch 1", status="completed")
+update_step_status(step="Gather evidence batch 2", status="in_progress")
+delegate_to(agent="LITREVIEW", task=batch_2_task)
+```
+
 ### Send-Back Protocol
 
 When output is non-compliant:
@@ -427,6 +456,41 @@ The validator MUST be a NEW `delegate_to` call — never `send_message` to the a
 
 **The coordinator does NOT copy phase templates into the task description.** The sub-agent reads its own template from its loaded skills.
 
+### Delegation Task Construction (CRITICAL)
+
+Two confirmed failure modes from prior runs require explicit mitigation:
+
+**Failure mode A: Context compaction leaks into task descriptions.**
+When the coordinator's context compacts mid-pipeline, the next `delegate_to` call may receive the compaction summary as its `task` parameter instead of the actual Phase instructions. The child agent then gets "This session is being continued from a previous conversation..." as its task.
+
+**Mitigation:** Always build the full task string in a **single python cell** and pass it to `delegate_to` in the **same cell** or the immediately next tool call. Never rely on a task string surviving across multiple tool calls — context compaction can intervene between any two calls.
+
+```python
+# CORRECT — task built and used in one cell
+task = f"""Execute Phase 7 (Section Drafting) for section {sec_num}.
+Skills: comprev-section-writing + comprev-reviewer-agent.
+Inputs: {{{{artifact:{evidence_vid}}}}} (evidence package), ..."""
+# delegate_to happens in the next tool call with this exact string
+```
+
+**Failure mode B: Unresolved f-strings / string interpolation in delegation tasks.**
+If the coordinator builds a list of task strings in Python but then references them with `{verifier_tasks[i]}` in a non-f-string, the child receives the literal `{verifier_tasks[i]}` as its task.
+
+**Mitigation:** When batching delegations, build each task string as a complete Python string variable, not an index into a list rendered at call time. Print the first 100 characters of each task string before delegating to confirm it resolved correctly.
+
+```python
+# WRONG — the list reference may not resolve
+for i in range(8):
+    delegate_to(task=f"{verifier_tasks[i]}")  # ← {verifier_tasks[i]} is already
+                                                #    inside an f-string, but if the
+                                                #    outer string isn't f-prefixed, fails
+
+# CORRECT — explicit variable
+for i, task_str in enumerate(verifier_tasks):
+    print(f"Delegating batch {i}: {task_str[:80]}...")  # verify it resolved
+    delegate_to(agent="LITREVIEW", task=task_str)
+```
+
 
 ## Phase 1: Scope and Thesis
 
@@ -496,6 +560,10 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 3 | Author name contamination — LLM-generated names in citations | Citation key map (Phase 3), content inspection | Mechanical cite_key assignment; no author names from memory |
 | 4 | Context compression — losing enforcement rules mid-pipeline | Re-read protocol, session boundaries | `read_file` on orchestrator + plan at every phase boundary |
 | 5 | Plan step misassignment — coordinator steps orphaned in plan | Plan excludes coordinator | Plan phases use only DATAML and review agents |
+| 14 | Premature step completion — plan shows "completed" before child returns | Plan Step Status Protocol | `update_step_status("completed")` only after `wait_for_notification` returns + gate passes |
+| 15 | Context compaction corrupts delegation task — child gets compaction summary | Delegation Task Construction | Build task string + delegate in same cell; never rely on cross-cell string survival |
+| 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
+| 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
 | 6 | Step work displacing orchestration — loops consuming context | DATAML delegation, context budget | No loops in coordinator; delegate all data processing |
 | 7 | Stub function definitions — mechanisms defined but never called | Tool-call-based re-reads (not Python functions) | All cross-turn mechanisms use `read_file`, not in-kernel functions |
 | 8 | Silent fulltext false positives — metadata-only XML marked as fulltext | Size validation (>15KB + `<body>` tag) | Enforce in Phase 2 compliance checks |
