@@ -779,11 +779,26 @@ for pat in forbidden:
         raise RuntimeError(f'Stale phrasing not cleaned: {pat}')
 
 pathlib.Path('content/M_methods.md').write_text(methods)
+
+# (4) Re-render the M.0 pipeline architecture figure. The Phase-13 snapshot
+#     marks Phases 13-20 as in_progress/scheduled with dashed/faded boxes;
+#     after the full run, the figure must show every phase complete with the
+#     real gate-derived metric annotations. The notebook at
+#     `figures/notebooks/fig_methods_pipeline.ipynb` reads pipeline_metrics.json
+#     and re-renders fig_methods_pipeline.png.
+#     Update pipeline_metrics.json first (executed-phase outcomes + final
+#     ledger numbers) and flip the seven 'scheduled' tuples in the notebook's
+#     `phases` list to 'complete' before re-executing it.
+import subprocess
+subprocess.run(['jupyter','nbconvert','--to','notebook','--execute',
+                'figures/notebooks/fig_methods_pipeline.ipynb',
+                '--output','fig_methods_pipeline.ipynb'], check=True)
+# Verify the regenerated PNG mtime is newer than the source notebook's edit time.
 ```
 
 **GATE ARTIFACT:** Save `gate_phase_20a_methods_refresh.json` with
-`{frame_count, agent_counts, status_counts, elapsed_hours, forbidden_hits: 0}`
-before advancing to the push.
+`{frame_count, agent_counts, status_counts, elapsed_hours, forbidden_hits: 0,
+figure_regenerated: true, figure_md5_changed: bool}` before advancing to the push.
 
 ---
 

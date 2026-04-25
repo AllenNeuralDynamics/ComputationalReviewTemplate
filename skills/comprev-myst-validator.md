@@ -57,9 +57,17 @@
     3. **M.6 phases-completed wording is final.** The phrase
        "All 20 pipeline phases completed" (case-sensitive) must appear in
        the M.6 section.
+    4. **M.0 figure is post-Phase-13.** Open
+       `figures/notebooks/fig_methods_pipeline.ipynb` and parse the
+       `phases` list inside the notebook source; assert that no tuple
+       carries the status `"scheduled"` or `"in_progress"`. Also assert
+       that `figures/fig_methods_pipeline.png` mtime is later than the
+       Phase 13 gate artifact's `created_at`. (The figure is regenerated
+       by Phase 20a step (4); this sub-check verifies it ran.)
 
-    Block check that catches the failure mode where M_methods.md was
-    rendered at Phase 13 with provisional numbers and never refreshed.
+    Block check that catches the failure mode where M_methods.md or
+    fig_methods_pipeline.png were rendered at Phase 13 with provisional
+    numbers and never refreshed.
     The Phase 20a Methods Ledger Refresh step in `comprev-dataml-phases.md`
     is what populates the final values; this gate verifies the refresh ran.
     **pass/fail**
