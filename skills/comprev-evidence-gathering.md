@@ -282,7 +282,7 @@ After each search pass (initial keyword search, each snowball round, each query 
 - `min_papers_per_cluster` (if set) acts as a hard floor: even if the saturation criterion fires early, do not stop until the floor is met.
 
 **Output:**
-Save `saturation_log.json` as an artifact alongside the evidence package. This log is consumed by the validator (check `EVIDENCE_SATURATION_REPORTED`) and by the Methods section (Phase 13) to document the search strategy.
+Save `saturation_log.json` as an artifact alongside the evidence package. This log is consumed by the validator (check `EVIDENCE_PARAMETERS_HONORED`) and by the Methods section (Phase 13) to document the search strategy.
 
 
 ## Evidence Schema

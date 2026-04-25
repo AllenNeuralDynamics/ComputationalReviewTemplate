@@ -1,10 +1,10 @@
 # Computational Review Template
 
-Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v25.
+Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v26.
 
 ## Pipeline Overview
 
-![Expert Review Pipeline v25](figures/fig_methods_pipeline.png)
+![Expert Review Pipeline v26](figures/fig_methods_pipeline.png)
 
 The pipeline executes 20 phases with **actor-critic separation** — section writers cannot see how they will be critiqued, figure auditors cannot see the argument arc, and citation verifiers cannot see the fix protocol. This prevents agents from gaming evaluation criteria.
 
@@ -19,7 +19,7 @@ Start a comprehensive critical literature review titled: "[YOUR TITLE]"
 
 The three files in skills/ define the complete pipeline:
 
-skills/comprev-orchestrator-v25.md — The orchestrator protocol. Read this FIRST.
+skills/comprev-orchestrator-v26.md — The orchestrator protocol. Read this FIRST.
 It defines all 20 phases, the coordinator protocol, gate artifacts, and the plan structure.
 Follow it phase by phase.
 
@@ -53,7 +53,7 @@ The pipeline is split into role-specific skills with **information barriers** to
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
-| `comprev-orchestrator-v25` | All | Coordinator | Sees everything |
+| `comprev-orchestrator-v26` | All | Coordinator | Sees everything |
 | `comprev-evidence-gathering` | 2 | EXPERT | Cannot see critic/writing criteria |
 | `comprev-scaffold` | 4 | EXPERT | Cannot see critic criteria |
 | `comprev-figure-audit` | 6 | EXPERT | Blinded — no scaffold or argument arc |

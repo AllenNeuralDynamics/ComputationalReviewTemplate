@@ -131,9 +131,11 @@ These groupings are suggestions, not mandates — the section writer may reorgan
 
 **Gate:** Every package must contain:
 - **Paper count (tiered by section importance):**
-  - Core sections (the main cell-type or function sections identified in the scaffold): ≥40 unique papers
-  - Supporting sections (methods, classification, development, species, modeling): ≥30 unique papers
-  - Synthesis/conclusion sections: ≥20 unique papers (these re-cite from earlier sections)
+  Read `evidence_parameters` from `gate_scope.json` to determine the Phase 2 gathering target (`min_papers_per_cluster`, default 70). Curation floors scale proportionally:
+  - Core sections (the main cell-type or function sections identified in the scaffold): ≥ 60% of `min_papers_per_cluster` unique papers (e.g. ≥42 at default 70, ≥120 at 200)
+  - Supporting sections (methods, classification, development, species, modeling): ≥ 40% of `min_papers_per_cluster` unique papers (e.g. ≥28 at default 70, ≥80 at 200)
+  - Synthesis/conclusion sections: ≥ 30% of `min_papers_per_cluster` unique papers (these re-cite from earlier sections)
+  - If `min_papers_per_cluster` is null (saturation mode), use the actual per-cluster paper count from Phase 2 as the reference and apply the same percentages.
   - If any section falls below its tier, flag for supplementary Phase 2 search before proceeding.
 - These are FLOORS, not targets. Include ALL relevant papers from Phase 2 — do not compress to the minimum. If Phase 2 gathered 40 papers relevant to a section, the evidence package should contain 40 papers, not 15.
 - **Anti-compression check:** If the total unique papers assigned across all sections is less than 75% of the total unique papers gathered in Phase 2, justify why the remainder were excluded. A common failure mode is that the curation agent treats the floor as a target and drops relevant papers to stay near the minimum.

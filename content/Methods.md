@@ -5,7 +5,7 @@
 :label: fig-methods-pipeline
 :width: 100%
 
-Overview of the 20-phase Expert Review Pipeline v25. Green boxes indicate EXPERT agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
+Overview of the 20-phase Expert Review Pipeline v26. Green boxes indicate EXPERT agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
 :::
 
 
@@ -118,7 +118,7 @@ by their gate frames and never by the actor frames they evaluate.
 
 | Skill | Role | Phase(s) |
 |---|---|---|
-| `comprev-orchestrator-v25.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–20 (all) |
+| `comprev-orchestrator-v26.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–20 (all) |
 | `comprev-evidence-gathering.md` | Worker protocol for EXPERT evidence-gathering frames (one per topic cluster) | 2 |
 | `comprev-reviewer-agent.md` | Universal EXPERT core — how to evaluate literature and write review prose | 2, 4, 6–8, 10–12, 16, 18 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |

@@ -163,7 +163,7 @@ This puts the full phase rules in kernel memory (usable for delegation templates
 import json, os
 
 # Read orchestrator into kernel memory (NOT into context)
-orch_path = os.path.expandvars(".../skills/orchestrator_v25.md")
+orch_path = os.path.expandvars(".../skills/orchestrator_v26.md")
 with open(orch_path) as f:
     orch_lines = f.readlines()
 
