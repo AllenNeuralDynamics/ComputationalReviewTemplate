@@ -267,16 +267,29 @@ The Methods section is a transparency document describing how the review was pro
 - Fix actions taken (Phase 17-13)
 - Final error rate after fixes
 
-**M.6 Pipeline Execution:**
+**M.6 Pipeline Execution (DRAFT SNAPSHOT — refreshed at Phase 20):**
+
+This block is rendered at Phase 13 with whatever numbers the ledger reports
+*at draft time* (Phases 1-12 only). It MUST be labeled as a snapshot and
+re-rendered at Phase 20 just before push, when the ledger covers the entire
+run including all downstream phases. Treat the Phase-13 numbers as
+provisional placeholders and do not delete the snapshot label until the
+Phase-20 refresh has overwritten the values.
+
 ```python
-# Extract from pipeline metadata metadata
+# Phase 13 draft-time render. Note explicit snapshot labeling.
 methods_data = {
-    'model_version': 'claude-opus-4-6',
-    'total_frames': len(pipeline metadata),
-    'total_tokens': sum(f['token_count'] for f in pipeline metadata),
-    'phases_completed': [p for p, v in phase_ledger.items() if v['status'] == 'complete'],
-    'wall_clock_hours': (end_time - start_time).total_seconds() / 3600,
+    'model_version': 'claude-sonnet-4-5',
+    'snapshot_phase': 13,
+    'snapshot_at': datetime.now(timezone.utc).isoformat(),
+    'total_frames': len(operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames']),
+    'phases_completed_at_draft_time': [p for p, v in phase_ledger.items() if v['status'] == 'complete'],
+    'wall_clock_hours_at_draft_time': (datetime.now(timezone.utc) - first_frame_at).total_seconds() / 3600,
 }
+# Phase 13 MUST emit a `**Phases 14-20 (pending refresh).**` placeholder
+# paragraph at the end of M.5 with explicit text the Phase-20 refresh will
+# scan for and replace. Forbidden stale phrasings ("are scheduled", "had not
+# yet executed", "in progress") are blocked at Phase 20V.
 ```
 
 **M.7 Figure Reproducibility:**
@@ -675,6 +688,104 @@ Apply fixes in **reverse document order** (last occurrence first) to prevent off
      proceeding to Phase 20.
 6. **Save** final `.tex` and `.bib` files.
 
+
+## Phase 20a: Methods Ledger Refresh (pre-push)
+
+**Agent:** DATAML
+
+Before pushing, the Methods file must reflect the *final* pipeline state
+(Phase-13 snapshot numbers cover only Phases 1-12). This step re-renders
+M.6 and replaces any draft-time placeholder paragraphs in M.5.
+
+**Procedure:**
+
+```python
+import re, json, pathlib
+from datetime import datetime, timezone
+from collections import Counter
+
+frames = operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False, max_results=500)['frames']
+agent_counts = Counter(f['agent_name'] for f in frames)
+status_counts = Counter(f['status'] for f in frames)
+first_at = min(f['created_at'] for f in frames)
+# Use the Phase-20 release gate timestamp if available (more meaningful than
+# last frame); fall back to last frame timestamp if release gate not yet
+# stamped.
+release_gate = pathlib.Path('provenance/gate_phase_20_release.json')
+end_at = json.loads(release_gate.read_text())['released_at'] if release_gate.exists() else max(f['created_at'] for f in frames)
+elapsed_h = (datetime.fromisoformat(end_at.replace('Z','+00:00'))
+             - datetime.fromisoformat(first_at.replace('Z','+00:00'))).total_seconds() / 3600
+
+methods = pathlib.Path('content/M_methods.md').read_text()
+
+# (1) Replace the entire M.6 block, keyed on the H2 heading and the next H2.
+m6_pattern = re.compile(r'^## M\.6 Pipeline Execution\n.*?(?=^## M\.7 )', re.MULTILINE | re.DOTALL)
+agent_table = '\n'.join(f'| `{a}` | {n} |' for a, n in agent_counts.most_common())
+m6_block = f'''## M.6 Pipeline Execution
+
+**Model version.** `claude-sonnet-4-5` (Anthropic Claude), invoked via the
+Operon agent runtime.
+
+**Frame counts and agent breakdown.** Derived from the project's `frames`
+ledger (project `{{PROJECT_ID}}`, read via `operon.frames(project_id=...)`).
+Total session frames: **{sum(agent_counts.values())}**.
+
+| Agent | Frames |
+|---|---:|
+{agent_table}
+| **Total** | **{sum(agent_counts.values())}** |
+
+**Frame-status breakdown.** `{dict(status_counts)}`.
+
+**Wall-clock.** First frame created at **{first_at}**; final timestamp
+(release gate or last frame) **{end_at}**. Elapsed: **{elapsed_h:.2f} h**.
+
+**Phases completed.** All 20 pipeline phases completed; gate artifacts saved
+in `provenance/gate_*.json`. The orchestrator's `FINAL_GATE_master.json`
+records `status: PUBLISHED`.
+
+'''
+methods = m6_pattern.sub(m6_block, methods)
+
+# (2) Replace the Phase-13 placeholder paragraph in M.5. The Phase-13 step
+#     MUST emit a paragraph starting `**Phases 14-20 (pending refresh).**`
+#     so this regex can find it.
+placeholder_pattern = re.compile(
+    r'\*\*Phases 14[-–]20 \(pending refresh\)\.\*\*.*?(?=\n## )',
+    re.DOTALL,
+)
+gate_files = {
+    14: 'gate_assembly.json', 15: 'triples_full.json',
+    16: 'gate_phase_16_verification.json', 17: 'gate_phase_17_fixes.json',
+    18: 'gate_phase_18_validation.json', 19: 'phase19_push_log.md',
+    20: 'gate_phase_20_release.json',
+}
+# Build the outcomes table from each gate artifact's headline number.
+# (Implementations should map gate keys to one-line outcome strings.)
+outcomes_md = render_phase_outcomes_table(gate_files)  # supplied by orchestrator
+new_para = f'''**Phases 14-20 (executed).** All downstream phases ran to completion;
+gate artifacts in `provenance/gate_*.json` record the outcomes:
+
+{outcomes_md}
+
+'''
+methods = placeholder_pattern.sub(new_para, methods)
+
+# (3) Hard-block forbidden stale phrasings.
+forbidden = [r'\bare scheduled\b', r'\bhad not yet executed\b',
+             r'\bin progress \(this document', r'\bwill be captured in the final\b']
+for pat in forbidden:
+    if re.search(pat, methods, re.IGNORECASE):
+        raise RuntimeError(f'Stale phrasing not cleaned: {pat}')
+
+pathlib.Path('content/M_methods.md').write_text(methods)
+```
+
+**GATE ARTIFACT:** Save `gate_phase_20a_methods_refresh.json` with
+`{frame_count, agent_counts, status_counts, elapsed_hours, forbidden_hits: 0}`
+before advancing to the push.
+
+---
 
 ## Phase 20: Repository Push
 

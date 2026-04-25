@@ -87,6 +87,7 @@ delegations:
 | 17 | Fix Preparation | DATAML | Build fix requests with ±10 line context per non-VERIFIED triple |
 | 18 | Fix Execution | EXPERT (parallel) | Apply bib fixes and text fixes per fix request |
 | 19 | Fix Application | DATAML | Apply diffs in reverse order, verify zero orphans |
+| 20a | Methods Ledger Refresh | DATAML | Re-render M.6 + M.5 phase outcomes from final operon.frames ledger |
 | 20 | Repository Push | DATAML | Push all files via Contents API |
 
 ### After Plan Approval
@@ -360,8 +361,9 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 18 | actor | LITREVIEW | `comprev-fix-execution` + `comprev-reviewer-agent` | fix diffs | fixes executed |
 | 19 | **actor** | DATAML | `comprev-dataml-phases` | updated files | diffs applied |
 | 19V | **validator** | DATAML | `comprev-myst-validator` | validation report | build passes, zero orphans |
+| 20a | **actor** | DATAML | `comprev-dataml-phases` | refreshed `M_methods.md` + `gate_phase_20a_methods_refresh.json` | re-render M.6 from live ledger; replace `Phases 14-20 (pending refresh)` placeholder with actual gate outcomes |
 | 20 | **actor** | DATAML | `comprev-dataml-phases` | pushed repo | git push |
-| 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match |
+| 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match, **`METHODS_LEDGER_FRESH`** (M.6 frame count matches live ledger; "All 20 pipeline phases completed" present; zero forbidden stale phrasings — `are scheduled`, `had not yet executed`, etc.). HARD FAIL — the Phase 20a Methods Ledger Refresh in `comprev-dataml-phases.md` is what populates these; this gate verifies the refresh ran. |
 
 ### Delegation Pattern
 

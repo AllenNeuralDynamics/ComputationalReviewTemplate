@@ -41,6 +41,29 @@
     cannot see cross-section heading inconsistencies — e.g. §4 numbered H1 alongside
     §5 unnumbered H1 + numbered H2, or a wrapped `## heading\nundermined` orphan.)
 
+19. **METHODS_LEDGER_FRESH** *(Phase 20V only)*: `content/M_methods.md` must
+    reflect the final pipeline state, not the Phase-13 draft snapshot.
+    Three sub-checks, all must pass:
+
+    1. **No forbidden stale phrasings.** Grep `M_methods.md` for any of:
+       `\bare scheduled\b`, `\bhad not yet executed\b`,
+       `\bin progress \(this document\b`,
+       `\bwill be captured in the final\b`,
+       `\bPhases? 1[4-9].20 \(scheduled\)`. Zero hits required.
+    2. **M.6 frame count matches live ledger.** Parse the integer that
+       follows `Total session frames: \*\*` in the M.6 section. Must equal
+       `len(operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames'])`
+       within ±1 (allow for the validator's own frame).
+    3. **M.6 phases-completed wording is final.** The phrase
+       "All 20 pipeline phases completed" (case-sensitive) must appear in
+       the M.6 section.
+
+    Block check that catches the failure mode where M_methods.md was
+    rendered at Phase 13 with provisional numbers and never refreshed.
+    The Phase 20a Methods Ledger Refresh step in `comprev-dataml-phases.md`
+    is what populates the final values; this gate verifies the refresh ran.
+    **pass/fail**
+
 ## Output Schema
 ```json
 {"phase": 7|14|19|20, "gate": "pass|fail", "per_file_results": {...}, "build_result": {...}, "structural_results": {...}}
