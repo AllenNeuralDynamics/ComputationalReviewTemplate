@@ -43,6 +43,7 @@ project:
       template: ./latex/template
     - format: pdf
       output: review_manuscript.pdf
+      template: ./latex/template
 site:
   template: book-theme
   title: "Computational Review"
