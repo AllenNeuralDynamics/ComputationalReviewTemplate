@@ -531,6 +531,46 @@ e) Verify `myst.yml` `project.toc` lists ALL `content/*.md` files (count must ma
 f) Deploy plugin files: `citation-annotation-plugin.mjs`, `citation-annotation-widget.mjs`, `evidence-explorer-plugin.mjs`, `evidence-explorer-widget.mjs` — all using the anywidget pattern (NEVER raw HTML/CSS/JS injection)
 g) Insert the Phase 11 Abstract into `content/00_frontmatter.md`
 
+**MANDATORY — Pre-validator self-check (Phase 14, before emitting `gate_assembly.json`):**
+
+DATAML MUST run these mechanical checks itself and re-do any failed step
+before handing off to the validator. Treat these as a hard gate:
+
+1. **Plugin invocation form.** For every directive registered by a plugin
+   in `myst.yml` `project.plugins`, run:
+   ```bash
+   grep -rE '^\{<directive-name>\}\s*$' content/   # MUST be empty
+   grep -rE ':::\{<directive-name>\}'      content/   # MUST be ≥1 hit
+   ```
+   If a registered directive has zero `:::{...}` invocations, the widget
+   is dead — re-do step (a)/(c)/(d). If a `{name}` line on its own
+   appears, MyST will silently render it as literal text (role lookup
+   fails when only a directive of that name exists) — convert to
+   `:::{name}` ... `:::` block syntax.
+
+2. **Evidence package population.** After the per-section split:
+   ```python
+   for xx in range(2, 14):
+       p = pathlib.Path(f"evidence/section_{xx:02d}_evidence_package.json")
+       assert p.exists() and p.stat().st_size > 1024, p
+       data = json.loads(p.read_text())
+       assert "section_title" in data and "findings" in data, p
+   ```
+   If any file is missing, undersized, or malformed, re-run the split
+   (don't proceed with empty placeholders — the evidence-explorer widget
+   will load nothing).
+
+3. **MyST build smoke test.** `myst build --html` MUST exit 0 and emit
+   the rendered widgets in `_build/html/`. Grep the rendered HTML for
+   `class="anywidget"` (or the plugin's marker) — if the build succeeds
+   but the marker is absent, the directive was registered but never
+   invoked at the markdown layer.
+
+These three checks correspond to validator checks `PLUGIN_DIRECTIVES_INVOKED`
+(#20), `EVIDENCE_PACKAGES_POPULATED` (#21), and the existing build/structural
+checks. Running them at Phase 14 *before* validator handoff catches the
+silent-render failure mode that produced the v1.0 dead widgets.
+
 **Plugin deployment notes:**
 - All MyST plugins MUST use the anywidget pattern: directive → transform that converts to `node.type='anywidget'` with `.esm` and `.model` properties
 - MyST renders citations as `<cite>` elements with DOI in `<a href="https://doi.org/...">` — citation annotation plugins must match by DOI

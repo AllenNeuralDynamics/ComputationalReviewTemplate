@@ -72,7 +72,60 @@
     is what populates the final values; this gate verifies the refresh ran.
     **pass/fail**
 
+20. **PLUGIN_DIRECTIVES_INVOKED** *(Phase 14V, 20V)*: For every plugin
+    file listed in `myst.yml` `project.plugins`, parse the plugin source
+    (`*.mjs`) and extract every `name: '<directive-name>'` literal whose
+    value appears in a `directives: [...]` array (i.e., every directive
+    the plugin registers). For each such name:
+
+    1. **Invocation present.** At least one `content/*.md` file must
+       contain `:::{<directive-name>}` (block fence). Zero invocations
+       across the corpus = fail. Catches the case where a plugin loads
+       but no markdown calls it.
+    2. **No role-syntax mis-invocation.** `grep -rE '^\{<directive-name>\}\s*$'
+       content/*.md` must return **zero** matches. A bare `{name}` on
+       its own line is *role* syntax — MyST silently fails the role
+       lookup when only a directive of that name exists, and the line
+       renders as literal text. Authors MUST use `:::{name}` (or
+       backtick-fenced `\`\`\`{name}`) for directives.
+
+    Block check; **pass/fail**.
+
+21. **EVIDENCE_PACKAGES_POPULATED** *(Phase 14V, 20V)*: Strengthens
+    check #14 (EVIDENCE_JSONS_EXIST). For each section XX in 02..13:
+    `evidence/section_XX_evidence_package.json` must exist, be at least
+    1024 bytes, and parse as a JSON object containing the top-level key
+    `section_title`. Catches the failure mode where Phase 14 created
+    only the `.gitkeep` placeholder and the evidence-explorer widget had
+    nothing to load. **pass/fail**.
+
 ## Output Schema
+
+The validator's gate JSON (e.g. `gate_assembly.json`, `gate_post_publish.json`) MUST be a single JSON object containing — at minimum — these keys:
+
 ```json
-{"phase": 7|14|19|20, "gate": "pass|fail", "per_file_results": {...}, "build_result": {...}, "structural_results": {...}}
+{
+  "phase": 7|14|19|20,
+  "gate": "pass|fail",
+  "per_file_results": {...},
+  "build_result": {"myst_errors": int, "myst_warnings": int},
+  "structural_results": {
+    "TOC_MATCHES_FILES": "pass|fail",
+    "UNRESOLVED_CITE_KEYS": int,
+    "BROKEN_FIGURE_REFS": int,
+    "FIGURE_DROPDOWN_MATCH": "pass|fail",
+    "FIGURE_NOTEBOOK_MATCH": "pass|fail",
+    "HEADING_STYLE_CONSISTENT": "pass|fail",
+    "METHODS_LEDGER_FRESH": "pass|fail",
+    "EVIDENCE_JSONS_EXIST": "pass|fail",
+    "EVIDENCE_PACKAGES_POPULATED": "pass|fail",
+    "PLUGIN_DIRECTIVES_INVOKED": "pass|fail",
+    "...": "every other check in this skill, by exact NAME"
+  },
+  "gate_passed": bool
+}
 ```
+
+**Mandatory:** `structural_results` MUST contain a key for **every numbered check defined in this skill that applies to the current phase**. Omitting a check key is itself a gate failure — the orchestrator MUST treat any missing expected key as `"fail"`. This prevents the silent-skip pattern where the validator agent runs only a subset of checks and reports `gate_passed: true` because the missing checks were never evaluated.
+
+If a check is genuinely not applicable to the current phase, emit `"<CHECK_NAME>": "n/a"` with a one-line `"<CHECK_NAME>_reason"` sibling key explaining why.
