@@ -12,10 +12,13 @@ JSON files named:
 section_02_evidence_package.json
 section_03_evidence_package.json
 ...
-section_13_evidence_package.json
+section_NN_evidence_package.json
 ```
 
-Each file corresponds to one core review section (02 through 13).
+One file per core review section. Section numbering starts at 02 (the
+Introduction is section 01 and has no evidence package); the upper bound is
+set by the user's table of contents — typical reviews land between section_08
+and section_13, but the orchestrator is agnostic to the exact section count.
 
 ## JSON Schema
 
@@ -28,10 +31,15 @@ Each per-section file must contain:
     {
       "claim": "What the paper found",
       "claim_source_sentence": "Verbatim sentence from paper",
-      "doi": "10.xxxx/...",
+      "effect_size": "Quantitative magnitude (or 'not reported')",
+      "effect_size_source_sentence": "Verbatim sentence supporting the effect size",
+      "n": 0,
       "study_system": "mouse | human | ...",
-      "replication_status": "replicated | unreplicated | contested",
-      "text_access": "fulltext | abstract_only"
+      "replication_status": "independently_replicated | replication_unknown | contested",
+      "replication_evidence_dois": ["10.xxxx/..."],
+      "doi": "10.xxxx/...",
+      "text_access": "fulltext | abstract_only",
+      "evidence": "Optional supporting context"
     }
   ],
   "conflicts": [
@@ -61,3 +69,4 @@ and copy these into this directory.
 A combined `evidence_database.json` may also be generated, but the
 evidence-explorer plugin does **not** read it directly — it requires
 the individual per-section files.
+

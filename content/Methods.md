@@ -83,9 +83,9 @@ The review was produced through a 20-phase pipeline. Key execution metadata from
 |-------|-------------|--------|-------------|
 | 1 | Scope definition | Pending | — |
 | 2 | Evidence gathering & compliance | Pending | — |
-| 3 | Deduplication & conflict resolution | Pending | — |
+| 3 | Citation infrastructure (citation_key_map, author_name_table) | Pending | — |
 | 4 | Scaffold approval | Pending | — |
-| 5 | Figure comparison design | Pending | — |
+| 5 | Per-section evidence curation | Pending | — |
 | 6 | Figure audit | Pending | — |
 | 7 | Section drafting | Pending | — |
 | 8 | Critic review | Pending | — |
@@ -132,9 +132,9 @@ by their gate frames and never by the actor frames they evaluate.
 | `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 18 |
 | `comprev-dataml-phases.md` | Worker protocol for DATAML agents — Phase 1 materialisation, citation infrastructure, BibTeX, CrossRef | 1, 3, 5, 9, 13–15, 17, 19–20 |
 | `comprev-scoping-validator.md` | Phase 1 scope JSON, evidence-parameters consistency, plan structure, prompt-verbatim provenance gate | 1V |
-| `comprev-evidence-validator.md` | Evidence-package schema and coverage gate | 2V, 5V |
+| `comprev-evidence-validator.md` | Evidence-package schema and coverage gate | 2V |
 | `comprev-curation-validator.md` | Per-section evidence package size and content gate | 5V |
-| `comprev-citation-validator.md` | BibTeX well-formedness, DOI resolution, key-uniqueness gate | 9V |
+| `comprev-citation-validator.md` | citation_key_map (Phase 3) and BibTeX (Phase 9) — DOI resolution, CrossRef matching, key uniqueness, author match | 3V, 9V |
 | `comprev-triples-validator.md` | Citation-triples extraction-completeness gate | 15V |
 | `comprev-myst-validator.md` | MyST build, structural, figure, heading, plugin-directive, and evidence-population gate | 7V, 14V, 19V, 20V |
 
@@ -159,3 +159,4 @@ All pipeline artifacts are preserved and versioned, enabling full reproduction o
 - **Phase ledger:** Records the status and gate artifact for each of the 20 pipeline phases.
 
 The pipeline used no manual curation steps. All evidence extraction, section drafting, critic review, and integration were performed computationally, with gate artifacts serving as checkpoints between phases.
+

@@ -77,9 +77,9 @@ The pipeline is split into role-specific skills with **information barriers** to
 | Skill | Phase | Role | What it gates |
 |-------|-------|------|---------------|
 | `comprev-scoping-validator` | 1V | DATAML | Scope JSON, evidence-parameters consistency, plan structure, prompt-verbatim provenance |
-| `comprev-evidence-validator` | 2V, 5V | DATAML | Evidence-package schema, per-cluster coverage, fulltext rate |
+| `comprev-evidence-validator` | 2V | DATAML | Evidence-package schema, per-cluster coverage, fulltext rate |
 | `comprev-curation-validator` | 5V | DATAML | Per-section evidence package size, conflict and figure-data presence |
-| `comprev-citation-validator` | 9V | DATAML | BibTeX entry well-formedness, DOI resolution, key uniqueness |
+| `comprev-citation-validator` | 3V, 9V | DATAML | citation_key_map (Phase 3) and BibTeX (Phase 9) — DOI resolution, CrossRef matching, key uniqueness, author match |
 | `comprev-triples-validator` | 15V | DATAML | One triple per `{cite:p}`/`{cite:t}` occurrence, no sampling |
 | `comprev-myst-validator` | 7V, 14V, 19V, 20V | DATAML | MyST build, structural checks, figure/heading consistency, plugin-directive invocation, evidence-package population |
 
@@ -153,3 +153,4 @@ Phase 5 curation floors scale proportionally with your evidence density target.
 ## License
 
 MIT
+

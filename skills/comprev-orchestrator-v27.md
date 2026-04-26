@@ -95,6 +95,7 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 
 | Phase Transition | Gate Artifact | Key Contents |
 |-----------------|---------------|--------------|
+| 1 → 2 | `gate_scope.json` | scope JSON, evidence_parameters, TOC, cluster definitions, prompt-verbatim provenance |
 | 2 → 3 | `gate_evidence_compliance.json` | Per-cluster: pass/fail, paper count, conflicts, fulltext rate |
 | 3 → 4 | `gate_citation_infrastructure.json` | citation_key_map VID (null blocks all downstream), DOI count, failures |
 | 4 → 5 | `gate_scaffold_approved.json` | Connections, cross-refs, conflicts represented, ≥2 figures/section |
@@ -105,7 +106,7 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 9 → 10 | `gate_bibliography.json` | .bib artifact ID, entry count, failures |
 | 10 → 11 | `gate_integration.json` | Passes 10a-10f, filename mismatches, structural hygiene |
 | 11 → 12 | `gate_intro_conclusion.json` | Section artifact IDs, citation count |
-| 12 → 13 | `gate_methods.json` | Methods artifact ID |
+| 12 → 13 | `gate_bookend_critic.json` | MUST_FIX=0 on novel intro/conclusion citations |
 | 13 → 14 | `gate_methods.json` | Methods.md artifact ID, ledger sub-block populated |
 | 14 → 14V | (assembled manuscript) | LaTeX + content/*.md + figures + notebooks present |
 | 14V → 15 | `gate_assembly.json` | All build/structural assertions passed |
@@ -411,4 +412,5 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 15 | Context compaction corrupts delegation task — child gets compaction summary | Delegation Task Construction | Build task string + delegate in same cell; never rely on cross-cell string survival |
 | 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
 | 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
+
 
