@@ -54,7 +54,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | Step | Role | Agent | Skills to load | Output | Key checks |
 |------|------|-------|----------------|--------|------------|
 | 1 | scope | Coordinator | — | `provenance/review_request.{md,txt}` + `gate_scope.json` | prompt captured verbatim, scaffold placeholders gone, clusters defined, TOC topics covered, `evidence_parameters` present with defaults filled |
-| 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs | papers≥target, conflicts>0, figure_data≥2/cluster |
+| 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs (per cluster — may be assembled across multiple continuation children, see §"Phase 2 Continuation Pattern") | papers≥target, conflicts>0, figure_data≥2/cluster, every child returns `continuation_required: false` or hits the sanity cap |
 | 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |
 | 3V | **validator** | DATAML | `comprev-citation-validator` | `gate_citation_infrastructure.json` | CrossRef matching, key uniqueness, author match |
@@ -201,6 +201,7 @@ verify that only the requested deliverables were produced.
 - **Maximum 4 parallel agents.** Never delegate to more than 4 agents simultaneously. For Phase 2 (12 clusters) and Phase 7 (12 sections), batch into groups of 4. Wait for each batch to complete before launching the next.
 - **Incremental artifact saves.** All agents producing large outputs (section writers, evidence gatherers) MUST save intermediate artifacts. Section writers: save .md text BEFORE generating figures. Evidence agents: save findings JSON every 30 papers. This prevents total work loss if an agent is terminated.
 - **Filter per-agent input size.** `citation_key_map` and `author_name_table` passed to Phase 7 writers MUST be filtered to only the DOIs/keys in that section's evidence package. Do not pass the full map to a writer who only needs ~70 keys. This reduces per-agent input from ~500KB to ~200KB, preventing resource exhaustion.
+- **Phase 2 continuation loops are sequential within a cluster, parallel across clusters.** A continuation child needs the prior child's `search_state_artifact_id`, so children of one cluster run one at a time. The 4-parallel cap therefore applies to *cluster loops*, not individual children — launch up to 4 cluster-loops concurrently.
 
 ### Session Boundaries
 
@@ -288,6 +289,17 @@ The validator MUST be a NEW `delegate_to` call — never `send_message` to the a
 4. If validator returns `gate: "pass"`: save gate artifact → advance
 
 **The coordinator does NOT copy phase templates into the task description.** The sub-agent reads its own template from its loaded skills.
+
+
+**Sequence for Phase 2 (continuation-aware):**
+
+Phase 2 children run under a **40-findings-per-frame budget** defined in `comprev-evidence-gathering`. When a child hits the budget without satisfying saturation or `min_papers_per_cluster`, it returns `continuation_required: true` plus a `search_state_artifact_id`. The coordinator then:
+
+1. If `continuation_required: true`: build a fresh Phase 2 task with a `continuation_state` block carrying `{search_state_artifact_id, evidence_artifact_id, papers_so_far}` and delegate to a new LITREVIEW child. Do NOT `send_message` to the prior child — start a new frame so the budget resets.
+2. If `continuation_required: false`: the cluster has terminated legitimately (saturation OR papers target met). Proceed to Phase 2V for that cluster.
+3. **Sanity caps:** stop forking continuations for a cluster when `papers_so_far ≥ 2 × min_papers_per_cluster` OR after **6 continuation children** (240 findings ceiling). Log a warning and proceed to Phase 2V with whatever was gathered.
+4. **Plan/ledger accounting:** the Phase 2 plan step stays `in_progress` across all continuation children for all clusters in the batch. Mark it `completed` only when every cluster's loop has terminated. Continuation children do NOT each get their own plan step.
+5. **Validator timing:** delegate to `comprev-evidence-validator` (Phase 2V) only after every cluster's continuation loop has terminated. The validator sees one merged evidence JSON per cluster and is unaware of continuation.
 
 ### Delegation Task Construction (CRITICAL)
 
@@ -399,3 +411,4 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 15 | Context compaction corrupts delegation task — child gets compaction summary | Delegation Task Construction | Build task string + delegate in same cell; never rely on cross-cell string survival |
 | 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
 | 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
+

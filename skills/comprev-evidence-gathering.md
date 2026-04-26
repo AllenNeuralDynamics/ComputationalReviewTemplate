@@ -195,6 +195,56 @@ After each search pass (initial keyword search, each snowball round, each query 
 Save `saturation_log.json` as an artifact alongside the evidence package. This log is consumed at Phase 2V by `comprev-evidence-validator`'s `SATURATION_LOGGED` check, at Phase 14V/20V by `comprev-myst-validator`'s `EVIDENCE_PARAMETERS_HONORED` check, and by the Methods section (Phase 13) to document the search strategy.
 
 
+
+## Per-Frame Findings Budget (Compaction Mitigation)
+
+Phase 2 evidence gathering is the only phase in the pipeline that empirically produces **multi-compaction chains** within a single sub-agent — a 52% per-frame compaction rate, with ~20% of Phase 2 children showing signals of more than one rollover. To eliminate this risk, every Phase 2 child runs under a hard findings-count budget and exits cleanly when the budget is hit. The coordinator forks a fresh continuation child if more searching is needed.
+
+**The budget rule:**
+- **Maximum findings per child frame: 40** (one HARDENED checkpoint cycle plus a small buffer).
+- The agent MUST check `len(set(f["doi"] for f in findings))` after every save and every snowball round.
+- When the count reaches **40 unique findings**, the agent must stop searching, save final state, and exit — even if `min_papers_per_cluster` has not been met. The coordinator will fork a continuation.
+- This budget is **independent of saturation**. Saturation can fire earlier and stops the *entire cluster*; the per-frame budget can fire repeatedly and only stops the *current child*.
+
+**On budget exit, the agent MUST:**
+
+1. Save the evidence JSON one last time as `cluster_NN_evidence.json` (versioned via `version_of` if a prior version exists).
+2. Save `cluster_NN_search_state.json` with the search-state fields needed for resumption:
+   ```json
+   {
+     "cluster_id": "cluster_06",
+     "section_id": "section_07",
+     "passes_completed": ["epmc:disinhibit*", "epmc:VIP+SST", "openalex:disinhibition", "snowball_round_1"],
+     "passes_remaining": ["epmc:gain_modulation", "openalex:L1_disinhibitory", "snowball_round_2"],
+     "snowball_seeds_used": ["10.1038/nature12676", "10.1038/nn.3446", "..."],
+     "seen_dois_artifact_id": "<artifact id of seen-DOI list, written as one DOI per line>",
+     "saturation_log_artifact_id": "<artifact id>",
+     "papers_so_far": 38,
+     "evidence_artifact_id": "<latest cluster_NN_evidence.json version id>",
+     "exit_reason": "frame_budget_reached | saturation | papers_target_met"
+   }
+   ```
+3. Return a **structured output** with:
+   ```json
+   {
+     "continuation_required": true,
+     "search_state_artifact_id": "<id of cluster_NN_search_state.json>",
+     "evidence_artifact_id": "<id of cluster_NN_evidence.json>",
+     "papers_so_far": 38,
+     "exit_reason": "frame_budget_reached"
+   }
+   ```
+   Set `continuation_required: false` only when `exit_reason` is `saturation` or `papers_target_met`.
+4. Do NOT attempt one more search pass "to round up." Exit immediately.
+
+**On continuation entry, the agent receives:**
+- A standard Phase 2 delegation task with one extra block: `continuation_state` containing the previous search-state and evidence-artifact IDs.
+- The agent MUST: load the previous evidence JSON, load the seen-DOI list, skip every pass already in `passes_completed`, and deduplicate every new hit against the seen-DOI list before adding it.
+- The agent appends to the same `findings`, `conflicts`, `figure_data` arrays — does NOT reset them.
+- The continuation child runs under the same 40-findings budget, measured against findings *added in this child* (not the cumulative count). If the cluster still hasn't saturated after this child's 40 are added, the agent emits another `continuation_required: true` and the coordinator forks again.
+
+**Why 40, not 30 or 50?** 30 is the existing checkpoint cadence — a child must be able to hit 30 and still have headroom to finalize the schema (homogeneity_check, figure_data, conflicts). 50 puts the heaviest children too close to the empirical compaction threshold (the chained frames in the VIP v2 audit hit rollover at ~100+ cumulative findings spread across 100–150 messages). 40 leaves a safe buffer.
+
 ## Evidence Schema
 
 Every evidence-gathering agent returns a JSON matching this schema. The coordinator validates compliance on return.
@@ -442,3 +492,4 @@ Organize by **debates and open questions**, not just topics. Each section: histo
 - Reserve sequential paper-by-paper exposition for historical narratives where chronology IS the argument.
 
 ---
+
