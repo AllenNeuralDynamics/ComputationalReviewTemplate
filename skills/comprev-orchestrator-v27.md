@@ -63,7 +63,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 4 | actor | LITREVIEW | `comprev-scaffold` + `comprev-reviewer-agent` | scaffold JSON | `gate_scaffold_approved.json`: ≥2 figs/section, cross-refs |
 | 5 | **actor** | DATAML | `comprev-dataml-phases` | section evidence packages | findings assigned, cite keys attached |
 | 5V | **validator** | DATAML | `comprev-curation-validator` | `gate_evidence_curated.json` | no duplicates, anti-compression ≥75%, conflicts assigned |
-| 6 | actor | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic cannot reach the network) |
+| 6 | **critic** | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic cannot reach the network) |
 | 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
 | 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, cite keys exist (dropdowns are NOT yet present — they are added at Phase 14) |
 | 8 | critic | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back |
@@ -365,6 +365,7 @@ Actor finishes Phase N
 
 | Phase gate | Validator skill | Key checks |
 |------------|----------------|------------|
+| 1 → 2 | `comprev-scoping-validator` | Phase 1V — review_request, scope schema, plan_content, evidence_parameters validation |
 | 2 → 3 | `comprev-evidence-validator` | Source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 → 4 | `comprev-citation-validator` | CrossRef matching, key format, uniqueness |
 | 5 → 6 | `comprev-curation-validator` | No duplicates, anti-compression, conflict assignment |

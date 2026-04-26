@@ -23,3 +23,8 @@
 {"phase": 5, "gate": "pass|fail", "sections_checked": N, "per_section_results": {...}, "aggregate_results": {...}}
 ```
 
+`gate` is `"pass"` only when every per-section check passes AND every aggregate check passes.
+
+## Gate Artifact
+
+The orchestrator saves this structured output as `provenance/gate_evidence_curated.json` (the named gate that closes the 5 → 6 transition). Phase 6 cannot start without it.

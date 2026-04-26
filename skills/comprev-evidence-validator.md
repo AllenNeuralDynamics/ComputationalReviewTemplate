@@ -89,6 +89,10 @@ These checks catch fabrication signals in evidence packages.
 
 `gate` is `"pass"` only when every per-finding, schema-compliance, compliance, and anti-fabrication check passes AND every aggregate is `"pass"`.
 
+## Gate Artifact
+
+The orchestrator saves this structured output as `provenance/gate_evidence_compliance.json` (the named gate that closes the 2 → 3 transition). Phase 3 cannot start without it.
+
 ## Rate Limiting
 - Europe PMC: max 10 req/s. Use 200ms delay between requests.
 - CrossRef: max 50 req/s with `mailto=` UA. Sample-based `DOI_TITLE_CROSSCHECK` keeps total CrossRef calls bounded; never call CrossRef for every paper.
