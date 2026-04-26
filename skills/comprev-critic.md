@@ -414,7 +414,46 @@ Gate check before Phase 10: assert orphaned_keys == 0 (cited in .tex/.md but not
 
 ---
 
+
+## Red Flags Checklist
+
+The Phase 8 critic must scan each section for these patterns. Any hit is a finding:
+
+- Zero conflicts or caveats in a section
+- Clean unanimous narrative
+- Replication status never mentioned
+- All papers summarized in one sentence
+- Most paragraphs discuss exactly one paper (catalog-style)
+- Section delivered without figures
+- Only conceptual schematics, no cross-study comparisons
+- Hard-coded figure numbers instead of \ref{}
+- Process language in output
+
+## MUST_FIX Categorisation and Deferral Rule
+
+The critic categorises every issue as `MUST_FIX`, `SHOULD_CAVEAT`, or `MINOR`.
+**The Phase 8 → 9 gate fails if any `MUST_FIX` is unaddressed in the next pass.**
+Coordinator action: hard block before Phase 9 with `assert total_must_fix == 0` after the
+re-pass. Do not advance with deferred MUST_FIX items.
+
+## Conflict Survival Pre-Check
+
+For every section, the critic must verify that `conflicts[]` from the section's
+evidence package were addressed in the section text and not silently dropped.
+Mechanical pre-check: both DOIs from each conflict entry must appear (as
+`{cite:p}` keys) in the section prose. Missing → MUST_FIX with the offending
+conflict id and DOIs.
+
 ## Phase 12: Bookend Critic
+
+## Bookend Citation Attribution Check (Phase 12)
+
+The Phase 12 bookend critic adds a citation-attribution check: novel
+claim-citation pairs in the introduction and conclusion must be verified
+against the cited paper's abstract or full text. Inherited pairs (already
+verified in Phase 16 for body sections) are skipped. Misattribution — a bib
+key attached to a claim it does not support — is `MUST_FIX`.
+
 
 **Agent:** LITREVIEW (parallel — one for Introduction, one for Conclusion)
 

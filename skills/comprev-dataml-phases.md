@@ -9,6 +9,54 @@ Delegation templates for all DATAML mechanical phases: citation infrastructure (
 
 ---
 
+
+## Phase 1: Scoping Materialisation (DATAML actor)
+
+**Agent:** DATAML actor (mechanical only)
+
+After the LITREVIEW Phase 1 scoper returns `scope.json` and the `plan_content`
+list, a DATAML actor materialises the on-disk artifacts that downstream phases
+depend on. This is mechanical work only — no rewriting of the user's prompt,
+no reinterpretation of `evidence_parameters`.
+
+**Inputs.**
+- `scope.json` (from the LITREVIEW scoper)
+- The user's submitted prompt as captured by the coordinator (raw bytes)
+
+**Mechanical steps.**
+1. Write `provenance/review_request.txt` — the user's prompt, byte-for-byte, no reflow, no normalisation. Compute and record SHA256 alongside.
+2. Write `provenance/review_request.md` — three labelled sections (header with project ID + timestamp + pipeline version; `## Verbatim user prompt` blockquote; `## Editorial note` listing every mechanical reflow applied or stating "No edits applied").
+3. Write `gate_scope.json` derived directly from `scope.json`. Required keys: `title`, `clusters[]`, `sections[]`, `evidence_parameters{}`, `review_request_path: "provenance/review_request.md"`.
+4. Verify NO `[PIPELINE FILLS THIS]` placeholders or `<...>` template tokens remain in any of the four files.
+
+**Output:** `gate_scope.json` plus the two provenance files. Triggered by the
+coordinator after Phase 1 LITREVIEW returns; followed by Phase 1V validation
+via `comprev-scoping-validator`.
+
+---
+
+## Author Table Continuity (Phase 17/18 fix flow)
+
+The `author_name_table.json` produced in Phase 3 is the SOLE source for
+author-name strings used in `{cite:t}` rendering. During Phase 17 fix
+preparation and Phase 18 fix execution, any new bibliography entry created or
+modified must update `author_name_table.json` synchronously. Specifically:
+
+- When Phase 18 adds a bib entry for a previously-unseen DOI, append the
+  CrossRef-derived author surname to `author_name_table.json` immediately;
+  do not defer to Phase 19.
+- When Phase 18 modifies an existing entry's author family name (e.g. correcting
+  ASCII collation), update both `references.bib` and `author_name_table.json`
+  in the same diff bundle.
+- The Phase 19 fix-application gate verifies row-count parity between
+  `references.bib` and `author_name_table.json`; mismatch → fail.
+
+Failure mode this prevents: bib entry written without the author table being
+updated, leading to `{cite:t}` rendering empty author placeholders or stale
+names downstream.
+
+---
+
 ## Phase 3: Citation Infrastructure
 
 **Agent:** DATAML

@@ -14,25 +14,27 @@
 7. **CITE_KEYS_EXIST**: Every `{cite:p}` and `{cite:t}` key in references.bib? **pass/fail**
 8. **NO_BARE_AUTHOR_NAMES**: Zero "X and colleagues" or "X et al." without adjacent `{cite:t}`? **pass/fail**
 
+9. **FORBIDDEN_LEXICON**: Zero matches across all `content/*.md` for the forbidden review-text vocabulary: Operon, scaffold, evidence package, framework failure, adversarial search, verdict, orchestrator, batch, sub-agent, revision manifest, prediction error, replication scorecard (as section title), paper weight, epistemic checkpoint. Allowed scientific uses ("phase" oscillation, "convergence" convergent evidence, "scaffold" developmental scaffolding, "recursive" recursive processing) are NOT flagged — match on whole-token boundaries with the explicit forbidden senses only. **pass/fail**
+
 ## Build Checks (Phase 14, 19, 20)
 
-9. **MYSTMD_INSTALLED**: `npm install -g mystmd` succeeds? **pass/fail**
-10. **BUILD_PASSES**: `myst build --html` exits with zero ⛔ errors? **pass/fail**
-11. **ZERO_CITATION_ERRORS**: Zero "Could not link citation" in output? **pass/fail**
-12. **ZERO_IMAGE_ERRORS**: Zero "Cannot find image" in output? **pass/fail**
+10. **MYSTMD_INSTALLED**: `npm install -g mystmd` succeeds? **pass/fail**
+11. **BUILD_PASSES**: `myst build --html` exits with zero ⛔ errors? **pass/fail**
+12. **ZERO_CITATION_ERRORS**: Zero "Could not link citation" in output? **pass/fail**
+13. **ZERO_IMAGE_ERRORS**: Zero "Cannot find image" in output? **pass/fail**
 
 ## Structural Checks (Phase 14, 20)
 
-13. **TOC_MATCHES_FILES**: Every myst.yml toc file exists on disk? **pass/fail**
-14. **EVIDENCE_JSONS_EXIST**: `evidence/section_XX_evidence_package.json` for XX=02-13? **pass/fail**
-15. **FIGURE_NOTEBOOK_MATCH**: Every `:::{figure} ../figures/<name>.png` referenced in any
+14. **TOC_MATCHES_FILES**: Every myst.yml toc file exists on disk? **pass/fail**
+15. **EVIDENCE_JSONS_EXIST**: `evidence/section_XX_evidence_package.json` for XX=02-13? **pass/fail**
+16. **FIGURE_NOTEBOOK_MATCH**: Every `:::{figure} ../figures/<name>.png` referenced in any
     `content/*.md` has a corresponding `figures/notebooks/<name>.ipynb` on disk, AND every
     such notebook contains ≥1 non-empty code cell (i.e., is not a stub)? **pass/fail**
     (Block check that catches the failure mode where Phase 6 saved PNGs without notebooks
     and Phase 14 had nothing to embed in dropdowns.)
-16. **AUTHORS_YML_EXISTS**: `content/authors.yml` exists? **pass/fail**
-17. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
-18. **HEADING_STYLE_CONSISTENT**: Run `audit_headings()` (defined in `comprev-critic.md`)
+17. **AUTHORS_YML_EXISTS**: `content/authors.yml` exists? **pass/fail**
+18. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
+19. **HEADING_STYLE_CONSISTENT**: Run `audit_headings()` (defined in `comprev-critic.md`)
     across all `content/*.md` files. Zero problems of any type:
     `MANUAL_NUMBER_PREFIX`, `WRAPPED_HEADING`, `MULTI_SPACE_AFTER_NUMBER`,
     `INCONSISTENT_DASH`, `MIXED_H1_H2_STYLE`, `INCONSISTENT_ACROSS_SECTIONS`?
@@ -41,7 +43,7 @@
     cannot see cross-section heading inconsistencies — e.g. §4 numbered H1 alongside
     §5 unnumbered H1 + numbered H2, or a wrapped `## heading\nundermined` orphan.)
 
-19. **METHODS_LEDGER_FRESH** *(Phase 20V only)*: `content/Methods.md` must
+20. **METHODS_LEDGER_FRESH** *(Phase 20V only)*: `content/Methods.md` must
     reflect the final pipeline state, not the Phase-13 draft snapshot.
     Three sub-checks, all must pass:
 
@@ -81,7 +83,7 @@
     is what populates the final values; this gate verifies the refresh ran.
     **pass/fail**
 
-20. **PLUGIN_DIRECTIVES_INVOKED** *(Phase 14V, 20V)*: For every plugin
+21. **PLUGIN_DIRECTIVES_INVOKED** *(Phase 14V, 20V)*: For every plugin
     file listed in `myst.yml` `project.plugins`, parse the plugin source
     (`*.mjs`) and extract every `name: '<directive-name>'` literal whose
     value appears in a `directives: [...]` array (i.e., every directive
@@ -100,7 +102,7 @@
 
     Block check; **pass/fail**.
 
-21. **EVIDENCE_PACKAGES_POPULATED** *(Phase 14V, 20V)*: Strengthens
+22. **EVIDENCE_PACKAGES_POPULATED** *(Phase 14V, 20V)*: Strengthens
     check #14 (EVIDENCE_JSONS_EXIST). For each section XX in 02..13:
     `evidence/section_XX_evidence_package.json` must exist, be at least
     1024 bytes, and parse as a JSON object containing the top-level key
@@ -108,7 +110,7 @@
     only the `.gitkeep` placeholder and the evidence-explorer widget had
     nothing to load. **pass/fail**.
 
-22. **REVIEW_REQUEST_CAPTURED** *(Phase 14V, 20V)*: The Coordinator MUST
+23. **REVIEW_REQUEST_CAPTURED** *(Phase 14V, 20V)*: The Coordinator MUST
     have written the user's task description verbatim to provenance at
     Phase 1. All five sub-checks must pass:
     1. **`provenance/review_request.txt` exists.** Non-empty, plain UTF-8.
@@ -129,7 +131,7 @@
     and is lost when the session ends. **pass/fail**.
 
 
-23. **FIGURE_WIDTH_DECLARED** *(Phase 7V, 14V, 20V)*: Every `:::{figure}`
+24. **FIGURE_WIDTH_DECLARED** *(Phase 7V, 14V, 20V)*: Every `:::{figure}`
     directive in `content/*.md` MUST declare an explicit `:width:` option
     in its option block (the lines between the directive opener and the
     caption body). MyST's default LaTeX renderer emits
@@ -141,7 +143,7 @@
     listing offenders as `path:line`.
 
 
-24. **EVIDENCE_PARAMETERS_HONORED** *(Phase 2V, 14V)*:
+25. **EVIDENCE_PARAMETERS_HONORED** *(Phase 2V, 14V)*:
     Read `evidence_parameters` from `gate_scope.json`. For each cluster
     evidence package (`evidence/section_*_evidence_package.json`):
 

@@ -31,3 +31,16 @@ Cross-checks:
 ```json
 {"phase": 3|9, "gate": "pass|fail", "total_entries": N, "per_entry_failures": [...], "cross_check_failures": [...]}
 ```
+
+## Author-Name Contamination Check (Phase 3)
+
+The Phase 3 validator must protect against author-name contamination — the
+failure mode where an LLM fabricates an author name from prompt-mentioned text
+rather than from the CrossRef-resolved metadata. Every cite_key surname must
+derive from CrossRef `author[0].family` (ASCII-normalized) for that DOI; cite
+keys whose surname appears nowhere in the CrossRef record fail
+`AUTHOR_MATCH`. The validator also samples `citation_key_map.json` for keys
+whose surname appears in the user's review-request prompt but not in CrossRef
+metadata — these are flagged as suspected contamination and reported in
+`per_entry_failures`. Mechanical cite_key assignment from CrossRef metadata is
+the only allowed path; no author names from memory.

@@ -151,3 +151,13 @@ Save the assembled file directly to `content/00_frontmatter.md`. Phase 14
 violated.
 
 
+
+## Output Hygiene
+
+FORBIDDEN in review text: Operon, scaffold, evidence package, framework failure, adversarial search, verdict, orchestrator, batch, sub-agent, revision manifest, prediction error, replication scorecard (as section title), paper weight, epistemic checkpoint.
+
+Allowed scientific uses: "phase" (oscillation), "convergence" (convergent evidence), "scaffold" (developmental scaffolding), "recursive" (recursive processing).
+
+**Test:** Could a reader tell this was produced by an automated system? If yes → fail.
+
+This applies to Phase 9 introduction/conclusion writing, Phase 13 methods, and Phase 11 cross-section integration.

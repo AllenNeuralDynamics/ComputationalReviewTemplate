@@ -183,3 +183,21 @@ Apply the relevant subset to each paper. The common failure is skipping principl
 }
 ```
 Do NOT use alternative field names (`paper1_doi`, `side_a`, `papers[]`, `claim_a`, etc.). Do NOT nest claim data inside objects. Every conflict MUST have both DOIs populated.
+
+## Self-Audit Red Flags (writing guidance)
+
+Before submitting any section draft or evidence package, scan your own output
+for these red-flag patterns. The Phase 8 critic and Phase 2V validator will
+flag them; finding them in your own draft first saves a send-back round:
+
+- Zero conflicts or caveats in the section
+- Clean unanimous narrative
+- Replication status never mentioned
+- All papers summarized in one sentence
+- Most paragraphs discuss exactly one paper (catalog-style)
+- Section delivered without figures
+- Only conceptual schematics, no cross-study comparisons
+- Hard-coded figure numbers instead of \ref{}
+- Process language in output ("scaffold", "evidence package", "orchestrator", etc.)
+
+If your draft hits any of these, rewrite before submission.

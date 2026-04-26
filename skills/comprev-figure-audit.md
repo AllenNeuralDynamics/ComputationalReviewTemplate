@@ -97,3 +97,15 @@ If a Phase 7 section writer's completion notification mentions 'audit', 'compara
 *(Save gate_figure_audit.json with verdict counts, zero REDESIGN remaining)*
 
 
+
+## Misleading Cross-Study Comparison Check
+
+The figure audit must flag any panel that compares metrics across incompatible
+study systems without a methods caveat. Specifically: when entries within a
+single comparison have differing `study_system`, `scope_region`,
+`scope_population`, `taxonomic_level`, or `n_definition` values, the figure
+must either carry a verdict of `CAVEAT` (with the heterogeneity called out in
+the caption) or `SPLIT` (panels separated by axis). A figure that places
+incomparable data on the same axis without naming the heterogeneity is
+`REDESIGN`. This is the figure-audit critic's primary defense against
+misleading cross-study comparisons.

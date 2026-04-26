@@ -386,6 +386,15 @@ When `comprev-figure-construction` is loaded (Phase 7):
 
 ---
 
+
+## Output Hygiene
+
+FORBIDDEN in review text: Operon, scaffold, evidence package, framework failure, adversarial search, verdict, orchestrator, batch, sub-agent, revision manifest, prediction error, replication scorecard (as section title), paper weight, epistemic checkpoint.
+
+Allowed scientific uses: "phase" (oscillation), "convergence" (convergent evidence), "scaffold" (developmental scaffolding), "recursive" (recursive processing).
+
+**Test:** Could a reader tell this was produced by an automated system? If yes → fail.
+
 ## Output Format: MyST Markdown
 
 When writing review sections, produce BOTH formats:
