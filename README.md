@@ -1,10 +1,10 @@
 # Computational Review Template
 
-Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v26.
+Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v27.
 
 ## Pipeline Overview
 
-![Expert Review Pipeline v26](figures/fig_methods_pipeline.png)
+![Expert Review Pipeline v27](figures/fig_methods_pipeline.png)
 
 The pipeline executes 20 phases with **actor-critic separation** — section writers cannot see how they will be critiqued, figure auditors cannot see the argument arc, and citation verifiers cannot see the fix protocol. This prevents agents from gaming evaluation criteria.
 
@@ -19,9 +19,9 @@ Start a comprehensive critical literature review titled: "[YOUR TITLE]"
 
 The three files in skills/ define the complete pipeline:
 
-skills/comprev-orchestrator-v26.md — The orchestrator protocol. Read this FIRST.
-It defines all 20 phases, the coordinator protocol, gate artifacts, and the plan structure.
-Follow it phase by phase.
+skills/comprev-orchestrator-v27.md — The coordinator protocol. Read this FIRST.
+It defines the routing across 20 phases, gate artifacts, and the session protocol.
+Per-phase rules live in the agent skills, which the coordinator loads on demand.
 
 skills/comprev-reviewer-agent.md — The worker skill for LITREVIEW agents.
 Pass this to every LITREVIEW delegation so the agent can load it.
@@ -50,15 +50,16 @@ N. Conclusion
 
 ## What's Included
 
-### Skills (17 files in `skills/`)
+### Skills (19 files in `skills/`)
 
 The pipeline is split into role-specific skills with **information barriers** to enforce actor-critic separation. Worker skills produce content; validator skills run after each phase as blinded gates that emit named pass/fail checks into the gate JSON.
 
-**Worker skills (12):**
+**Worker skills (13):**
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
-| `comprev-orchestrator-v26` | All | Coordinator | Sees everything |
+| `comprev-orchestrator-v27` | All | Coordinator | Sees everything |
+| `comprev-scoping` | 1 | LITREVIEW | No barriers (first phase, sees user prompt) |
 | `comprev-evidence-gathering` | 2 | LITREVIEW | Cannot see critic/writing criteria |
 | `comprev-scaffold` | 4 | LITREVIEW | Cannot see critic criteria |
 | `comprev-figure-audit` | 6 | LITREVIEW | Blinded — no scaffold or argument arc |
@@ -67,14 +68,15 @@ The pipeline is split into role-specific skills with **information barriers** to
 | `comprev-integration` | 10–11 | LITREVIEW | Full visibility (integration role) |
 | `comprev-verification` | 15–17 | LITREVIEW | Cannot see fix protocol |
 | `comprev-fix-execution` | 18 | LITREVIEW | Cannot see verification criteria |
-| `comprev-dataml-phases` | 3, 5, 9, 13–15, 17, 19–20 | DATAML | No barriers (mechanical work) |
+| `comprev-dataml-phases` | 1, 3, 5, 9, 13–15, 17, 19–20 | DATAML | No barriers (mechanical work) |
 | `comprev-reviewer-agent` | 2, 4, 6–8, 10–12, 16, 18 | LITREVIEW | Evidence & writing procedures |
 | `comprev-figure-construction` | 7 | LITREVIEW | Figure production |
 
-**Validator skills (5):**
+**Validator skills (6):**
 
 | Skill | Phase | Role | What it gates |
 |-------|-------|------|---------------|
+| `comprev-scoping-validator` | 1V | DATAML | Scope JSON, evidence-parameters consistency, plan structure, prompt-verbatim provenance |
 | `comprev-evidence-validator` | 2V, 5V | DATAML | Evidence-package schema, per-cluster coverage, fulltext rate |
 | `comprev-curation-validator` | 5V | DATAML | Per-section evidence package size, conflict and figure-data presence |
 | `comprev-citation-validator` | 9V | DATAML | BibTeX entry well-formedness, DOI resolution, key uniqueness |
@@ -113,9 +115,9 @@ Pre-configured pages that the pipeline populates:
 
 **Act 3 — Assembly, Verification & Deploy** (Phases 14–20): Assemble the complete document, exhaustively extract citation triples (every citation occurrence), verify ALL citations with full-text-first claim checking (DOI resolution, title/author/metadata match, full-text claim verification with supporting passage audit trail), prepare and execute fixes for non-verified citations, apply fixes, and push to GitHub.
 
-### Evidence Parameters (v26)
+### Evidence Parameters
 
-The pipeline's evidence-gathering depth is user-configurable via the prompt. The orchestrator extracts these from your review request at Phase 1:
+The pipeline's evidence-gathering depth is user-configurable via the prompt. Phase 1 extracts these from your review request:
 
 | Parameter | Default | What it controls |
 |-----------|---------|-----------------|

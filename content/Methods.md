@@ -5,7 +5,7 @@
 :label: fig-methods-pipeline
 :width: 100%
 
-Overview of the 20-phase Expert Review Pipeline v26. Green boxes indicate LITREVIEW agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
+Overview of the 20-phase Expert Review Pipeline v27. Green boxes indicate LITREVIEW agents (scientific judgment), blue boxes indicate DATAML agents (mechanical work), and the gray box is the coordinator. Red dashed lines mark information barriers where actor-critic separation is enforced. Orange diamonds indicate gate checkpoints where the coordinator verifies compliance before advancing.
 :::
 
 
@@ -106,9 +106,9 @@ Figure generation notebooks are preserved in `figures/notebooks/` and can be re-
 (sec-methods-skills)=
 ## Pipeline Skills
 
-The full pipeline is encoded as seventeen version-controlled skill files committed
-to this repository under [`skills/`](./skills): twelve worker skills that produce
-content and five validator skills that gate each phase with named pass/fail checks.
+The full pipeline is encoded as nineteen version-controlled skill files committed
+to this repository under [`skills/`](./skills): thirteen worker skills that produce
+content and six validator skills that gate each phase with named pass/fail checks.
 Each skill is a markdown specification that was loaded by the relevant agent at the
 relevant phase — re-running a phase from scratch requires only the skill plus the
 upstream artifacts. Information barriers are enforced by *omission*: writer agents
@@ -118,7 +118,8 @@ by their gate frames and never by the actor frames they evaluate.
 
 | Skill | Role | Phase(s) |
 |---|---|---|
-| `comprev-orchestrator-v26.md` | Coordinator protocol governing phase DAG, delegation, and gate artifacts | 0–20 (all) |
+| `comprev-orchestrator-v27.md` | Coordinator protocol governing phase routing, delegation, and gate artifacts | 0–20 (all) |
+| `comprev-scoping.md` | Worker protocol for LITREVIEW scoping: clusters, sections, length targets, evidence parameters, plan content | 1 |
 | `comprev-evidence-gathering.md` | Worker protocol for LITREVIEW evidence-gathering frames (one per topic cluster) | 2 |
 | `comprev-reviewer-agent.md` | Universal LITREVIEW core — how to evaluate literature and write review prose | 2, 4, 6–8, 10–12, 16, 18 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |
@@ -129,7 +130,8 @@ by their gate frames and never by the actor frames they evaluate.
 | `comprev-integration.md` | Cross-section integration passes; Introduction, Conclusion, and Abstract drafting | 10, 11 |
 | `comprev-verification.md` | Citation-triple verification against CrossRef and full-text sources | 15–17 |
 | `comprev-fix-execution.md` | Fix-application protocol: replace bib entries, correct claim sentences | 18 |
-| `comprev-dataml-phases.md` | Worker protocol for DATAML agents — citation infrastructure, BibTeX, CrossRef | 3, 5, 9, 13–15, 17, 19–20 |
+| `comprev-dataml-phases.md` | Worker protocol for DATAML agents — Phase 1 materialisation, citation infrastructure, BibTeX, CrossRef | 1, 3, 5, 9, 13–15, 17, 19–20 |
+| `comprev-scoping-validator.md` | Phase 1 scope JSON, evidence-parameters consistency, plan structure, prompt-verbatim provenance gate | 1V |
 | `comprev-evidence-validator.md` | Evidence-package schema and coverage gate | 2V, 5V |
 | `comprev-curation-validator.md` | Per-section evidence package size and content gate | 5V |
 | `comprev-citation-validator.md` | BibTeX well-formedness, DOI resolution, key-uniqueness gate | 9V |
@@ -138,7 +140,7 @@ by their gate frames and never by the actor frames they evaluate.
 
 To re-run this pipeline against a different topic, clone the
 [ComputationalReviewTemplate](https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate)
-repository (which ships these same seventeen skills), update `myst.yml` with a new title
+repository (which ships these same nineteen skills), update `myst.yml` with a new title
 and table of contents, and issue a single coordinator prompt — the orchestrator skill
 then drives all twenty phases to completion.
 

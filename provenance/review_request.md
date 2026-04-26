@@ -6,14 +6,14 @@ that initiated the review — the upstream provenance of every artifact in the
 repository (title, table of contents, cluster structure all originate here).
 
 > **Template scaffold.** This is a placeholder. The orchestrator skill
-> (`skills/comprev-orchestrator-v26.md`, Phase 1) instructs the Coordinator to
+> (`skills/comprev-orchestrator-v27.md`, Phase 1) instructs the Coordinator to
 > overwrite this file with the actual user prompt at the start of every run.
 > Validator check `REVIEW_REQUEST_CAPTURED` (Phase 14V) fails if this scaffold
 > text is still present at assembly time.
 
 **Operon project ID:** `[PIPELINE FILLS THIS]`
 **Captured at:** `[PIPELINE FILLS THIS]`
-**Pipeline:** Expert Review Pipeline v26 (`skills/comprev-orchestrator-v26.md`)
+**Pipeline:** Expert Review Pipeline v27 (`skills/comprev-orchestrator-v27.md`)
 
 ---
 
