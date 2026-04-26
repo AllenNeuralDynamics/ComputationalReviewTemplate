@@ -123,7 +123,7 @@ by their gate frames and never by the actor frames they evaluate.
 | `comprev-evidence-gathering.md` | Worker protocol for LITREVIEW evidence-gathering frames (one per topic cluster) | 2 |
 | `comprev-reviewer-agent.md` | Universal LITREVIEW core — how to evaluate literature and write review prose | 2, 4, 6–8, 10–12, 16, 18 |
 | `comprev-scaffold.md` | Scaffold construction: argument arc, section plans, figure specs, style guide | 4 |
-| `comprev-figure-construction.md` | Worker skill for producing publication-quality figures from `figure_data` JSON | 6–7 |
+| `comprev-figure-construction.md` | Worker skill for producing publication-quality figures from `figure_data` JSON | 7 |
 | `comprev-figure-audit.md` | Blinded figure-auditor protocol — cross-study comparison validity | 6 |
 | `comprev-section-writing.md` | Writer protocol: MyST formatting, citation discipline, synthesis rules | 7 |
 | `comprev-critic.md` | Blinded section-critic protocol — unsupported claims, misrepresented evidence | 8, 12 |
