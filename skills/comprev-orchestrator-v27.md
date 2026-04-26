@@ -147,7 +147,7 @@ This puts the full phase rules in kernel memory (usable for delegation templates
 import json, os
 
 # Read orchestrator into kernel memory (NOT into context)
-orch_path = os.path.expandvars(".../skills/orchestrator_v26.md")
+orch_path = os.path.expandvars(".../skills/orchestrator_v27.md")
 with open(orch_path) as f:
     orch_lines = f.readlines()
 
@@ -389,6 +389,3 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 15 | Context compaction corrupts delegation task — child gets compaction summary | Delegation Task Construction | Build task string + delegate in same cell; never rely on cross-cell string survival |
 | 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
 | 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
-
-Failure modes 3, 8, 9, 10, 11, 12, 13 have moved to their owning skills (citation-validator, evidence-validator, figure-audit, critic, dataml-phases, critic, critic respectively). The coordinator no longer enumerates them — it relies on the validators and critics to catch them.
-
