@@ -53,7 +53,9 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 
 | Step | Role | Agent | Skills to load | Output | Key checks |
 |------|------|-------|----------------|--------|------------|
-| 1 | scope | Coordinator | — | `provenance/review_request.{md,txt}` + `gate_scope.json` | prompt captured verbatim, scaffold placeholders gone, clusters defined, TOC topics covered, `evidence_parameters` present with defaults filled |
+| 1 | **actor** | LITREVIEW | `comprev-scoping` | `scope.json` (clusters, sections, `evidence_parameters`, `plan_content`) | prompt parsed, clusters defined, TOC topics covered, `evidence_parameters` present with defaults filled, `plan_content` lists 20 phases |
+| 1 | **actor** | DATAML | `comprev-dataml-phases` | `provenance/review_request.{md,txt}` + `gate_scope.json` | review_request.txt verbatim bytes, review_request.md three-section render, `gate_scope.json` carries `review_request_path`, no template placeholders remain |
+| 1V | **validator** | DATAML | `comprev-scoping-validator` | structured pass/fail | `REVIEW_REQUEST_VERBATIM`, `REVIEW_REQUEST_MD_PRESENT`, `NO_PLACEHOLDERS`, `GATE_SCOPE_FIELDS`, `EVIDENCE_PARAMETERS_VALID`, `EVIDENCE_PARAMETERS_CONSISTENT`, `CLUSTERS_NONEMPTY`, `SECTIONS_COVER_TOC`, `PLAN_CONTENT_20_PHASES`, `PLAN_AGENTS_VALID` all pass |
 | 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs (per cluster — may be assembled across multiple continuation children, see §"Phase 2 Continuation Pattern") | papers≥target, conflicts>0, figure_data≥2/cluster, every child returns `continuation_required: false` or hits the sanity cap |
 | 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |

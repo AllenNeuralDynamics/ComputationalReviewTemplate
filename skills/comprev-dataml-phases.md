@@ -906,10 +906,17 @@ placeholder_pattern = re.compile(
     re.DOTALL,
 )
 gate_files = {
-    14: 'gate_assembly.json', 15: 'triples_full.json',
-    16: 'gate_phase_16_verification.json', 17: 'gate_phase_17_fixes.json',
-    18: 'gate_phase_18_validation.json', 19: 'phase19_push_log.md',
-    20: 'gate_phase_20_release.json',
+    # Phase: canonical output artifact (matches orchestrator Phase Index "Output" column).
+    # Phases 16/18/19 produce per-batch artifacts rather than a single gate JSON; the
+    # renderer (`render_phase_outcomes_table`, supplied by the orchestrator) summarises
+    # those directories. Phase 20's outcome is captured by the 20V repository-push gate.
+    14: 'gate_assembly.json',          # Phase 14V (myst-validator)
+    15: 'citation_triples.json',       # Phase 15 (dataml-phases)
+    16: 'verification/',                # Phase 16 (verification): per-batch reports (dir)
+    17: 'fix_requests.json',           # Phase 17 (dataml-phases)
+    18: 'fixes/',                       # Phase 18 (fix-execution): per-batch diffs (dir)
+    19: 'updated_files/',               # Phase 19 (dataml-phases): applied diffs (dir)
+    20: 'gate_repository_push.json',   # Phase 20V (myst-validator)
 }
 # Build the outcomes table from each gate artifact's headline number.
 # (Implementations should map gate keys to one-line outcome strings.)
