@@ -31,6 +31,13 @@ MUST emit real names (or no entry at all) — not `Human Supervisor`, `Anonymous
 `TBD`, `[NAME]`, `<placeholder>`, or `Author N`. Phase 14V and 20V validators
 flag violations via `AUTHOR_IDENTITY_NOT_PLACEHOLDER`.
 
+**Directive whitelist.** Section-body MyST directives are restricted to the
+whitelist documented in `comprev-orchestrator-v27` §Directive Whitelist.
+Notably, section writers and assemblers MUST NOT emit `{contents}`,
+`{toctree}`, or `{include}` directives in body files — the project-level
+`myst.yml` and Phase 14 assembly emit the global TOC. Phase 7V and 19V
+validators flag violations as `DIRECTIVE_WHITELIST_VIOLATION`.
+
 ---
 
 

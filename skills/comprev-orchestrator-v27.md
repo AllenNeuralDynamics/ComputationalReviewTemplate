@@ -415,6 +415,24 @@ Canonical triggers (non-exhaustive):
 
 
 
+### Directive Whitelist
+
+Section-body MyST directives are restricted to a documented whitelist. Section writers (LITREVIEW prose actors at Phase 7) and assemblers (DATAML at Phase 14) may emit only the following block-directive forms inside `content/*.md` body files:
+
+| Directive | Allowed in | Notes |
+|---|---|---|
+| `:::{figure}` | section bodies | Required `:width:` property; paired with `:::{dropdown} 📓 Figure code` |
+| `:::{dropdown}` | section bodies | Auto-injected at Phase 14 to wrap figure code |
+| `:::{admonition}` | section bodies | For sidebars / asides only; no `{contents}`, `{toctree}`, or `{include}` aliases |
+| `:::{warning}` | section bodies | Same constraints as admonition |
+| `:::{authorship-explorer}` | frontmatter only | Plugin-registered |
+| `:::{evidence-explorer}` | section bodies | Plugin-registered |
+
+Notably **forbidden** in section bodies (the assembler emits global versions): `:::{contents}`, `:::{toctree}`, `:::{include}`, `:::{tableofcontents}`. These build a per-section TOC that conflicts with the project-level `myst.yml` TOC and pollutes the rendered manuscript.
+
+Phase 7V (`comprev-myst-validator`) and Phase 19V re-runs flag any non-whitelisted directive as `DIRECTIVE_WHITELIST_VIOLATION` and send the section back. Plugin-registered directives MUST also appear in `myst.yml` `project.plugins[]` — `PLUGIN_DIRECTIVES_INVOKED` (Phase 14V) is the dual check that ensures every registered plugin gets used.
+
+
 ## Coordinator Failure Modes
 
 These require active coordinator vigilance. Each maps to specific phase enforcement.

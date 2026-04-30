@@ -11,6 +11,15 @@
 4. **FIGURE_DROPDOWN_MATCH** *(Phase 14V, 19V, 20V only — dropdowns are injected at Phase 14)*: `:::{figure}` count == `:::{dropdown}` count per section? **pass/fail**
 5. **FIGURE_HAS_IMAGE_PATH**: Every `:::{figure}` points to `../figures/*.png`, not `#label`? **pass/fail**
 6. **NO_PROCESS_LANGUAGE**: Zero "scaffold", "evidence package", "orchestrator" in prose? **pass/fail**
+
+6a. **DIRECTIVE_WHITELIST_VIOLATION** *(Phase 7V, 19V)*: Every `:::{name}` directive in
+    `content/*.md` body files matches the whitelist documented in `comprev-orchestrator-v27`
+    §Directive Whitelist (`figure`, `dropdown`, `admonition`, `warning`, `authorship-explorer`
+    in frontmatter only, `evidence-explorer`). Any `:::{contents}`, `:::{toctree}`,
+    `:::{include}`, or `:::{tableofcontents}` in body sections is a hard fail — the build
+    emits a global TOC. Bare-`{name}` role-syntax mis-invocations of plugin directives
+    (e.g., `{evidence-explorer}` instead of `:::{evidence-explorer}`) are also failures.
+    **pass/fail**
 7. **CITE_KEYS_EXIST**: Every `{cite:p}` and `{cite:t}` key in references.bib? **pass/fail**
 8. **NO_BARE_AUTHOR_NAMES**: Zero "X and colleagues" or "X et al." without adjacent `{cite:t}`? **pass/fail**
 
