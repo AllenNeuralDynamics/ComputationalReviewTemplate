@@ -86,6 +86,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 20a | **actor** | DATAML | `comprev-dataml-phases` | refreshed `Methods.md` + `gate_phase_20a_methods_refresh.json` | re-render M.6 from live ledger; replace `Phases 14-20 (pending refresh)` placeholder with actual gate outcomes |
 | 20 | **actor** | DATAML | `comprev-dataml-phases` | pushed repo | git push |
 | 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match, **`METHODS_LEDGER_FRESH`** (M.6 frame count matches live ledger; "All 20 pipeline phases completed" present; zero forbidden stale phrasings — `are scheduled`, `had not yet executed`, etc.), **`AUTHOR_IDENTITY_NOT_PLACEHOLDER`** (no `Human Supervisor`, `Anonymous`, `TBD`, or `<...>` placeholders in `content/authors.yml`, `myst.yml` `authors:`, or any author-byline block). HARD FAIL — the Phase 20a Methods Ledger Refresh in `comprev-dataml-phases.md` is what populates these; this gate verifies the refresh ran. |
+| 21 | **validator** | DATAML | `comprev-deploy-polish` | `gate_phase21_deploy_polish.json` | post-deployment UX gate: tier-A static checks against the built Pages-artifact tarball (`NO_FRONTMATTER_LEAK`, `FIGURE_DROPDOWN_COMPLETE`, `FIGURE_ASSETS_RESOLVE`, `INTERNAL_LINK_HEALTH`, `PLUGIN_DATA_BOUND`, `DIRECTIVE_RENDERED_OK`, `FORBIDDEN_LEXICON_DEPLOYED`, `AUTHOR_IDENTITY_DEPLOYED`); tier-B live-URL checks (`PER_PAGE_HTTP_200`, `EXTERNAL_LINK_HEALTH`) gated by `DEPLOY_ACCESSIBLE` — fall through to a manual user checklist when the deploy URL is unreachable from the sandbox. ONLY phase the coordinator may open after Phase 20 PASS; one targeted fix iteration max, then `ask_user` escalation. |
 
 ## Coordinator Protocol
 
@@ -121,13 +122,15 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 20a → 20 | `gate_phase_20a_methods_refresh.json` | Methods.md M.5/M.6 fully rendered (no `Pending` rows) |
 | 20 → 20V | (pushed repo) | Contents API push complete, commit SHA |
 | 20V (release gate) | `gate_repository_push.json` | Fresh-clone build passes; files match local |
+| 20V → 21 | (deployment context) | Build green at HEAD; deploy URL + repo identifier captured |
+| 21 (deploy-polish gate) | `gate_phase21_deploy_polish.json` | Tier-A static checks PASS on built-Pages-artifact; Tier-B live checks either PASS or are reported as `BLOCKED_DEPLOY_INACCESSIBLE` with a manual checklist for the user |
 
 ### Phase Ledger
 
 ```python
 import json
 phase_ledger = {f'phase_{i}': {'status': 'pending', 'gate_artifact_id': None, 'child_ids': []}
-                for i in list(range(1, 21)) + ['20a']}
+                for i in list(range(1, 22)) + ['20a']}
 
 def advance_phase(phase_num, gate_artifact_id, child_ids=None):
     key = f'phase_{phase_num}'
