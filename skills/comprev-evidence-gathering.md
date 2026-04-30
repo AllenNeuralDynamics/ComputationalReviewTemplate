@@ -7,6 +7,7 @@ Phase 2 delegation template for evidence-gathering agents. Each agent searches d
 - `saturation_criterion` — optional stopping rule (e.g., "<2% new unique in last 100")
 - `snowball_rounds` — how many citation-chasing rounds to run (default 0)
 - `total_bibliography_target` — optional total across all clusters
+- `bibliography_target_is_hard_floor` — bool (default `true`). When `true`, the Phase 2V validator returns `FAIL_REQUIRES_USER_SIGNOFF` if cross-cluster unique DOIs fall below `total_bibliography_target` even after saturation/snowball exit conditions fire. Set to `false` only when the scope explicitly intends saturation as the terminal exit and the target is informational. See `comprev-evidence-validator` §`BIBLIOGRAPHY_FLOOR_HARD`.
 
 If `evidence_parameters` is absent from the delegation task, use defaults (70 papers, no saturation, no snowball).
 

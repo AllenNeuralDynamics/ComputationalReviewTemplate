@@ -39,6 +39,7 @@ These are binary gate checks. Each returning cluster must satisfy every applicab
 - **FIGURE_DATA_PRESENT**: `figure_data[]` non-empty per cluster. **pass/fail**
 - **PAPER_COUNT_FLOOR**: `papers_reviewed_count` ≥ `evidence_parameters.min_papers_per_cluster` (when not null). **pass/fail**
 - **CROSS_CLUSTER_UNIQUE_DOIS**: Cross-cluster unique DOI count ≥ 80% of total target. **pass/fail**
+- **BIBLIOGRAPHY_FLOOR_HARD**: When `evidence_parameters.total_bibliography_target` is set and `evidence_parameters.bibliography_target_is_hard_floor != false` (default: true), cross-cluster unique DOI count MUST be ≥ `total_bibliography_target`. If this check fails, the gate verdict is `FAIL_REQUIRES_USER_SIGNOFF` (NOT `PASS_WITH_DOCUMENTED_EXITS`) regardless of saturation status. The coordinator MUST escalate to the user via `ask_user` before any downstream phase consumes the evidence package — saturation-based exits below the absolute floor require an explicit user decision (proceed / extend search / abort). Record the user decision in `gate_evidence_compliance.json` under a top-level `user_signoff` field. **pass/fail/escalate**
 - **EVERY_PAPER_HAS_DOI**: Every paper in findings/figure_data/conflicts has a DOI starting with `10.`. **pass/fail**
 - **SEARCH_FAILURES_PRESENT**: `search_failures[]` is present and lists papers mentioned in delegation but not found in databases. Unfound papers MUST NOT appear in `findings` without a database-verified DOI. **pass/fail**
 - **FULLTEXT_RATE_PER_CLUSTER**: Fulltext retrieval rate ≥ 20% per cluster. **pass/fail**

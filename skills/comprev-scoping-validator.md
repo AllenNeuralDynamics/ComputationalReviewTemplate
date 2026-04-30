@@ -28,7 +28,7 @@ Phase 1V DATAML validator delegation. Coordinator delegates: *"Load
 | `REVIEW_REQUEST_MD_PRESENT` | `provenance/review_request.md` exists with the three required sections (header, `## Verbatim user prompt` blockquote, `## Editorial note`). | All three sections detected |
 | `NO_PLACEHOLDERS` | Files do not contain `[PIPELINE FILLS THIS]` or any `<...>` template tokens. | Zero matches across all four files |
 | `GATE_SCOPE_FIELDS` | `gate_scope.json` contains: `title`, `clusters[]`, `sections[]`, `evidence_parameters{}`, `review_request_path`. | All keys present |
-| `EVIDENCE_PARAMETERS_VALID` | `evidence_parameters` has the 4 required keys (`min_papers_per_cluster`, `saturation_criterion`, `snowball_rounds`, `total_bibliography_target`); types match schema. | All present, types correct |
+| `EVIDENCE_PARAMETERS_VALID` | `evidence_parameters` has the 5 required keys (`min_papers_per_cluster`, `saturation_criterion`, `snowball_rounds`, `total_bibliography_target`, `bibliography_target_is_hard_floor` — default `true`); types match schema. | All present, types correct |
 | `EVIDENCE_PARAMETERS_CONSISTENT` | If `saturation_criterion != null` then `snowball_rounds >= 1`. If user prompt contains "saturate" or "cover all" or "every relevant" (case-insensitive substring), then `min_papers_per_cluster == null` and `saturation_criterion != null`. | Logical consistency |
 | `CLUSTERS_NONEMPTY` | `clusters[]` length ≥ 1 and each cluster has non-empty `name` and `topics`. | All clusters valid |
 | `SECTIONS_COVER_TOC` | Every section heading in the user's TOC has at least one matching entry in `sections[]` (substring match on title). | All TOC headings represented |
