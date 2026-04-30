@@ -1,6 +1,6 @@
 ---
 name: comprev-deploy-polish
-description: Phase 21 (post-deployment) UX validation skill. Runs after Phase 20 push to main confirms green build. Catches deployment-class defects (per-page rendering, plugin data-binding, figure dropdown completeness, link health, asset paths, frontmatter visibility) that compile-time checks miss. Loaded by a DATAML validator sub-frame; produces gate_deploy_polish.json and (on FAIL) a structured fix-list returned to coordinator. Coordinator opens at most one targeted fix-loop iteration before final user sign-off.
+description: Phase 21 (post-deployment) UX validation skill. Runs after Phase 20 push to main confirms green build. Catches deployment-class defects (per-page rendering, plugin data-binding, figure dropdown completeness, link health, asset paths, frontmatter visibility) that compile-time checks miss. Loaded by a DATAML validator sub-frame; produces gate_phase21_deploy_polish.json and (on FAIL) a structured fix-list returned to coordinator. Coordinator opens at most one targeted fix-loop iteration before final user sign-off.
 ---
 
 # Deploy Polish — Phase 21 Post-Deployment UX Validation
@@ -127,12 +127,12 @@ On any FAIL, the validator emits a structured fix-list keyed by check:
   coordinator delivers the manual-checklist artifact to the user via
   `ask_user` and waits for explicit confirmation that Tier B checks
   passed in the user's browser before marking the run complete.
-- Every Phase 21 invocation appends a gate JSON to `provenance/gates/`
+- Every Phase 21 invocation appends a gate JSON to `provenance/`
   and an entry to `provenance/artifact_manifest.json`.
 
 ## Outputs
 
-- `provenance/gates/gate_phase21_deploy_polish.json` (verdict + checks)
+- `provenance/gate_phase21_deploy_polish.json` (verdict + checks)
 - (On FAIL → fix → re-validate path) one additional gate JSON per
   iteration, suffixed `_attempt_2`, etc.
 - `manual_phase21_checklist.md` (when Tier B blocked)

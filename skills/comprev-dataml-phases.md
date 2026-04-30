@@ -885,10 +885,10 @@ frames = operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False, 
 agent_counts = Counter(f['agent_name'] for f in frames)
 status_counts = Counter(f['status'] for f in frames)
 first_at = min(f['created_at'] for f in frames)
-# Use the Phase-20 release gate timestamp if available (more meaningful than
-# last frame); fall back to last frame timestamp if release gate not yet
-# stamped.
-release_gate = pathlib.Path('provenance/gate_phase_20_release.json')
+# Use the Phase 20V repository-push gate timestamp if available (more
+# meaningful than last frame); fall back to last frame timestamp if the gate
+# has not yet been stamped (i.e. on the initial Phase 20a run).
+release_gate = pathlib.Path('provenance/gate_repository_push.json')
 end_at = json.loads(release_gate.read_text())['released_at'] if release_gate.exists() else max(f['created_at'] for f in frames)
 elapsed_h = (datetime.fromisoformat(end_at.replace('Z','+00:00'))
              - datetime.fromisoformat(first_at.replace('Z','+00:00'))).total_seconds() / 3600
