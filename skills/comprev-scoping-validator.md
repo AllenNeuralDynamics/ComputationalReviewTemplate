@@ -32,7 +32,7 @@ Phase 1V DATAML validator delegation. Coordinator delegates: *"Load
 | `EVIDENCE_PARAMETERS_CONSISTENT` | If `saturation_criterion != null` then `snowball_rounds >= 1`. If user prompt contains "saturate" or "cover all" or "every relevant" (case-insensitive substring), then `min_papers_per_cluster == null` and `saturation_criterion != null`. | Logical consistency |
 | `CLUSTERS_NONEMPTY` | `clusters[]` length ≥ 1 and each cluster has non-empty `name` and `topics`. | All clusters valid |
 | `SECTIONS_COVER_TOC` | Every section heading in the user's TOC has at least one matching entry in `sections[]` (substring match on title). | All TOC headings represented |
-| `PLAN_CONTENT_20_PHASES` | `plan_content[]` length == 20; phase names match the canonical Phase Index; `depends_on` chains are valid (Phase N depends on N-1). | Structure valid |
+| `PLAN_CONTENT_PHASE_COUNT` | `plan_content[]` length == 21; phase names match the canonical Phase Index; `depends_on` chains are valid (Phase N depends on N-1). | Structure valid |
 | `PLAN_AGENTS_VALID` | Every delegation in `plan_content` uses `DATAML` or `LITREVIEW` only; coordinator never appears as an agent. | No `Coordinator` agent anywhere |
 
 ## Output Schema
@@ -50,7 +50,7 @@ Phase 1V DATAML validator delegation. Coordinator delegates: *"Load
     "EVIDENCE_PARAMETERS_CONSISTENT": "pass",
     "CLUSTERS_NONEMPTY": "pass",
     "SECTIONS_COVER_TOC": "pass",
-    "PLAN_CONTENT_20_PHASES": "pass",
+    "PLAN_CONTENT_PHASE_COUNT": "pass",
     "PLAN_AGENTS_VALID": "pass"
   },
   "failures": [

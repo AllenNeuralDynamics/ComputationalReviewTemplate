@@ -921,7 +921,7 @@ Total session frames: **{sum(agent_counts.values())}**.
 **Wall-clock.** First frame created at **{first_at}**; final timestamp
 (release gate or last frame) **{end_at}**. Elapsed: **{elapsed_h:.2f} h**.
 
-**Phases completed.** All 20 pipeline phases completed; gate artifacts saved
+**Phases completed.** All 21 pipeline phases completed; gate artifacts saved
 in `provenance/gate_*.json`. The orchestrator's `FINAL_GATE_master.json`
 records `status: PUBLISHED`.
 

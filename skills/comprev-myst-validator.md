@@ -73,7 +73,7 @@
        `len(operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames'])`
        within ±1 (allow for the validator's own frame).
     3. **Pipeline Execution phases-completed wording is final.** The phrase
-       "All 20 pipeline phases completed" (case-sensitive) must appear in
+       "All 21 pipeline phases completed" (case-sensitive) must appear in
        the Pipeline Execution section.
     4. **Pipeline Architecture figure is post-Phase-13.** Open
        `figures/notebooks/fig_methods_pipeline.ipynb` and parse the
