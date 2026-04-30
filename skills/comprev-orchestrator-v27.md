@@ -57,7 +57,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 1 | **actor** | DATAML | `comprev-dataml-phases` | `provenance/review_request.{md,txt}` + `gate_scope.json` | review_request.txt verbatim bytes, review_request.md three-section render, `gate_scope.json` carries `review_request_path`, no template placeholders remain |
 | 1V | **validator** | DATAML | `comprev-scoping-validator` | structured pass/fail | `REVIEW_REQUEST_VERBATIM`, `REVIEW_REQUEST_MD_PRESENT`, `NO_PLACEHOLDERS`, `GATE_SCOPE_FIELDS`, `EVIDENCE_PARAMETERS_VALID`, `EVIDENCE_PARAMETERS_CONSISTENT`, `CLUSTERS_NONEMPTY`, `SECTIONS_COVER_TOC`, `PLAN_CONTENT_20_PHASES`, `PLAN_AGENTS_VALID` all pass |
 | 2 | **actor** | LITREVIEW | `comprev-evidence-gathering` + `comprev-reviewer-agent` | evidence JSONs (per cluster — may be assembled across multiple continuation children, see §"Phase 2 Continuation Pattern") | papers≥target, conflicts>0, figure_data≥2/cluster, every child returns `continuation_required: false` or hits the sanity cap |
-| 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty, `BIBLIOGRAPHY_FLOOR_HARD` (escalates to user when DOI count < `total_bibliography_target`) |
+| 2V | **validator** | DATAML | `comprev-evidence-validator` | `gate_evidence_compliance.json` | source sentences in abstracts, DOI resolution, fulltext honesty |
 | 3 | **actor** | DATAML | `comprev-dataml-phases` | citation_key_map, author_name_table | DOIs mapped, cite keys generated |
 | 3V | **validator** | DATAML | `comprev-citation-validator` | `gate_citation_infrastructure.json` | CrossRef matching, key uniqueness, author match |
 | 4 | actor | LITREVIEW | `comprev-scaffold` + `comprev-reviewer-agent` | scaffold JSON | `gate_scaffold_approved.json`: ≥2 figs/section, cross-refs |
@@ -416,26 +416,4 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
 | 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
 
----
-
-## v28 Additions
-
-These subsections were added in response to a v27 retrospective. They formalise checks that the validators in v27 were silent on, and that subsequently produced defects in deployed manuscripts.
-
-### User Sign-Off Protocol
-
-Some validator outcomes cannot be auto-accepted by the coordinator and require explicit user approval. When a gate JSON returns `verdict: "FAIL_REQUIRES_USER_SIGNOFF"` (or sets `user_signoff_required: true`), the coordinator MUST:
-
-1. Pause downstream phases. Do not delegate Phase N+1 until sign-off resolves.
-2. Call `ask_user` with the failing-check name, observed value, expected target, and a 2–4-option decision panel:
-   - **Proceed** — accept the documented exit; record `user_signoff: {decision: "proceed", note: ...}` back into the gate JSON.
-   - **Extend** — re-run the actor with relaxed/expanded inputs (e.g., extra snowball rounds for bibliography shortfalls).
-   - **Abort** — terminate the pipeline and report the gap.
-3. Never edit the gate JSON to flip `verdict` from `FAIL_REQUIRES_USER_SIGNOFF` to `PASS` without recording a `user_signoff` field. The verdict is structural; the override is a separate, audited field.
-
-Canonical triggers (non-exhaustive):
-- Phase 2V: `BIBLIOGRAPHY_FLOOR_HARD` failed — DOI count below `total_bibliography_target` despite saturation.
-- Phase 5V: any cluster falls below `min_papers_per_cluster` after EXIT 1 (saturation) is invoked.
-- Phase 7: `n_failures > 0` after the maximum configured drafting iterations.
-- Phase 8: critic `iterations >= max_iterations` and `must_fix_count > 0`.
 
