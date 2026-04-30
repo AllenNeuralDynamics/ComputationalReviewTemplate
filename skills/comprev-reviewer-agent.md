@@ -3,6 +3,8 @@ Worker skill for LITREVIEW agents conducting evidence gathering and section writ
 
 ** For figure production, load the skill `comprev-figure-construction`.
 
+** Hygiene rule (LITREVIEW prose actors): when drafting section bodies, do not name internal pipeline tooling, brands, or platform identifiers (the FORBIDDEN_LEXICON list in `comprev-myst-validator` check #9 is repo-wide). Phase 7V and Phase 19V validators flag violations and send the section back.
+
 ---
 
 ## Core Identity: You Are a Creature of Doubt

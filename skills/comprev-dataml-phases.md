@@ -10,6 +10,24 @@ Delegation templates for all DATAML mechanical phases: citation infrastructure (
 ---
 
 
+
+## Universal DATAML Actor Rules
+
+Every DATAML actor (every phase below) MUST honour these rules. They are
+enforced by binary checks in the corresponding validator skill — failing any
+of them returns the actor's gate to `FAIL_*` regardless of the phase-specific
+output.
+
+**Forbidden-lexicon scope.** Any actor that writes to `content/*.md`,
+`content/*.yml`, or `manuscript.tex` MUST scrub the FORBIDDEN_LEXICON list
+(defined in `comprev-myst-validator` check #9) from its own output before
+emitting. This includes Methods (Phase 13), authors.yml (Phase 1/14),
+frontmatter (Phase 14), and verification summaries (Phase 20a). The scrub
+runs in the actor — the validator only catches misses.
+
+---
+
+
 ## Phase 1: Scoping Materialisation (DATAML actor)
 
 **Agent:** DATAML actor (mechanical only)
