@@ -25,6 +25,12 @@ emitting. This includes Methods (Phase 13), authors.yml (Phase 1/14),
 frontmatter (Phase 14), and verification summaries (Phase 20a). The scrub
 runs in the actor — the validator only catches misses.
 
+**No author placeholders.** Any actor that writes to `content/authors.yml`,
+the `authors:` block in `myst.yml`, or any author-byline block in `content/*.md`
+MUST emit real names (or no entry at all) — not `Human Supervisor`, `Anonymous`,
+`TBD`, `[NAME]`, `<placeholder>`, or `Author N`. Phase 14V and 20V validators
+flag violations via `AUTHOR_IDENTITY_NOT_PLACEHOLDER`.
+
 ---
 
 

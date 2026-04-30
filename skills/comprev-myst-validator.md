@@ -33,8 +33,15 @@
     (Block check that catches the failure mode where Phase 6 saved PNGs without notebooks
     and Phase 14 had nothing to embed in dropdowns.)
 17. **AUTHORS_YML_EXISTS**: `content/authors.yml` exists? **pass/fail**
-18. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
-19. **HEADING_STYLE_CONSISTENT**: Run `audit_headings()` (defined in `comprev-critic.md`)
+
+18. **AUTHOR_IDENTITY_NOT_PLACEHOLDER** *(Phase 14V, 20V)*: Zero placeholder author tokens in
+    `content/authors.yml`, `myst.yml` `authors:` block, or any author-byline block in
+    `content/*.md`. Forbidden tokens (case-insensitive substring match on `name:` values
+    and byline text): `Human Supervisor`, `Anonymous`, `TBD`, `[NAME]`, `<...>` template
+    angle-brackets, `Author N` patterns. v27 deployments shipped with `Human Supervisor`
+    bylines; this check is the regression guard. **pass/fail**
+19. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
+20. **HEADING_STYLE_CONSISTENT**: Run `audit_headings()` (defined in `comprev-critic.md`)
     across all `content/*.md` files. Zero problems of any type:
     `MANUAL_NUMBER_PREFIX`, `WRAPPED_HEADING`, `MULTI_SPACE_AFTER_NUMBER`,
     `INCONSISTENT_DASH`, `MIXED_H1_H2_STYLE`, `INCONSISTENT_ACROSS_SECTIONS`?

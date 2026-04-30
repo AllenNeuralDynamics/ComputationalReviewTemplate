@@ -85,7 +85,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 19V | **validator** | DATAML | `comprev-myst-validator` | validation report | build passes, zero orphans, `FORBIDDEN_LEXICON` repo-wide (`content/*.md content/*.yml manuscript.tex`) |
 | 20a | **actor** | DATAML | `comprev-dataml-phases` | refreshed `Methods.md` + `gate_phase_20a_methods_refresh.json` | re-render M.6 from live ledger; replace `Phases 14-20 (pending refresh)` placeholder with actual gate outcomes |
 | 20 | **actor** | DATAML | `comprev-dataml-phases` | pushed repo | git push |
-| 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match, **`METHODS_LEDGER_FRESH`** (M.6 frame count matches live ledger; "All 20 pipeline phases completed" present; zero forbidden stale phrasings — `are scheduled`, `had not yet executed`, etc.). HARD FAIL — the Phase 20a Methods Ledger Refresh in `comprev-dataml-phases.md` is what populates these; this gate verifies the refresh ran. |
+| 20V | **validator** | DATAML | `comprev-myst-validator` | `gate_repository_push.json` | fresh clone builds, files match, **`METHODS_LEDGER_FRESH`** (M.6 frame count matches live ledger; "All 20 pipeline phases completed" present; zero forbidden stale phrasings — `are scheduled`, `had not yet executed`, etc.), **`AUTHOR_IDENTITY_NOT_PLACEHOLDER`** (no `Human Supervisor`, `Anonymous`, `TBD`, or `<...>` placeholders in `content/authors.yml`, `myst.yml` `authors:`, or any author-byline block). HARD FAIL — the Phase 20a Methods Ledger Refresh in `comprev-dataml-phases.md` is what populates these; this gate verifies the refresh ran. |
 
 ## Coordinator Protocol
 
