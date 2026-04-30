@@ -118,12 +118,21 @@ for sec_num, writer_id in section_to_writer_id.items():
 > - Type/category inflation: claims about a broad category citing only one specific subtype or variant
 > - Temporal inflation: 'established' citing a single unreplicated study
 >
-> **TRACK 5 — Unused Counter-Evidence:**
-> Compare the papers in the evidence package against the papers cited in the section. For the uncited papers:
-> - Do any contradict claims made in the section?
-> - Do any provide important nuance (different species, region, or result) that the section ignores?
-> - Are any replication studies for claims presented as unreplicated?
-> Most uncited papers will be confirmatory — only flag those that would change the section's conclusions if included.
+> **TRACK 5 — Coverage of Evidence Package (EXHAUSTIVE):**
+> Every paper in the evidence package must be accounted for. For each paper that
+> is NOT cited in the section, classify it as exactly ONE of:
+>
+> - `SHOULD_CITE` — the paper provides relevant evidence for a claim already in the section, contradicts a section claim, replicates an unreplicated claim, or covers an aspect of the topic the section discusses but uses other evidence for. Adding the citation would strengthen, correct, or appropriately qualify the section.
+> - `WAIVED_OUT_OF_SCOPE` — the paper's actual scope (system, species, method, time period, sub-topic) does not overlap the section's argument arc. Document the scope mismatch in one sentence.
+> - `WAIVED_REDUNDANT` — the paper's findings are already represented by an equivalent cited paper. Document the equivalent cite_key.
+> - `WAIVED_LOW_QUALITY` — the paper has identified methodological issues that make it unreliable as evidence (retraction, expression of concern, n=2 study superseded by n=200, known fraud, etc.). Document the issue.
+>
+> Every uncited paper MUST receive exactly one classification. Return a `coverage_review` array (see summary block below) covering every uncited cite_key.
+>
+> Each `SHOULD_CITE` paper is a `MUST_FIX` finding. The writer's permitted responses are:
+> 1. Add the citation to a relevant claim in the section.
+> 2. Push back with a documented waiver reason that overrides the critic's `SHOULD_CITE` classification (e.g., "this paper measured X in primates, the section is about rodent X, and the package's curator over-included it").
+> A naked refusal to cite without a waiver reason is NOT acceptable — the gate stays open.
 >
 > **TRACK 6 — Trace-to-Primary-Data (False Consensus Detection):**
 > For each major mechanistic claim in the section (e.g., "X targets Y", "A drives B",
@@ -166,9 +175,20 @@ for sec_num, writer_id in section_to_writer_id.items():
 >   "suppressed_conflicts": [{"paper_a": "", "paper_b": "", "topic": ""}],
 >   "papers_in_package": N,
 >   "papers_cited": M,
->   "uncited_counter_evidence_count": K
+>   "papers_should_cite": K_should,
+>   "papers_waived_out_of_scope": K_oos,
+>   "papers_waived_redundant": K_red,
+>   "papers_waived_low_quality": K_lq,
+>   "coverage_review": [
+>     {"cite_key": "Smith2020", "classification": "SHOULD_CITE", "reason": "directly tests the claim in §3.2 about pathway X with negative result; section currently presents pathway X as established"},
+>     {"cite_key": "Jones2019", "classification": "WAIVED_OUT_OF_SCOPE", "reason": "primate study; section is rodent-only"}
+>   ]
 > }
 > ```
+>
+> **Coverage accounting invariant** (the critic must self-check before returning):
+> `papers_cited + papers_should_cite + papers_waived_out_of_scope + papers_waived_redundant + papers_waived_low_quality == papers_in_package`
+> AND `len(coverage_review) == papers_in_package - papers_cited` (every uncited paper appears exactly once).
 >
 > **Calibration:** Be aggressive on Tracks 3 and 5. A section that presents a clean consensus when the evidence package contains conflicts is MORE problematic than a section with minor imprecisions. Conflict suppression is the most important failure mode to catch."
 
@@ -177,6 +197,15 @@ for sec_num, writer_id in section_to_writer_id.items():
 - SHOULD_CAVEAT findings are collected and passed to Phase 10 integration for text amendments during the integration passes.
 - MINOR findings are logged in the review metadata but do not block.
 - **Conflict survival threshold:** If conflicts_represented / conflicts_in_package < 0.5, send back to the section writer: "More than half the conflicts in your evidence package are absent from the section. The following conflicts must be represented: [list]. Revise to include both sides of each."
+
+- **Coverage gate (HARD — runs after every MUST_FIX revision pass):** Each `coverage_review` entry with `classification: "SHOULD_CITE"` is a MUST_FIX. After each writer revision the coordinator re-counts:
+  ```python
+  unresolved = [r for r in coverage_review if r['classification'] == 'SHOULD_CITE'
+                and r['cite_key'] not in cited_keys_in_revised_section
+                and r['cite_key'] not in writer_waivers]   # waivers writer added with documented reason
+  assert len(unresolved) == 0, f"{len(unresolved)} SHOULD_CITE papers unaddressed"
+  ```
+  When the writer pushes back with a waiver on a SHOULD_CITE item, the critic re-reviews on the next pass and may either accept the waiver (move it into `WAIVED_*` on its next coverage_review) or escalate the disagreement to the coordinator with a one-line rebuttal. The coordinator's tie-breaker after 3 critic-writer rounds: accept the writer's waiver, log the unresolved item to the Phase 8 gate artifact's `coverage_disputes` field, and proceed. Disputes are visible to Phase 16 for downstream verification.
 
 **Interaction with Phase 16:** Phase 8 checks whether the text accurately represents the relationship between papers (using abstracts). Phase 16 performs exhaustive full-text verification of every citation-claim pair — checking that each cited paper's actual content supports the specific claim. Both are needed — a claim can pass Phase 8 (abstract seems compatible) and fail Phase 16 (the paper's full text contradicts the claim), or vice versa.
 

@@ -196,7 +196,26 @@ The `../figures/` prefix is required because content files are in `content/` and
 - Key papers receive substantive treatment (not just a one-sentence citation), either within a synthesis paragraph or — for singular landmarks — in a dedicated paragraph?
 - Paragraphs organized by argument, not by paper? Each paragraph should advance ONE claim or sub-argument and cite MULTIPLE papers as converging evidence, conflicting results, or methodological comparisons. Target: 5–8 citations per synthesis paragraph. A paragraph that discusses only one paper is acceptable only when that paper is a singular landmark requiring detailed methodological exposition. A section where most paragraphs map 1:1 to individual papers is catalog-style, not synthetic — send back: "Restructure paragraphs around arguments, not individual papers."
 - Tiered treatment applied? Check that the section uses three levels of paper treatment: (1) landmark papers with detailed discussion of methods and results, (2) core papers with substantive 2–3 sentence treatment within synthesis paragraphs, (3) confirmatory papers cited as converging evidence. If all cited papers receive equal-depth treatment, the section will be either too long or too shallow — send back: "Apply tiered treatment. Not every paper needs a full paragraph — integrate core and confirmatory papers into synthesis paragraphs at higher density."
-- Minimum citations per section: core sections ≥35, supporting sections ≥25? If a section writer uses fewer citations than provided in their evidence package, send back: "Your evidence package contained N papers but you only cited M. Key papers that should receive treatment: [list uncited papers from the package]."
+- Minimum citations per section: core sections ≥35, supporting sections ≥25.
+- **Per-paper coverage (HARD GATE in Phase 8):** the critic exhaustively classifies every uncited paper from the evidence package as `SHOULD_CITE` or one of three `WAIVED_*` reasons. Each `SHOULD_CITE` is a MUST_FIX — there is no longer a soft "Key papers that should receive treatment" suggestion. See `comprev-critic` Track 5 for the classification taxonomy.
+
+**Responding to SHOULD_CITE findings during Phase 8 MUST_FIX revisions:**
+
+When the critic returns a list of `SHOULD_CITE` papers, the writer's revised section MUST resolve each one in exactly one of two ways:
+
+1. **Cite the paper.** Add `\citep{cite_key}` (or `\citet{cite_key}`) to a claim where the paper provides relevant evidence. The new citation must follow the existing claim-citation alignment rules — do not paste a citation onto a claim it does not support just to clear the gate.
+
+2. **Document a waiver.** If the writer disagrees with the critic's `SHOULD_CITE` classification, return a `writer_waivers` array in the structured output:
+   ```json
+   {
+     "writer_waivers": [
+       {"cite_key": "Smith2020", "reason": "Smith2020 measures the same pathway in zebrafish; this section is restricted to mammalian preparations as stated in the scope paragraph. Reclassify as WAIVED_OUT_OF_SCOPE."}
+     ]
+   }
+   ```
+   The next critic pass treats waivers as proposed reclassifications and either accepts or rebuts them. Waivers without a specific scope/redundancy/quality reason will not be accepted — "I don't have space" is not a valid waiver.
+
+A naked refusal (neither cite nor waive) leaves the gate open; the coordinator will continue the MUST_FIX loop until convergence or the 3-iteration cap, after which unresolved disputes are logged and the manuscript proceeds with a `coverage_disputes` annotation visible to Phase 16.
 - Citation density: the writer's self-reported `citations_per_paragraph`
   must be ≥ 4.0. The coordinator independently verifies by counting
   `\cite` commands and dividing by paragraph count in the .tex file.

@@ -66,7 +66,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 6 | **critic** | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic cannot reach the network) |
 | 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
 | 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, cite keys exist (dropdowns are NOT yet present — they are added at Phase 14) |
-| 8 | **critic** | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back |
+| 8 | **critic** | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back, **coverage gate**: every uncited paper classified, no unaddressed `SHOULD_CITE` |
 | 9 | **actor** | DATAML | `comprev-dataml-phases` | references.bib | bib entries built from CrossRef |
 | 9V | **validator** | DATAML | `comprev-citation-validator` | `gate_bibliography.json` | bib matches CrossRef, all keys present, 0 contamination |
 | 10 | **actor** | LITREVIEW | `comprev-integration` + `comprev-reviewer-agent` | integrated sections | `gate_integration.json`: 6 passes documented |
@@ -105,7 +105,7 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 5 → 6 | `gate_evidence_curated.json` | Per-section paper count, anti-compression ≥75% |
 | 6 → 7 | `gate_figure_audit.json` | All verdicts, zero REDESIGN remaining, critic frame IDs |
 | 7 → 8 | `gate_sections_drafted.json` | Per-section: artifact IDs, citation count, word count |
-| 8 → 9 | `gate_critic_complete.json` | MUST_FIX count = 0, SHOULD_CAVEAT count, conflict survival |
+| 8 → 9 | `gate_critic_complete.json` | MUST_FIX count = 0, SHOULD_CAVEAT count, conflict survival, coverage_review (per-uncited-paper classification), coverage_disputes (writer-waiver disagreements after 3 rounds) |
 | 9 → 10 | `gate_bibliography.json` | .bib artifact ID, entry count, failures |
 | 10 → 11 | `gate_integration.json` | Passes 10a-10f, filename mismatches, structural hygiene |
 | 11 → 12 | `gate_intro_conclusion.json` | Section artifact IDs, citation count |
