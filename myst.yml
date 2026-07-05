@@ -45,7 +45,6 @@ project:
       output: review_manuscript.pdf
       template: ./latex/template
 site:
-  base_url: /ComputationalReviewTemplate
   template: book-theme
   title: "Computational Review"
   nav:
