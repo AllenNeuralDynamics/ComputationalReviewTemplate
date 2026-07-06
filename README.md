@@ -1,5 +1,7 @@
 # Computational Review Template
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21213212.svg)](https://doi.org/10.5281/zenodo.21213212)
+
 Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v29.
 
 ## Pipeline Overview
