@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/trust_score.schema.json",
+  "title": "TRUST Score",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "components",
+    "overall_score",
+    "trust_label",
+    "capped",
+    "cap_reason",
+    "computed_from"
+  ],
+  "properties": {
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "traceability",
+        "robustness",
+        "uncertainty_calibration",
+        "source_integrity",
+        "transferability_scope_control"
+      ],
+      "properties": {
+        "traceability": { "$ref": "#/$defs/component" },
+        "robustness": { "$ref": "#/$defs/component" },
+        "uncertainty_calibration": { "$ref": "#/$defs/component" },
+        "source_integrity": { "$ref": "#/$defs/component" },
+        "transferability_scope_control": { "$ref": "#/$defs/component" }
+      }
+    },
+    "overall_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "trust_label": {
+      "type": "string",
+      "enum": [
+        "high_trust",
+        "moderate_trust",
+        "low_trust",
+        "critical_or_unreliable"
+      ]
+    },
+    "capped": { "type": "boolean" },
+    "cap_reason": {
+      "type": ["string", "null"],
+      "enum": [
+        "unsupported_citation",
+        "direction_mismatch",
+        "contradicted_without_caveat",
+        "invented_reference",
+        "missing_doi_empirical",
+        "overextended_scope",
+        null
+      ]
+    },
+    "computed_from": {
+      "type": "string",
+      "enum": ["validator", "manual_override_with_justification"]
+    },
+    "manual_override_justification": {
+      "type": ["string", "null"],
+      "default": null
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score",
+        "rationale",
+        "evidence",
+        "failure_modes",
+        "recommended_fix"
+      ],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "rationale": { "type": "string", "minLength": 1 },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "failure_modes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "recommended_fix": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

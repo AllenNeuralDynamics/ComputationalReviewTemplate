@@ -1,0 +1,268 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-07T00:00:00Z",
+  "generated_by_phase": "phase_16T_trust_score_validation",
+  "claims": [
+    {
+      "claim_id": "clm_2f4c95c6017f8e0a",
+      "section_id": "sec-introduction",
+      "source_file": "content/01_introduction.md",
+      "paragraph_index": 1,
+      "sentence_index": 1,
+      "claim_text": "Fast-spiking interneuron activation increases temporal precision and constrains runaway cortical excitation.",
+      "normalized_claim": "fast spiking interneuron activation increase temporal precision constrain runaway cortical excitation",
+      "claim_type": "empirical",
+      "claim_scope": {
+        "biological": "mouse visual cortex",
+        "computational": "gain and temporal control",
+        "clinical": null,
+        "methodological": "optogenetics and electrophysiology",
+        "conceptual": "inhibitory stabilization"
+      },
+      "claim_polarity": "positive",
+      "modality": "likely",
+      "entities": [
+        { "name": "fast-spiking interneurons", "entity_type": "concept", "identifier": null },
+        { "name": "mouse", "entity_type": "species", "identifier": "NCBITaxon:10090" }
+      ],
+      "citation_keys": ["Cardin2009", "Atallah2012"],
+      "dois": ["10.1038/nature08417", "10.1038/nn.3446"],
+      "citation_contexts": [
+        {
+          "cite_key": "Cardin2009",
+          "doi": "10.1038/nature08417",
+          "role": "direct_support",
+          "supporting_passage": "Optogenetic stimulation of fast-spiking cells increased spike timing precision and reduced network variability.",
+          "passage_source": "full_text",
+          "direction_match": true,
+          "notes": "Primary direct evidence."
+        },
+        {
+          "cite_key": "Atallah2012",
+          "doi": "10.1038/nn.3446",
+          "role": "partial_support",
+          "supporting_passage": "Inhibitory responses scaled with excitatory drive and constrained gain under sensory stimulation.",
+          "passage_source": "abstract",
+          "direction_match": true,
+          "notes": "Convergent support in a related paradigm."
+        }
+      ],
+      "evidence_relation": "directly_supported",
+      "conflicts": [],
+      "knowledge_edges": [
+        { "subject": "fast-spiking interneuron activation", "predicate": "increases", "object": "temporal precision", "qualifier": "during cortical responses", "edge_source": "claim_text" },
+        { "subject": "fast-spiking interneuron activation", "predicate": "constrains", "object": "runaway cortical excitation", "qualifier": null, "edge_source": "claim_text" }
+      ],
+      "trust_score": {
+        "components": {
+          "traceability": { "score": 4, "rationale": "Two citations with DOI-level linkage and supporting passages are available.", "evidence": ["Cardin2009:10.1038/nature08417", "Atallah2012:10.1038/nn.3446"], "failure_modes": ["missing passage source", "non-resolving citation key"], "recommended_fix": "Require passage extraction for every cited empirical claim." },
+          "robustness": { "score": 3, "rationale": "Convergent support from independent studies using related methods.", "evidence": ["multiple independent papers", "same direction of effect"], "failure_modes": ["single-study support"], "recommended_fix": "Add additional replication studies if available." },
+          "uncertainty_calibration": { "score": 3, "rationale": "Claim is phrased as likely rather than definitive and matches evidence scope.", "evidence": ["modality=likely", "no overclaiming language"], "failure_modes": ["definitive wording with partial evidence"], "recommended_fix": "Keep modality calibrated to evidence depth." },
+          "source_integrity": { "score": 4, "rationale": "Primary DOI-indexed sources with no integrity flags.", "evidence": ["CrossRef-resolving DOI references", "primary experimental sources"], "failure_modes": ["metadata-only source", "retracted reference"], "recommended_fix": "Exclude low-integrity or unresolved sources." },
+          "transferability_scope_control": { "score": 2, "rationale": "Evidence is specific to mouse cortical systems and should not be over-generalized.", "evidence": ["species and region constrained"], "failure_modes": ["cross-species overextension"], "recommended_fix": "Keep explicit scope qualifiers in prose." }
+        },
+        "overall_score": 80,
+        "trust_label": "moderate_trust",
+        "capped": false,
+        "cap_reason": null,
+        "computed_from": "validator",
+        "manual_override_justification": null
+      },
+      "human_review_required": false,
+      "created_by_phase": "phase_5b_claim_seed",
+      "updated_by_phase": "phase_16T_trust_score_validation",
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_gebru2021_datasheets",
+      "section_id": "sec-introduction",
+      "source_file": "content/01_introduction.md",
+      "paragraph_index": 2,
+      "sentence_index": 2,
+      "claim_text": "Datasheets for datasets were proposed as standardized documentation to record dataset motivation, composition, collection process, intended uses, and maintenance.",
+      "normalized_claim": "datasheets for datasets proposed standardized documentation record motivation composition collection intended uses maintenance",
+      "claim_type": "empirical",
+      "claim_scope": {
+        "biological": null,
+        "computational": "machine learning dataset governance",
+        "clinical": null,
+        "methodological": "documentation standard",
+        "conceptual": "debt prevention"
+      },
+      "claim_polarity": "positive",
+      "modality": "established",
+      "entities": [
+        { "name": "datasheets for datasets", "entity_type": "method", "identifier": null }
+      ],
+      "citation_keys": ["gebru2021datasheets"],
+      "dois": ["10.1145/3458723"],
+      "citation_contexts": [
+        {
+          "cite_key": "gebru2021datasheets",
+          "doi": "10.1145/3458723",
+          "role": "direct_support",
+          "supporting_passage": "Datasheets for datasets propose documenting motivation, composition, collection process, recommended uses, and maintenance.",
+          "passage_source": "full_text",
+          "direction_match": true,
+          "notes": "Foundational proposal and direct statement of function."
+        }
+      ],
+      "evidence_relation": "directly_supported",
+      "conflicts": [],
+      "knowledge_edges": [
+        { "subject": "datasheets for datasets", "predicate": "documents", "object": "dataset motivation/composition/collection/use/maintenance", "qualifier": null, "edge_source": "claim_text" }
+      ],
+      "trust_score": {
+        "components": {
+          "traceability": { "score": 4, "rationale": "Direct citation with DOI and supporting passage.", "evidence": ["gebru2021datasheets", "10.1145/3458723"], "failure_modes": ["missing DOI"], "recommended_fix": "Ensure citation keys and DOI mappings remain stable." },
+          "robustness": { "score": 4, "rationale": "Claim reports a clearly documented proposal and its explicitly stated purpose.", "evidence": ["primary-source method paper"], "failure_modes": ["secondary-source paraphrase only"], "recommended_fix": "Prefer primary method references." },
+          "uncertainty_calibration": { "score": 3, "rationale": "Stated as established proposal details without overextension.", "evidence": ["proposal claims are descriptive"], "failure_modes": ["overgeneralized impact claims"], "recommended_fix": "Limit wording to documented function." },
+          "source_integrity": { "score": 4, "rationale": "Primary publication with resolvable DOI.", "evidence": ["DOI verified"], "failure_modes": ["unverified bibliographic source"], "recommended_fix": "Retain DOI-verification gate." },
+          "transferability_scope_control": { "score": 4, "rationale": "Scope remains within dataset documentation in ML contexts.", "evidence": ["no cross-domain overreach"], "failure_modes": ["scope expansion beyond documented use"], "recommended_fix": "Keep scope qualifiers explicit." }
+        },
+        "overall_score": 92,
+        "trust_label": "high_trust",
+        "capped": false,
+        "cap_reason": null,
+        "computed_from": "validator",
+        "manual_override_justification": null
+      },
+      "human_review_required": false,
+      "created_by_phase": "phase_5b_claim_seed",
+      "updated_by_phase": "phase_16T_trust_score_validation",
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_mitchell2019_modelcards",
+      "section_id": "sec-introduction",
+      "source_file": "content/01_introduction.md",
+      "paragraph_index": 2,
+      "sentence_index": 3,
+      "claim_text": "Model cards were introduced to report intended use, limitations, and disaggregated subgroup performance instead of a single aggregate metric.",
+      "normalized_claim": "model cards introduced report intended use limitations disaggregated subgroup performance instead single aggregate metric",
+      "claim_type": "empirical",
+      "claim_scope": {
+        "biological": null,
+        "computational": "machine learning model documentation",
+        "clinical": null,
+        "methodological": "reporting standard",
+        "conceptual": "disaggregated accountability"
+      },
+      "claim_polarity": "positive",
+      "modality": "established",
+      "entities": [
+        { "name": "model cards", "entity_type": "method", "identifier": null }
+      ],
+      "citation_keys": ["mitchell2019modelcards"],
+      "dois": ["10.1145/3287560.3287596"],
+      "citation_contexts": [
+        {
+          "cite_key": "mitchell2019modelcards",
+          "doi": "10.1145/3287560.3287596",
+          "role": "direct_support",
+          "supporting_passage": "Model cards describe intended use, caveats, and performance disaggregated by population and context.",
+          "passage_source": "full_text",
+          "direction_match": true,
+          "notes": "Direct proposal and rationale."
+        }
+      ],
+      "evidence_relation": "directly_supported",
+      "conflicts": [],
+      "knowledge_edges": [
+        { "subject": "model cards", "predicate": "requires", "object": "disaggregated performance reporting", "qualifier": null, "edge_source": "claim_text" }
+      ],
+      "trust_score": {
+        "components": {
+          "traceability": { "score": 4, "rationale": "Direct citation with DOI and supporting passage.", "evidence": ["mitchell2019modelcards", "10.1145/3287560.3287596"], "failure_modes": ["missing source passage"], "recommended_fix": "Keep passage-level traceability in claim contexts." },
+          "robustness": { "score": 4, "rationale": "Claim describes explicit proposal requirements from primary source.", "evidence": ["primary-source documentation standard"], "failure_modes": ["derivative summary without primary citation"], "recommended_fix": "Anchor to primary source when stating methodology." },
+          "uncertainty_calibration": { "score": 3, "rationale": "Descriptive statement with no overclaiming.", "evidence": ["proposal-level wording"], "failure_modes": ["effectiveness claims without evidence"], "recommended_fix": "Keep to documented proposal boundaries." },
+          "source_integrity": { "score": 4, "rationale": "Resolvable DOI and primary publication source.", "evidence": ["verified DOI"], "failure_modes": ["broken reference mapping"], "recommended_fix": "Retain DOI and key-resolution checks." },
+          "transferability_scope_control": { "score": 4, "rationale": "Claim remains in ML documentation context without overextension.", "evidence": ["scope constrained to model reporting"], "failure_modes": ["domain transfer without support"], "recommended_fix": "Preserve context qualifiers." }
+        },
+        "overall_score": 92,
+        "trust_label": "high_trust",
+        "capped": false,
+        "cap_reason": null,
+        "computed_from": "validator",
+        "manual_override_justification": null
+      },
+      "human_review_required": false,
+      "created_by_phase": "phase_5b_claim_seed",
+      "updated_by_phase": "phase_16T_trust_score_validation",
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_bender2018_datastatements",
+      "section_id": "sec-introduction",
+      "source_file": "content/01_introduction.md",
+      "paragraph_index": 2,
+      "sentence_index": 4,
+      "claim_text": "Data statements were proposed to document dataset provenance and representation boundaries so downstream language technology results remain interpretable and reproducible.",
+      "normalized_claim": "data statements proposed document dataset provenance representation boundaries downstream language technology results interpretable reproducible",
+      "claim_type": "empirical",
+      "claim_scope": {
+        "biological": null,
+        "computational": "language technology datasets",
+        "clinical": null,
+        "methodological": "dataset documentation protocol",
+        "conceptual": "representation transparency"
+      },
+      "claim_polarity": "positive",
+      "modality": "established",
+      "entities": [
+        { "name": "data statements", "entity_type": "method", "identifier": null }
+      ],
+      "citation_keys": ["benderfriedman2018datastatements"],
+      "dois": ["10.1162/tacl_a_00041"],
+      "citation_contexts": [
+        {
+          "cite_key": "benderfriedman2018datastatements",
+          "doi": "10.1162/tacl_a_00041",
+          "role": "direct_support",
+          "supporting_passage": "Data statements document speaker/population representation and provenance to improve reproducibility and responsible interpretation.",
+          "passage_source": "full_text",
+          "direction_match": true,
+          "notes": "Direct methodological rationale from primary source."
+        }
+      ],
+      "evidence_relation": "directly_supported",
+      "conflicts": [],
+      "knowledge_edges": [
+        { "subject": "data statements", "predicate": "documents", "object": "provenance and representation boundaries", "qualifier": "for language technology datasets", "edge_source": "claim_text" }
+      ],
+      "trust_score": {
+        "components": {
+          "traceability": { "score": 4, "rationale": "Direct citation with DOI and support passage.", "evidence": ["benderfriedman2018datastatements", "10.1162/tacl_a_00041"], "failure_modes": ["citation key mismatch"], "recommended_fix": "Keep key-to-DOI validation mandatory." },
+          "robustness": { "score": 4, "rationale": "Claim reflects explicit proposal and rationale from the originating paper.", "evidence": ["primary method reference"], "failure_modes": ["secondary interpretation drift"], "recommended_fix": "Prefer direct citation contexts for method proposals." },
+          "uncertainty_calibration": { "score": 3, "rationale": "Claim is descriptive and scoped; avoids overclaiming impact magnitude.", "evidence": ["proposal and rationale wording"], "failure_modes": ["causal overstatements"], "recommended_fix": "Limit to explicit paper claims." },
+          "source_integrity": { "score": 4, "rationale": "Resolvable DOI and primary publication source.", "evidence": ["DOI verified"], "failure_modes": ["unverified source metadata"], "recommended_fix": "Retain verification in citation validator." },
+          "transferability_scope_control": { "score": 4, "rationale": "Scope is constrained to language technology documentation context.", "evidence": ["domain-specific statement"], "failure_modes": ["cross-domain overextension"], "recommended_fix": "Maintain explicit scope in prose." }
+        },
+        "overall_score": 92,
+        "trust_label": "high_trust",
+        "capped": false,
+        "cap_reason": null,
+        "computed_from": "validator",
+        "manual_override_justification": null
+      },
+      "human_review_required": false,
+      "created_by_phase": "phase_5b_claim_seed",
+      "updated_by_phase": "phase_16T_trust_score_validation",
+      "validation_status": "validated"
+    }
+  ],
+  "edges": [
+    { "source_claim_id": "clm_2f4c95c6017f8e0a", "relation": "supports", "target": "Cardin2009", "target_type": "citation", "weight": 0.9, "notes": "Primary direct support" },
+    { "source_claim_id": "clm_gebru2021_datasheets", "relation": "supports", "target": "gebru2021datasheets", "target_type": "citation", "weight": 0.95, "notes": "Primary source" },
+    { "source_claim_id": "clm_mitchell2019_modelcards", "relation": "supports", "target": "mitchell2019modelcards", "target_type": "citation", "weight": 0.95, "notes": "Primary source" },
+    { "source_claim_id": "clm_bender2018_datastatements", "relation": "supports", "target": "benderfriedman2018datastatements", "target_type": "citation", "weight": 0.95, "notes": "Primary source" }
+  ],
+  "summary": {
+    "total_claims": 4,
+    "high_trust": 3,
+    "moderate_trust": 1,
+    "low_trust": 0,
+    "critical_or_unreliable": 0,
+    "needs_human_review": 0
+  }
+}

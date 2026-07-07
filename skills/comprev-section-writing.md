@@ -55,8 +55,24 @@ Each Phase 7 delegation template MUST include the Phase 6 verdicts artifact: `{{
 - Figure labels: use DASHES not colons: `:name: fig-secN-name` (NOT `fig:secN`)
 - Section label: Start the file with `(sec-LABEL)=` on line 1, before the heading
 - Cross-references: `` {ref}`sec-target-label` `` — no wrapping parentheses
+- Important claims MUST use `trust-claim` directive blocks with provisional metadata only:
+  ```markdown
+  :::{trust-claim}
+  :claim-id: claim-id-placeholder
+  :claim: "The claim sentence as written."
+  :cites: Key2020, Key2022
+  :claim-type: empirical
+  :modality: suggestive
+  :::
+  ```
 - No double backticks except in code blocks
 - Include `{authorship-explorer}` directive at end of file (before any code dropdowns)
+
+**MANDATORY — TRUST tag discipline:**
+- Add trust-claim tags only for important synthesis claims, not every sentence.
+- `:claim:` text must match the corresponding claim sentence in prose.
+- `:cites:` must contain only cite keys present in the section evidence package.
+- Writers MUST NOT assign final TRUST labels or cap overrides. Final trust scoring is validator-driven.
 
 **MANDATORY — Citation discipline:**
 - Only cite papers provided in the evidence package for your section. Do NOT introduce new citations from LLM memory.
@@ -263,8 +279,12 @@ The coordinator delegates this to DATAML as a mechanical validation step. For ea
 8. **Notebook quality:** Every saved .ipynb must have ≥1 code cell containing `plt.subplots` 
    or `fig =` or `ax.`. Reject notebooks with only comments like "see main workspace".
 
+9. **Trust-claim integrity:** Every `:::{trust-claim}` block must include `:claim:`, `:cites:`,
+  `:claim-type:`, and `:modality:`. Reject writer-assigned final fields such as
+  `:trust-label:` or `:cap-reason:`.
+
 If ANY check fails, `send_message` back to the writer with the specific regex matches and line numbers.
-9. **No uncited mechanistic claims:** Grep for mechanistic verbs without adjacent citations.
+10. **No uncited mechanistic claims:** Grep for mechanistic verbs without adjacent citations.
    Patterns: sentences containing "targets", "inhibits", "drives", "gates", "modulates",
    "mediates", "provides", "controls", "generates", "stabilizes" that lack a `{cite:p}` or
    `{cite:t}` within the same sentence or the immediately preceding/following sentence.
@@ -274,7 +294,7 @@ If ANY check fails, `send_message` back to the writer with the specific regex ma
    source can be identified. The absence of a citable primary source is itself a finding
    worth noting in the review."
 
-Do NOT accept the section until all 9 checks pass.
+Do NOT accept the section until all 10 checks pass.
 
 
 

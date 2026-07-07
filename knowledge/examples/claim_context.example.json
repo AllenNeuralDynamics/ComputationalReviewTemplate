@@ -1,0 +1,124 @@
+{
+  "claim_id": "clm_2f4c95c6017f8e0a",
+  "section_id": "sec-introduction",
+  "source_file": "content/01_introduction.md",
+  "paragraph_index": 2,
+  "sentence_index": 1,
+  "claim_text": "Cortical inhibition timing can stabilize recurrent network activity under fluctuating inputs.",
+  "normalized_claim": "cortical inhibition timing stabilize recurrent network activity fluctuating input",
+  "claim_type": "empirical",
+  "claim_scope": {
+    "biological": "rodent cortex",
+    "computational": "recurrent network dynamics",
+    "clinical": null,
+    "methodological": "in vivo electrophysiology",
+    "conceptual": "stability control"
+  },
+  "claim_polarity": "positive",
+  "modality": "likely",
+  "entities": [
+    {
+      "name": "inhibitory timing",
+      "entity_type": "concept",
+      "identifier": null
+    },
+    {
+      "name": "recurrent network",
+      "entity_type": "model",
+      "identifier": null
+    },
+    {
+      "name": "mouse",
+      "entity_type": "species",
+      "identifier": "NCBITaxon:10090"
+    }
+  ],
+  "citation_keys": ["Cardin2009", "Atallah2012"],
+  "dois": ["10.1038/nature08417", "10.1038/nn.3446"],
+  "citation_contexts": [
+    {
+      "cite_key": "Cardin2009",
+      "doi": "10.1038/nature08417",
+      "role": "direct_support",
+      "supporting_passage": "Optogenetic activation of fast-spiking interneurons increased temporal precision and reduced runaway excitation.",
+      "passage_source": "full_text",
+      "direction_match": true,
+      "notes": "Direct physiological support in mouse V1."
+    },
+    {
+      "cite_key": "Atallah2012",
+      "doi": "10.1038/nn.3446",
+      "role": "partial_support",
+      "supporting_passage": "Inhibitory activity scaled with excitatory drive and constrained gain.",
+      "passage_source": "abstract",
+      "direction_match": true,
+      "notes": "Supports stabilization but in narrower task context."
+    }
+  ],
+  "evidence_relation": "partially_supported",
+  "conflicts": [
+    {
+      "conflict_type": "citation_key",
+      "target_id": "Hypothetical2016",
+      "notes": "Reported weak effect under anesthesia."
+    }
+  ],
+  "knowledge_edges": [
+    {
+      "subject": "inhibitory timing",
+      "predicate": "stabilizes",
+      "object": "recurrent network activity",
+      "qualifier": "under fluctuating input",
+      "edge_source": "claim_text"
+    }
+  ],
+  "trust_score": {
+    "components": {
+      "traceability": {
+        "score": 4,
+        "rationale": "All references resolve and include supporting passages.",
+        "evidence": ["2 citation contexts with DOI and passage source"],
+        "failure_modes": ["missing DOI", "no supporting passage"],
+        "recommended_fix": "Require DOI lookup and passage extraction before acceptance."
+      },
+      "robustness": {
+        "score": 3,
+        "rationale": "Convergent support from two studies using related methods.",
+        "evidence": ["two independent studies", "aligned direction"],
+        "failure_modes": ["single-study support"],
+        "recommended_fix": "Add explicit replication evidence across labs."
+      },
+      "uncertainty_calibration": {
+        "score": 3,
+        "rationale": "Claim uses calibrated modality (likely).",
+        "evidence": ["modality=likely", "partial_support classification"],
+        "failure_modes": ["overstated confidence"],
+        "recommended_fix": "Use suggestive/uncertain language when replication is sparse."
+      },
+      "source_integrity": {
+        "score": 4,
+        "rationale": "Primary sources with DOI verification and full-text retrieval for key support.",
+        "evidence": ["CrossRef-verified DOI", "full_text passage for direct support"],
+        "failure_modes": ["metadata-only support", "retracted sources"],
+        "recommended_fix": "Drop retracted sources and require at least abstract-level traceability."
+      },
+      "transferability_scope_control": {
+        "score": 2,
+        "rationale": "Evidence is mostly rodent V1; broader cortical transfer remains uncertain.",
+        "evidence": ["scope limited to rodent V1"],
+        "failure_modes": ["species/generalization overreach"],
+        "recommended_fix": "Constrain claim scope explicitly to tested system."
+      }
+    },
+    "overall_score": 80,
+    "trust_label": "moderate_trust",
+    "capped": false,
+    "cap_reason": null,
+    "computed_from": "validator",
+    "manual_override_justification": null
+  },
+  "human_review_required": false,
+  "created_by_phase": "phase_5b_claim_seed",
+  "updated_by_phase": "phase_16_verification",
+  "validation_status": "validated"
+}

@@ -1,6 +1,6 @@
-# Curation Validator — Binary Gate for Phase 5
+# Curation Validator — Binary Gate for Phases 5 and 5b
 
-**Purpose:** Validate evidence curation — correct assignment of findings to sections.
+**Purpose:** Validate evidence curation (Phase 5) and claim-KB seed construction (Phase 5b).
 **Agent:** DATAML (set operations only)
 
 ## Pre-flight Shape Check (HARD GATE)
@@ -54,6 +54,39 @@ A `WRONG_ARTIFACT_TYPE` or `SCHEMA_INVALID` exception fails the gate immediately
 
 `gate` is `"pass"` only when every per-section check passes AND every aggregate check passes.
 
+## Phase 5b Checks: Claim KB Seed Construction
+
+Inputs: `knowledge/claim_seed_index.json`, `knowledge/schemas/claim_context.schema.json`,
+`knowledge/schemas/trust_score.schema.json`, and Phase 5 per-section evidence packages.
+
+1. **CLAIM_SEED_FILE_EXISTS**: `knowledge/claim_seed_index.json` exists and parses as JSON array/object? **pass/fail**
+2. **CLAIM_SCHEMA_VALID**: Every claim object validates against `claim_context.schema.json`? **pass/fail**
+3. **TRUST_SCHEMA_VALID**: Every `trust_score` validates against `trust_score.schema.json`? **pass/fail**
+4. **CLAIM_ID_DETERMINISTIC**: Recomputed hash from `section_id + normalized_claim + sorted(citation_keys)` matches stored `claim_id`? **pass/fail**
+5. **CLAIM_TRACEABLE_TO_SECTION**: Every claim points to an existing `evidence/evidence_section_NN.json` source and matching section id? **pass/fail**
+6. **EMPIRICAL_DOI_REQUIRED**: Any `claim_type=empirical` with empty DOI list fails unless `human_review_required=true` and validation status marks it unresolved? **pass/fail**
+7. **NO_WRITER_FINAL_TRUST_OVERRIDE**: Claims may not use writer-assigned final labels without validator override metadata (`computed_from=validator` or explicit manual override justification). **pass/fail**
+
+Phase 5b output schema:
+```json
+{
+    "phase": "5b",
+    "gate": "pass|fail",
+    "claims_checked": N,
+    "phase_5b_results": {
+        "CLAIM_SEED_FILE_EXISTS": "pass|fail",
+        "CLAIM_SCHEMA_VALID": "pass|fail",
+        "TRUST_SCHEMA_VALID": "pass|fail",
+        "CLAIM_ID_DETERMINISTIC": "pass|fail",
+        "CLAIM_TRACEABLE_TO_SECTION": "pass|fail",
+        "EMPIRICAL_DOI_REQUIRED": "pass|fail",
+        "NO_WRITER_FINAL_TRUST_OVERRIDE": "pass|fail"
+    }
+}
+```
+
 ## Gate Artifact
 
 The orchestrator saves this structured output as `provenance/gate_evidence_curated.json` (the named gate that closes the 5 → 6 transition). Phase 6 cannot start without it.
+
+For Phase 5b, save `provenance/gate_claim_kb_seeded.json` (the named gate that closes the 5b → 6 transition).
