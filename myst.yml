@@ -25,6 +25,7 @@ project:
     - plugins/authorship-plugin.mjs
     - plugins/evidence-explorer-plugin.mjs
     - plugins/figure-lightbox-plugin.mjs
+    - plugins/trust-claim-plugin.mjs
   github: https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate
   bibliography:
     - content/references.bib

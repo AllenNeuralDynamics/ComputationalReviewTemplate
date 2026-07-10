@@ -114,6 +114,7 @@ that the claimed finding actually matches the paper's abstract.
 >   "verification_depth": "fulltext | abstract_only",
 >   "supporting_passage": "verbatim sentence(s) from the paper that support the claim (null if MISATTRIBUTED or not found)",
 >   "details": "specific description of the issue",
+>   "trust_cap_trigger": "none | unsupported_citation | direction_mismatch | contradicted_without_caveat | invented_reference | missing_doi_empirical | overextended_scope",
 >   "correct_metadata": {
 >     "title": "database-fetched title (if different)",
 >     "author": "database-fetched authors (if different)",
@@ -133,6 +134,13 @@ that the claimed finding actually matches the paper's abstract.
 > triple cannot be verified — categorize as MISATTRIBUTED (or skip with
 > a manual-review flag). Do NOT record `verification_depth = "metadata_only"`;
 > that value is not allowed.
+
+> **TRUST cap rule (mechanical):**
+> - If any triple is flagged with `unsupported_citation`, `direction_mismatch`,
+>   `contradicted_without_caveat`, `invented_reference`, `missing_doi_empirical`,
+>   or `overextended_scope`, the linked claim's TRUST overall score is capped at 60
+>   unless a validator-provided explicit justification is recorded.
+> - Writers do not override this cap.
 >
 > **Supporting passage requirement:** For every VERIFIED triple checked at
 > fulltext depth, include the verbatim passage (≤2 sentences) from the

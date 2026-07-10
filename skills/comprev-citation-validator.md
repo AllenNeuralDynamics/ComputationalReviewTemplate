@@ -27,6 +27,10 @@ Cross-checks:
 6. **ALL_KEYS_IN_BIB**: Every cite key in .md files exists in .bib? **pass/fail**
 7. **NO_ORPHAN_BIB**: Every bib entry cited in ≥1 .md file? (warning, not blocking)
 
+TRUST linkage checks (Phase 9 and later):
+8. **CLAIM_CONTEXT_KEYS_RESOLVE**: Every `citation_contexts[].cite_key` in `knowledge/claim_seed_index.json` exists in references.bib? **pass/fail**
+9. **EMPIRICAL_CLAIM_DOI_PRESENT**: Any claim context with `claim_type = empirical` has at least one DOI unless marked `human_review_required = true`? **pass/fail**
+
 ## Output Schema
 
 The validator emits a phase-specific gate file:

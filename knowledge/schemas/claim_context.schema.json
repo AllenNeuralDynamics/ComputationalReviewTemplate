@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/claim_context.schema.json",
+  "title": "Claim Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "claim_id",
+    "section_id",
+    "source_file",
+    "paragraph_index",
+    "sentence_index",
+    "claim_text",
+    "normalized_claim",
+    "claim_type",
+    "claim_scope",
+    "claim_polarity",
+    "modality",
+    "entities",
+    "citation_keys",
+    "dois",
+    "citation_contexts",
+    "evidence_relation",
+    "conflicts",
+    "knowledge_edges",
+    "trust_score",
+    "human_review_required",
+    "created_by_phase",
+    "updated_by_phase",
+    "validation_status"
+  ],
+  "properties": {
+    "claim_id": { "type": "string", "pattern": "^clm_[a-f0-9]{16,64}$" },
+    "section_id": { "type": "string" },
+    "source_file": { "type": "string" },
+    "paragraph_index": { "type": "integer", "minimum": 0 },
+    "sentence_index": { "type": "integer", "minimum": 0 },
+    "claim_text": { "type": "string", "minLength": 1 },
+    "normalized_claim": { "type": "string", "minLength": 1 },
+    "claim_type": {
+      "type": "string",
+      "enum": [
+        "empirical",
+        "methodological",
+        "causal",
+        "comparative",
+        "definition",
+        "review_synthesis",
+        "limitation",
+        "speculation"
+      ]
+    },
+    "claim_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["biological", "computational", "clinical", "methodological", "conceptual"],
+      "properties": {
+        "biological": { "type": ["string", "null"] },
+        "computational": { "type": ["string", "null"] },
+        "clinical": { "type": ["string", "null"] },
+        "methodological": { "type": ["string", "null"] },
+        "conceptual": { "type": ["string", "null"] }
+      }
+    },
+    "claim_polarity": {
+      "type": "string",
+      "enum": ["positive", "negative", "mixed", "neutral"]
+    },
+    "modality": {
+      "type": "string",
+      "enum": ["established", "likely", "suggestive", "uncertain", "contested", "speculative"]
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "entity_type"],
+        "properties": {
+          "name": { "type": "string" },
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "concept",
+              "method",
+              "model",
+              "species",
+              "dataset",
+              "outcome",
+              "intervention",
+              "tool",
+              "theoretical_construct"
+            ]
+          },
+          "identifier": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "citation_keys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "dois": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "citation_contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cite_key",
+          "doi",
+          "role",
+          "supporting_passage",
+          "passage_source",
+          "direction_match",
+          "notes"
+        ],
+        "properties": {
+          "cite_key": { "type": "string" },
+          "doi": { "type": ["string", "null"] },
+          "role": {
+            "type": "string",
+            "enum": [
+              "direct_support",
+              "partial_support",
+              "background",
+              "method_reference",
+              "contradictory",
+              "review_context",
+              "unverified"
+            ]
+          },
+          "supporting_passage": { "type": ["string", "null"] },
+          "passage_source": {
+            "type": "string",
+            "enum": ["full_text", "abstract", "metadata_only", "unavailable"]
+          },
+          "direction_match": { "type": "boolean" },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "evidence_relation": {
+      "type": "string",
+      "enum": [
+        "directly_supported",
+        "partially_supported",
+        "indirectly_supported",
+        "conflicted",
+        "unsupported",
+        "overextended"
+      ]
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["conflict_type", "target_id"],
+        "properties": {
+          "conflict_type": {
+            "type": "string",
+            "enum": ["claim", "citation_key"]
+          },
+          "target_id": { "type": "string" },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "knowledge_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subject", "predicate", "object"],
+        "properties": {
+          "subject": { "type": "string" },
+          "predicate": { "type": "string" },
+          "object": { "type": "string" },
+          "qualifier": { "type": ["string", "null"] },
+          "edge_source": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "trust_score": { "$ref": "./trust_score.schema.json" },
+    "human_review_required": { "type": "boolean" },
+    "created_by_phase": { "type": "string" },
+    "updated_by_phase": { "type": "string" },
+    "validation_status": {
+      "type": "string",
+      "enum": ["pending", "validated", "failed", "needs_human_review"]
+    }
+  }
+}

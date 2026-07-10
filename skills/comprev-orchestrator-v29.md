@@ -1,4 +1,4 @@
-# Expert Review Orchestrator v29
+# Expert Review Orchestrator v30
 
 ## Purpose
 Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages).
@@ -63,8 +63,10 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 4 | **actor** | LITREVIEW | `comprev-scaffold` + `comprev-reviewer-agent` | scaffold JSON | `gate_scaffold_approved.json`: ≥2 figs/section, cross-refs |
 | 5 | **actor** | DATAML | `comprev-dataml-phases` | section evidence packages | findings assigned, cite keys attached |
 | 5V | **validator** | DATAML | `comprev-curation-validator` | `gate_evidence_curated.json` | no duplicates, anti-compression ≥75%, conflicts assigned |
+| 5b | **actor** | DATAML | `comprev-dataml-phases` | `knowledge/claim_seed_index.json` | deterministic claim seeds from curated evidence; DOI + citation context retained |
+| 5bV | **validator** | DATAML | `comprev-curation-validator` | `gate_claim_kb_seeded.json` | claim seed schema valid, deterministic `claim_id`, section traceability, no missing empirical DOI |
 | 6 | **critic** | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic cannot reach the network) |
-| 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
+| 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures, important claims tagged with provisional `trust-claim` directives (no writer-assigned final score) |
 | 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, cite keys exist (dropdowns are NOT yet present — they are added at Phase 14) |
 | 8 | **critic** | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back, **coverage gate**: every uncited paper classified, no unaddressed `SHOULD_CITE` |
 | 9 | **actor** | DATAML | `comprev-dataml-phases` | references.bib | bib entries built from CrossRef |
@@ -73,11 +75,12 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 11 | **actor** | LITREVIEW | `comprev-integration` + `comprev-reviewer-agent` | intro + conclusion | `gate_intro_conclusion.json`: no new citations |
 | 12 | **critic** | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | bookend critic report | `gate_bookend_critic.json`: MUST_FIX=0 |
 | 13 | **actor** | DATAML | `comprev-dataml-phases` | Methods.md | `gate_methods.json`: 8 subsections |
-| 14 | **actor** | DATAML | `comprev-dataml-phases` | assembled manuscript | all files collected, toc updated |
-| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, **`BIBLIOGRAPHY_PATH_MATCHES_MYSTYML`** (every path in `myst.yml` `project.bibliography` exists, is ≥1 KB, and has ≥100 `@`-entries), **`BIB_CITE_KEYS_RESOLVE`** (when myst build is deferred, every `{cite:p}/{cite:t}/\citep/\citet` key in `content/*.md` and `latex/manuscript.tex` resolves in the declared bibliography), **`EVIDENCE_PACKAGES_POPULATED`** (each `evidence/evidence_section_NN.json` ≥1 KB and parses with `section_id` + `findings` array of objects), **`EVIDENCE_FINDINGS_ARE_OBJECTS`** (findings array contains objects, not cite_key strings), **`REVIEW_REQUEST_CAPTURED`** (`provenance/review_request.{md,txt}` exist, no scaffold placeholders remain, `gate_scope.json` carries `review_request_path`, `content/Methods.md` includes the prompt block), **`PLUGIN_DIRECTIVES_INVOKED`** (every plugin directive registered in `myst.yml` has ≥1 `:::{name}` invocation in `content/*.md` and zero bare-`{name}` role-syntax mis-invocations), **`FIGURE_DROPDOWN_MATCH`** (`:::{dropdown} 📓 Figure code` count == `:::{figure}` count per section), **`FIGURE_NOTEBOOK_MATCH`** (every figure has a non-stub `.ipynb`), **`FIGURE_NOTEBOOK_SELF_CONTAINED`** (every notebook is runnable in a vanilla SciPy environment; any project-local import must be `shared_style` resolvable to a `figures/notebooks/shared_style.py` with the required symbols), **`HEADING_STYLE_CONSISTENT`** (zero problems from `audit_headings`: no manual number prefixes, no wrapped headings, no en-/em-dashes, H1 and H2 styles match within each section, body sections share one H1 style), **`NO_WRITER_SCRATCHPAD`**, **`CITE_DIRECTIVE_SYNTAX_CLEAN`**. `structural_results` MUST contain a key for every check defined in the validator skill — missing key ⇒ fail. HARD FAIL — never downgrade to a `note`. |
+| 14 | **actor** | DATAML | `comprev-dataml-phases` | assembled manuscript + `knowledge/claim_graph.json` refresh | all files collected, toc updated, trust-claim contexts merged with verification-ready claim KB |
+| 14V | **validator** | DATAML | `comprev-myst-validator` | `gate_assembly.json` | myst build passes, structural checks, **`BIBLIOGRAPHY_PATH_MATCHES_MYSTYML`** (every path in `myst.yml` `project.bibliography` exists, is ≥1 KB, and has ≥100 `@`-entries), **`BIB_CITE_KEYS_RESOLVE`** (when myst build is deferred, every `{cite:p}/{cite:t}/\citep/\citet` key in `content/*.md` and `latex/manuscript.tex` resolves in the declared bibliography), **`EVIDENCE_PACKAGES_POPULATED`** (each `evidence/evidence_section_NN.json` ≥1 KB and parses with `section_id` + `findings` array of objects), **`EVIDENCE_FINDINGS_ARE_OBJECTS`** (findings array contains objects, not cite_key strings), **`REVIEW_REQUEST_CAPTURED`** (`provenance/review_request.{md,txt}` exist, no scaffold placeholders remain, `gate_scope.json` carries `review_request_path`, `content/Methods.md` includes the prompt block), **`PLUGIN_DIRECTIVES_INVOKED`** (every plugin directive registered in `myst.yml` has ≥1 `:::{name}` invocation in `content/*.md` and zero bare-`{name}` role-syntax mis-invocations), **`FIGURE_DROPDOWN_MATCH`** (`:::{dropdown} 📓 Figure code` count == `:::{figure}` count per section), **`FIGURE_NOTEBOOK_MATCH`** (every figure has a non-stub `.ipynb`), **`FIGURE_NOTEBOOK_SELF_CONTAINED`** (every notebook is runnable in a vanilla SciPy environment; any project-local import must be `shared_style` resolvable to a `figures/notebooks/shared_style.py` with the required symbols), **`HEADING_STYLE_CONSISTENT`** (zero problems from `audit_headings`: no manual number prefixes, no wrapped headings, no en-/em-dashes, H1 and H2 styles match within each section, body sections share one H1 style), **`NO_WRITER_SCRATCHPAD`**, **`CITE_DIRECTIVE_SYNTAX_CLEAN`**, **`CLAIM_KB_FILES_PRESENT`**, and **`TRUST_CLAIM_TAG_LINKAGE`**. `structural_results` MUST contain a key for every check defined in the validator skill — missing key ⇒ fail. HARD FAIL — never downgrade to a `note`. |
 | 15 | **actor** | DATAML | `comprev-dataml-phases` | citation_triples.json | all triples extracted |
 | 15V | **validator** | DATAML | `comprev-triples-validator` | validation report | exhaustive count, sentences in files, keys in bib |
 | 16 | **critic** | LITREVIEW | `comprev-verification` + `comprev-reviewer-agent` | verification results | ALL triples deep-checked |
+| 16T | **validator** | DATAML | `comprev-trust-score-validator` | `gate_trust_scores.json` | TRUST component scoring complete, formula/label integrity, cap-rule enforcement, updated claim graph |
 | 17 | **actor** | DATAML | `comprev-dataml-phases` | fix_requests.json | fix requests for non-VERIFIED triples |
 | 17V | **validator** | DATAML | `comprev-triples-validator` | validation report | full coverage, context exists |
 | 18 | **actor** | LITREVIEW | `comprev-fix-execution` + `comprev-reviewer-agent` | fix diffs | fixes executed |
@@ -102,7 +105,8 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 2 → 3 | `gate_evidence_compliance.json` | Per-cluster: pass/fail, paper count, conflicts, fulltext rate |
 | 3 → 4 | `gate_citation_infrastructure.json` | citation_key_map VID (null blocks all downstream), DOI count, failures |
 | 4 → 5 | `gate_scaffold_approved.json` | Connections, cross-refs, conflicts represented, ≥2 figures/section |
-| 5 → 6 | `gate_evidence_curated.json` | Per-section paper count, anti-compression ≥75% |
+| 5 → 5b | `gate_evidence_curated.json` | Per-section paper count, anti-compression ≥75% |
+| 5b → 6 | `gate_claim_kb_seeded.json` | claim seed index built from curated evidence with deterministic IDs and citation traceability |
 | 6 → 7 | `gate_figure_audit.json` | All verdicts, zero REDESIGN remaining, critic frame IDs |
 | 7 → 8 | `gate_sections_drafted.json` | Per-section: artifact IDs, citation count, word count |
 | 8 → 9 | `gate_critic_complete.json` | MUST_FIX count = 0, SHOULD_CAVEAT count, conflict survival, coverage_review (per-uncited-paper classification), coverage_disputes (writer-waiver disagreements after 3 rounds) |
@@ -114,7 +118,8 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 14 → 14V | (assembled manuscript) | LaTeX + content/*.md + figures + notebooks present |
 | 14V → 15 | `gate_assembly.json` | All build/structural assertions passed |
 | 15 → 16 | `citation_triples.json` | Triple count, batch IDs, schema version |
-| 16 → 17 | (verification reports) | Per-triple verdicts, MUST_FIX count |
+| 16 → 16T | (verification reports) | Per-triple verdicts, MUST_FIX count |
+| 16T → 17 | `gate_trust_scores.json` | Trust scoring gate passed and claim graph refreshed with capped scores where required |
 | 17 → 18 | `fix_requests.json` | Fix-request count, target files, contexts |
 | 18 → 19 | (fix diffs) | Applied diffs, reverse-order verification |
 | 19 → 19V | (updated files) | Patched .md and .bib |

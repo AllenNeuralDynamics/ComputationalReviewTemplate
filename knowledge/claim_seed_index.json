@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "generated_by_phase": "phase_5b_claim_seed",
+  "claims": [
+    {
+      "claim_id": "clm_2f4c95c6017f8e0a",
+      "section_id": "sec-introduction",
+      "claim_text": "Fast-spiking interneuron activation increases temporal precision and constrains runaway cortical excitation.",
+      "normalized_claim": "fast spiking interneuron activation increase temporal precision constrain runaway cortical excitation",
+      "claim_type": "empirical",
+      "modality": "likely",
+      "citation_keys": ["Cardin2009", "Atallah2012"],
+      "dois": ["10.1038/nature08417", "10.1038/nn.3446"],
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_gebru2021_datasheets",
+      "section_id": "sec-introduction",
+      "claim_text": "Datasheets for datasets were proposed as standardized documentation to record dataset motivation, composition, collection process, intended uses, and maintenance.",
+      "normalized_claim": "datasheets for datasets proposed standardized documentation record motivation composition collection intended uses maintenance",
+      "claim_type": "empirical",
+      "modality": "established",
+      "citation_keys": ["gebru2021datasheets"],
+      "dois": ["10.1145/3458723"],
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_mitchell2019_modelcards",
+      "section_id": "sec-introduction",
+      "claim_text": "Model cards were introduced to report intended use, limitations, and disaggregated subgroup performance instead of a single aggregate metric.",
+      "normalized_claim": "model cards introduced report intended use limitations disaggregated subgroup performance instead single aggregate metric",
+      "claim_type": "empirical",
+      "modality": "established",
+      "citation_keys": ["mitchell2019modelcards"],
+      "dois": ["10.1145/3287560.3287596"],
+      "validation_status": "validated"
+    },
+    {
+      "claim_id": "clm_bender2018_datastatements",
+      "section_id": "sec-introduction",
+      "claim_text": "Data statements were proposed to document dataset provenance and representation boundaries so downstream language technology results remain interpretable and reproducible.",
+      "normalized_claim": "data statements proposed document dataset provenance representation boundaries downstream language technology results interpretable reproducible",
+      "claim_type": "empirical",
+      "modality": "established",
+      "citation_keys": ["benderfriedman2018datastatements"],
+      "dois": ["10.1162/tacl_a_00041"],
+      "validation_status": "validated"
+    }
+  ]
+}

@@ -66,7 +66,7 @@ Any hit is a fail. Each hit converts a citation into a literal code span and bre
 6a. **DIRECTIVE_WHITELIST_VIOLATION** *(Phase 7V, 19V)*: Every `:::{name}` directive in
     `content/*.md` body files matches the whitelist documented in `comprev-orchestrator-v29`
     §Directive Whitelist (`figure`, `dropdown`, `admonition`, `warning`, `authorship-explorer`
-    in frontmatter only, `evidence-explorer`). Any `:::{contents}`, `:::{toctree}`,
+    in frontmatter only, `evidence-explorer`, `trust-claim`). Any `:::{contents}`, `:::{toctree}`,
     `:::{include}`, or `:::{tableofcontents}` in body sections is a hard fail — the build
     emits a global TOC. Bare-`{name}` role-syntax mis-invocations of plugin directives
     (e.g., `{evidence-explorer}` instead of `:::{evidence-explorer}`) are also failures.
@@ -266,6 +266,22 @@ Any other import is a fail. Reports offenders as `notebook:line:module`. **pass/
       fields are null/default: emit `"EVIDENCE_PARAMETERS_HONORED": "n/a"`
       with reason "no custom evidence parameters set".
 
+26. **CLAIM_KB_FILES_PRESENT** *(Phase 14V, 19V, 20V)*:
+    Verify all required TRUST knowledge files exist and parse:
+    - `knowledge/claim_seed_index.json`
+    - `knowledge/claim_graph.json`
+    - `knowledge/schemas/claim_context.schema.json`
+    - `knowledge/schemas/trust_score.schema.json`
+    - `knowledge/schemas/claim_graph.schema.json`
+    Missing or invalid JSON is a hard fail. **pass/fail**
+
+27. **TRUST_CLAIM_TAG_LINKAGE** *(Phase 14V, 19V, 20V)*:
+    For every `:::{trust-claim}` in `content/*.md`:
+    - if `:claim-id: != claim-id-placeholder`, it must resolve in `knowledge/claim_graph.json` `claims[].claim_id`
+    - resolved claim must include `trust_score.overall_score` and `trust_score.trust_label`
+    - directive options must include `:claim-id:`, `:claim:`, and `:cites:`
+    Unresolved IDs or missing score fields are a hard fail. **pass/fail**
+
 ## Output Schema
 
 The validator's gate JSON (e.g. `gate_sections_drafted.json` at 7V, `gate_assembly.json` at 14V, `gate_repository_push.json` at 20V — and the in-memory return value at 19V, which has no named gate file) MUST be a single JSON object containing — at minimum — these keys:
@@ -295,6 +311,8 @@ The validator's gate JSON (e.g. `gate_sections_drafted.json` at 7V, `gate_assemb
     "FIGURE_WIDTH_DECLARED": "pass|fail",
     "BIB_CITE_KEYS_RESOLVE": "pass|fail|n/a",
     "EVIDENCE_PARAMETERS_HONORED": "pass|fail|n/a",
+        "CLAIM_KB_FILES_PRESENT": "pass|fail",
+        "TRUST_CLAIM_TAG_LINKAGE": "pass|fail",
     "...": "every other check in this skill, by exact NAME"
   },
   "gate_passed": bool

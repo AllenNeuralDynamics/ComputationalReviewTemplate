@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/claim_graph.schema.json",
+  "title": "Claim Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "generated_by_phase",
+    "claims",
+    "edges",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generated_by_phase": { "type": "string" },
+    "claims": {
+      "type": "array",
+      "items": { "$ref": "./claim_context.schema.json" }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_claim_id", "relation", "target"],
+        "properties": {
+          "source_claim_id": { "type": "string" },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "partially_supports",
+              "contradicts",
+              "depends_on",
+              "scopes",
+              "defines",
+              "extends",
+              "requires_caveat"
+            ]
+          },
+          "target": { "type": "string" },
+          "target_type": {
+            "type": "string",
+            "enum": ["claim", "citation", "entity", "method", "dataset"]
+          },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_claims",
+        "high_trust",
+        "moderate_trust",
+        "low_trust",
+        "critical_or_unreliable",
+        "needs_human_review"
+      ],
+      "properties": {
+        "total_claims": { "type": "integer", "minimum": 0 },
+        "high_trust": { "type": "integer", "minimum": 0 },
+        "moderate_trust": { "type": "integer", "minimum": 0 },
+        "low_trust": { "type": "integer", "minimum": 0 },
+        "critical_or_unreliable": { "type": "integer", "minimum": 0 },
+        "needs_human_review": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
