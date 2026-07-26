@@ -56,7 +56,7 @@ Each Phase 7 delegation template MUST include the Phase 6 verdicts artifact: `{{
 - Section label: Start the file with `(sec-LABEL)=` on line 1, before the heading
 - Cross-references: `` {ref}`sec-target-label` `` — no wrapping parentheses
 - No double backticks except in code blocks
-- Include `{authorship-explorer}` directive at end of file (before any code dropdowns)
+- Do not include `{authorship-explorer}` in section files; integration adds it to the frontmatter only
 
 **MANDATORY — Citation discipline:**
 - Only cite papers provided in the evidence package for your section. Do NOT introduce new citations from LLM memory.

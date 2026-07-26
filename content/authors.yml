@@ -7,6 +7,11 @@ project:
       city: San Francisco
       state: California
       country: United States
+    - id: aind
+      name: Allen Institute for Neural Dynamics
+      city: Seattle
+      state: Washington
+      country: United States
 
   contributors:
     - id: ai-pipeline
@@ -43,4 +48,41 @@ project:
       section_contributions:
         - section: all-sections
           description: Drafted all sections from evidence packages under orchestrator constraints
+          effort: lead
+
+    - id: jerome-lecoq
+      name: Jérôme Lecoq
+      corresponding: true
+      email: jerome.lecoq@alleninstitute.org
+      roles:
+        - Conceptualization
+        - Methodology
+        - Software
+        - Supervision
+        - Writing – review & editing
+      affiliations:
+        - aind
+      first_name: Jérôme
+      last_name: Lecoq
+      career_stage: Principal Investigator
+      is_ai_tool: false
+      credit_levels:
+        - role: Conceptualization
+          level: lead
+          description: Defined the review scope, framing, and evidence standards
+        - role: Methodology
+          level: lead
+          description: Designed the computational review and validation workflow
+        - role: Software
+          level: lead
+          description: Developed and maintained the review pipeline tooling
+        - role: Supervision
+          level: lead
+          description: Supervised pipeline execution and approved phase outputs
+        - role: "Writing – Review & Editing"
+          level: equal
+          description: Reviewed outputs and directed revisions
+      section_contributions:
+        - section: all-sections
+          description: Scoped, supervised, and approved all phase outputs
           effort: lead
