@@ -22,7 +22,7 @@ project:
     code:
       continue: true
   plugins:
-    - plugins/authorship-plugin.mjs
+    - https://github.com/AllenNeuralDynamics/AuthorshipExtractor/releases/latest/download/authorship-plugin.mjs
     - plugins/evidence-explorer-plugin.mjs
     - plugins/figure-lightbox-plugin.mjs
   github: https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate

@@ -86,11 +86,11 @@ The pipeline is split into role-specific skills with **information barriers** to
 | `comprev-myst-validator` | 7V, 14V, 19V, 20V | DATAML | MyST build, structural checks, figure/heading consistency, plugin-directive invocation, evidence-package population, directive whitelist (7V/19V), repo-wide forbidden-lexicon glob (19V), author-identity placeholder check (20V) |
 | `comprev-deploy-polish` | 21 | DATAML | Post-deployment UX gate: tier-A static checks against built Pages-artifact tarball; tier-B live-URL checks (per-page HTTP, external link health) with manual-checklist fallback when deploy URL is sandbox-inaccessible |
 
-### Plugins (3 files in `plugins/`)
+### Plugins
 
 | Plugin | What it does |
 |--------|-------------|
-| `authorship-plugin.mjs` | Renders interactive CRediT authorship widget |
+| [AuthorshipExtractor](https://github.com/AllenNeuralDynamics/AuthorshipExtractor) release | Renders interactive CRediT authorship widget |
 | `evidence-explorer-plugin.mjs` | Loads evidence packages into interactive browser |
 | `figure-lightbox-plugin.mjs` | Click-to-zoom lightbox for inline figures |
 

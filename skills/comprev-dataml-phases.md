@@ -743,7 +743,7 @@ silent-render condition where a plugin loads but no markdown invokes it.
 **Plugin deployment notes:**
 - All MyST plugins MUST use the anywidget pattern: directive → transform that converts to `node.type='anywidget'` with `.esm` and `.model` properties
 - MyST renders citations as `<cite>` elements with DOI in `<a href="https://doi.org/...">` — citation annotation plugins must match by DOI
-- The `authorship-plugin.mjs` resolves `./authors.yml` relative to the document directory — directives must specify `:authors: ../authors.yml` since content files are in `content/`
+- The released AuthorshipExtractor plugin resolves `./authors.yml` relative to the document directory — directives must specify `:authors: ../authors.yml` since content files are in `content/`
 
 
 ## Phase 15: Citation Triples
@@ -1049,8 +1049,8 @@ for bulk uploads — it can push wrong file contents to multiple paths).
    provenance/, latex/, scripts/
 3. Copy pipeline artifacts to their correct paths using `shutil.copy2` with 
    `{{artifact:VID}}` markers (which resolve correctly at execution time)
-4. **Preserve** all pre-existing repo files: .github/, myst.yml, authors.yml, 
-   00_frontmatter.md, authorship-widget.*, authorship-plugin.mjs, deploy.yml, 
+4. **Preserve** all pre-existing repo files: .github/, myst.yml (including the
+  AuthorshipExtractor release URL), authors.yml, 00_frontmatter.md, deploy.yml,
    LICENSE, README.md, skills/, evidence-explorer-*
 5. **Verify file signatures** after copy:
    - Every .png: first 8 bytes match PNG magic (89 50 4E 47 0D 0A 1A 0A)
