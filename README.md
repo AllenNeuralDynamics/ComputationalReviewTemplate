@@ -12,26 +12,34 @@ The pipeline executes 21 phases with **actor-critic separation** — 20 producti
 
 ## Quick Start
 
+Runs on Claude Science with **nothing to install** — no agent profiles, no published skills.
+The coordinator reads the pipeline skills straight from this repository's `skills/` folder
+(see "Runtime: Claude Science" in `skills/comprev-orchestrator-v29.md`).
+
 1. **Create a new repo** from this template (Use this template → Create a new repository)
-2. **Clone the new repo** and update `myst.yml` with your review title and description
-3. **Open in Claude** and provide your review prompt:
+2. **Edit three files** in the new repo:
+   - `myst.yml` — `title`, `description`, `keywords`, the `github:` URL, and `site.title` / `site.nav` GitHub URL
+   - `.github/workflows/deploy.yml` — `BASE_URL: /<your-repo-name>`
+   - `content/authors.yml` — real author names and affiliations (Phase 20V fails on placeholders)
+3. **Connect GitHub** in Claude Science (Customize → Credentials) with push access to the new repo
+4. **Start a new session** and paste your review prompt:
 
 ```
 Start a comprehensive critical literature review titled: "[YOUR TITLE]"
 
-The three files in skills/ define the complete pipeline:
+GitHub Repository: https://github.com/[YOUR-ORG]/[YOUR-REPO]
+Clone it into the workspace. The files in its skills/ folder define the complete pipeline;
+nothing needs to be installed — follow the "Runtime: Claude Science" section of the orchestrator.
 
 skills/comprev-orchestrator-v29.md — The coordinator protocol. Read this FIRST.
 It defines the routing across 21 phases, gate artifacts, and the session protocol.
-Per-phase rules live in the agent skills, which the coordinator loads on demand.
+Per-phase rules live in the agent skills, which the coordinator passes to sub-agents.
 
-skills/comprev-reviewer-agent.md — The worker skill for LITREVIEW agents.
-Pass this to every LITREVIEW delegation so the agent can load it.
+skills/comprev-reviewer-agent.md — The worker skill for LITREVIEW roles.
+Pass it to every LITREVIEW delegation.
 
-skills/comprev-figure-construction.md — Already published as a skill on LITREVIEW agents.
-Section writers load it for figure production.
+skills/comprev-figure-construction.md — Section writers use it for figure production.
 
-GitHub Repository: https://github.com/[YOUR-ORG]/[YOUR-REPO]
 Push all outputs to this repo in Phase 20.
 
 Evidence parameters: [OPTIONAL — omit for defaults]
@@ -47,14 +55,18 @@ Table of Contents:
 N. Conclusion
 ```
 
-4. The pipeline populates `content/`, `evidence/`, `figures/`, and `provenance/`
-5. GitHub Actions auto-builds and deploys the MyST site to GitHub Pages
+5. The pipeline populates `content/`, `evidence/`, `figures/`, and `provenance/`
+6. GitHub Actions auto-builds and deploys the MyST site to GitHub Pages
 
 ## What's Included
 
 ### Skills (20 files in `skills/`)
 
 The pipeline is split into role-specific skills with **information barriers** to enforce actor-critic separation. Worker skills produce content; validator skills run after each phase as blinded gates that emit named pass/fail checks into the gate JSON.
+
+LITREVIEW and DATAML are **roles**, not agent profiles: each phase is delegated to a default
+sub-agent that is handed the listed skill files. Every skill file carries YAML frontmatter, so
+it can optionally be published from Customize → Skills, but this is not required.
 
 **Worker skills (13):**
 

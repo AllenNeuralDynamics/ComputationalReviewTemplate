@@ -1,3 +1,8 @@
+---
+name: comprev-evidence-validator
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Evidence Validator — Binary Gate for Phase 2"
+---
+
 # Evidence Validator — Binary Gate for Phase 2
 
 **Purpose:** Validate evidence-gathering output before advancing to Phase 3.

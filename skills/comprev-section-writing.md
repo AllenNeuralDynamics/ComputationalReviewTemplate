@@ -1,3 +1,8 @@
+---
+name: comprev-section-writing
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Section Writing Protocol"
+---
+
 # Section Writing Protocol
 
 > **Template provides:** `figures/notebooks/shared_style.py` is the canonical figure style module (full content listed in `comprev-figure-construction.md`). Every figure notebook imports `from shared_style import COLORS, apply_style, save_figure` — never define palette keys inline in a notebook. If you need a new palette key, add it to `shared_style.py` so all figures stay consistent. AuthorshipExtractor is loaded from its GitHub release in `myst.yml`; `evidence-explorer-widget.mjs` is deployed in `content/`. Do not recreate these assets.

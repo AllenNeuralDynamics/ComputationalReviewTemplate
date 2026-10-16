@@ -1,3 +1,8 @@
+---
+name: comprev-triples-validator
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Triples Validator — Binary Gate for Phases 15 and 17"
+---
+
 # Triples Validator — Binary Gate for Phases 15 and 17
 
 **Purpose:** Validate citation triple extraction and fix preparation.

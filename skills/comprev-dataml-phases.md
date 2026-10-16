@@ -1,3 +1,8 @@
+---
+name: comprev-dataml-phases
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): DATAML Phase Protocols"
+---
+
 # DATAML Phase Protocols
 
 > **Template-aware:** This pipeline assumes the repo was created from `ComputationalReviewTemplate`. All directory structure, plugins, widgets, `myst.yml`, `deploy.yml`, and `authors.yml` already exist. Phase 14 UPDATES existing files (adds section entries to `myst.yml` toc, populates `content/provenance.md`). Phase 20 pushes content into the existing structure — it does NOT create directories or deploy infrastructure.
@@ -403,10 +408,10 @@ Phase-20 refresh has overwritten the values.
 ```python
 # Phase 13 draft-time render. Note explicit snapshot labeling.
 methods_data = {
-    'model_version': 'claude-sonnet-4-5',
+    'model_version': MODEL_ID,  # exact model id passed in by the coordinator; never hardcode
     'snapshot_phase': 13,
     'snapshot_at': datetime.now(timezone.utc).isoformat(),
-    'total_frames': len(operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames']),
+    'total_frames': len(host.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames']),
     'phases_completed_at_draft_time': [p for p, v in phase_ledger.items() if v['status'] == 'complete'],
     'wall_clock_hours_at_draft_time': (datetime.now(timezone.utc) - first_frame_at).total_seconds() / 3600,
 }
@@ -926,7 +931,7 @@ import re, json, pathlib
 from datetime import datetime, timezone
 from collections import Counter
 
-frames = operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False, max_results=500)['frames']
+frames = host.frames(project_id=PROJECT_ID, roots_only=False, has_task=False, max_results=500)['frames']
 agent_counts = Counter(f['agent_name'] for f in frames)
 status_counts = Counter(f['status'] for f in frames)
 first_at = min(f['created_at'] for f in frames)
@@ -949,11 +954,11 @@ m6_pattern = re.compile(
 agent_table = '\n'.join(f'| `{a}` | {n} |' for a, n in agent_counts.most_common())
 m6_block = f'''## Pipeline Execution
 
-**Model version.** `claude-sonnet-4-5` (Anthropic Claude), invoked via the
-Operon agent runtime.
+**Model version.** `{MODEL_ID}` (Anthropic Claude), invoked via the
+Claude Science agent runtime.
 
 **Frame counts and agent breakdown.** Derived from the project's `frames`
-ledger (project `{{PROJECT_ID}}`, read via `operon.frames(project_id=...)`).
+ledger (project `{{PROJECT_ID}}`, read via `host.frames(project_id=...)`).
 Total session frames: **{sum(agent_counts.values())}**.
 
 | Agent | Frames |

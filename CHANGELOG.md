@@ -1,3 +1,17 @@
+# v29 — Claude Science runtime compatibility
+
+- Runs on the current Claude Science product with nothing to install: the coordinator saves
+  `skills/*.md` as artifacts at session start and hands sub-agents the skill files they need
+  (new "Runtime: Claude Science" section in `comprev-orchestrator-v29.md`).
+- LITREVIEW / DATAML are documented as roles delegated to default sub-agents, not profiles.
+- Legacy calls updated: `delegate_to` → `host.delegate`, `operon.*` / `pipeline.*` → `host.*`.
+  Phase 20 push via `git push` only.
+- Fix: Phase 13/20a Methods text no longer hardcodes `claude-sonnet-4-5` or names "Operon"
+  (which tripped the FORBIDDEN_LEXICON check at 19V/20V); model id now passed as `MODEL_ID`.
+- Phase 6 figure-audit critic: told not to search the network rather than assumed unable to.
+- All 20 skill files gain `name`/`description` YAML frontmatter (optional publishing).
+- README Quick Start rewritten (template → edit 3 files → connect GitHub → paste prompt).
+
 # Skill catalogue v28 → v29
 
 ## File changes
