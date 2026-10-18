@@ -9,6 +9,12 @@
 - Fix: Phase 13/20a Methods text no longer hardcodes `claude-sonnet-4-5` or names "Operon"
   (which tripped the FORBIDDEN_LEXICON check at 19V/20V); model id now passed as `MODEL_ID`.
 - Phase 6 figure-audit critic: told not to search the network rather than assumed unable to.
+- Fix: `evidence-explorer-plugin.mjs` never followed the `evidence_section_NN.json` rename
+  below, read sections `02..13`, treated `argument_groups.*.supporting_findings` cite-key
+  strings as finding records, and swallowed every read failure in `catch { continue }` — so a
+  complete evidence set bound an empty explorer with a green build. It now discovers the
+  section files present (no hardcoded count), prefers `ev.findings`, and throws when nothing
+  loads; `:sections:` optionally declares the expected count.
 - All 20 skill files gain `name`/`description` YAML frontmatter (optional publishing).
 - README Quick Start rewritten (template → edit 3 files → connect GitHub → paste prompt).
 
