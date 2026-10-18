@@ -1,9 +1,10 @@
-# Unreleased
+# v1.1.0
 
-- **Breaking:** `skills/comprev-orchestrator-v29.md` → **`skills/comprev-orchestrator.md`**
+- **Renamed:** `skills/comprev-orchestrator-v29.md` → **`skills/comprev-orchestrator.md`**
   (frontmatter `name` likewise). A generation bump no longer renames a file or breaks the
-  cross-references in four other skills. Prompts and bookmarks naming the old path must be
-  updated.
+  cross-references in four other skills. Saved prompts and bookmarks naming the old path
+  must be updated; nothing depends on this repository programmatically, and reviews already
+  produced carry their own frozen copy of `skills/`, so they are unaffected.
 - New `skills/manifest.json` — single source of truth for the pipeline generation plus the
   sha256 and byte count of every skill file. Generated and verified by
   `scripts/build_skill_manifest.py`; the new `Skill manifest` GitHub Actions workflow runs
