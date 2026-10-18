@@ -1,3 +1,8 @@
+---
+name: comprev-evidence-gathering
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Evidence Gathering Protocol"
+---
+
 # Evidence Gathering Protocol
 
 Phase 2 delegation template for evidence-gathering agents. Each agent searches databases and returns structured evidence for one topic cluster.

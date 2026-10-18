@@ -1,3 +1,8 @@
+---
+name: comprev-scoping
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scoping Protocol — Phase 1 (LITREVIEW actor) — Phase 1 scientific scoping. The LITREVIEW agent loaded with this skill reads the user's prompt at provenance/review_request.md and produces a structured scope.json plus a populated 21-phase plan_content list that downstream phases consume; it does not call generate_plan, so the coordinator submits the plan for user approval."
+---
+
 # Scoping Protocol — Phase 1 (LITREVIEW actor)
 
 ## Purpose
@@ -98,8 +103,8 @@ delegations:
 | 17 | Fix Preparation | DATAML | Build fix requests with ±10 line context per non-VERIFIED triple |
 | 18 | Fix Execution | LITREVIEW (parallel) | Apply bib fixes and text fixes per fix request |
 | 19 | Fix Application | DATAML | Apply diffs in reverse order, verify zero orphans |
-| 20a | Methods Ledger Refresh | DATAML | Re-render M.6 + M.5 phase outcomes from final operon.frames ledger |
-| 20 | Repository Push | DATAML | Push all files via Contents API |
+| 20a | Methods Ledger Refresh | DATAML | Re-render M.6 + M.5 phase outcomes from final host.frames ledger |
+| 20 | Repository Push | DATAML | Push all files via git clone + copy + `git push` (never the Contents API) |
 | 21 | Deploy Polish | DATAML | Post-deployment UX gate: tier-A static checks against built Pages-artifact tarball; tier-B live-URL checks (or manual checklist if sandbox cannot reach the deploy URL) |
 
 The plan phases use ONLY `DATAML` and `LITREVIEW` as agents. The coordinator NEVER appears as an agent. Coordinator work (gate checks, compliance inspection, send-backs) happens BETWEEN plan phases and is described in the step descriptions as "coordinator verifies X before advancing."

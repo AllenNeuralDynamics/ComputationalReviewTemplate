@@ -1,3 +1,8 @@
+---
+name: comprev-orchestrator-v29
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Expert Review Orchestrator v29 — Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages)."
+---
+
 # Expert Review Orchestrator v29
 
 ## Purpose
@@ -26,9 +31,51 @@ LITREVIEW
     Scientific work: evidence gathering, section writing, blinded criticism,
     citation verification.
     Loads: comprev-reviewer-agent (evidence + writing), comprev-figure-construction (figures).
+    (Roles, not agent profiles — see "Runtime: Claude Science" below.)
 ```
 
 The coordinator defines WHAT and WHEN. DATAML does mechanical HOW. The review agent does scientific HOW.
+
+## Runtime: Claude Science (nothing to install)
+
+This pipeline runs on the current Claude Science product with **no agent profiles and no
+published skills required**. LITREVIEW and DATAML are **roles**, not agent profiles.
+
+**Session setup (coordinator, before Phase 1).**
+1. Clone the review repository (created from ComputationalReviewTemplate) into the workspace,
+   declaring the GitHub credential on the cell. Never print the token.
+2. Read this file from `skills/comprev-orchestrator-v29.md` in the clone.
+3. Save every `skills/*.md` file as an artifact in ONE `save_artifacts` call, and write the
+   resulting `{skill_name: version_id}` map to `skill_vids.json` (save it too). These
+   artifacts are the canonical, version-pinned skill texts for the whole run.
+
+**What "Load skill X" means.** Wherever this pipeline says an agent "loads" a skill, the
+coordinator puts the skill's artifact marker in the delegation task, e.g.
+`Skill comprev-dataml-phases: {{artifact:<VID>}} — read it in full with read_file before
+doing anything else, and follow it.` If a published skill with the same name happens to be
+installed, the repo artifact still takes precedence.
+
+**Roles → delegations.**
+- LITREVIEW actor / critic → `host.delegate(...)` with **no `profile` argument**, task naming
+  the phase skill + `comprev-reviewer-agent` (+ `comprev-figure-construction` for writers).
+- DATAML actor → `host.delegate(...)`, task naming `comprev-dataml-phases`.
+- DATAML validator → a **new** `host.delegate(...)` (never `send_message` to the actor),
+  task naming only the `comprev-*-validator` skill.
+- Parallel batches: pass a list of requests to one `host.delegate([...])` call (max 4, see
+  Parallelism). Give each request a short `name`.
+
+**Information barriers.** A child sees only the skill artifacts whose markers are in its
+task. Pass only the allowed skills, and state in every blinded task (Phases 6, 8, 12, 16)
+which comprev-* skills it must NOT read or search for.
+
+**Legacy names in older text.** `delegate_to` → `host.delegate`; `operon.*` / `pipeline.*`
+→ `host.*` (`host.frames`, `host.delegate`, `host.send_message` run in the `repl` tool;
+`host.artifacts` runs in the `python` tool). Repository writes use `git push` with the
+GitHub credential declared on the cell, never the Contents API.
+
+**Model identity.** Methods text must name the exact model id the coordinator is running
+on (from its own system context); pass it to the Phase 13 and 20a DATAML tasks as
+`MODEL_ID`. Do not hardcode a model name.
 
 
 ## First Action: Run Phase 1
@@ -63,7 +110,7 @@ The coordinator uses this table to delegate each phase. The full delegation temp
 | 4 | **actor** | LITREVIEW | `comprev-scaffold` + `comprev-reviewer-agent` | scaffold JSON | `gate_scaffold_approved.json`: ≥2 figs/section, cross-refs |
 | 5 | **actor** | DATAML | `comprev-dataml-phases` | section evidence packages | findings assigned, cite keys attached |
 | 5V | **validator** | DATAML | `comprev-curation-validator` | `gate_evidence_curated.json` | no duplicates, anti-compression ≥75%, conflicts assigned |
-| 6 | **critic** | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic cannot reach the network) |
+| 6 | **critic** | LITREVIEW | `comprev-figure-audit` + `comprev-reviewer-agent` | audit verdicts | `gate_figure_audit.json`: 0 REDESIGN remaining (coordinator MUST pre-fetch paper abstracts via Europe PMC and pass them inline; the critic is instructed not to search the network and works only from the inlined abstracts) |
 | 7 | **actor** | LITREVIEW | `comprev-section-writing` + `comprev-reviewer-agent` + `comprev-figure-construction` | section .md files + figures | word count, citation count, figures |
 | 7V | **validator** | DATAML | `comprev-myst-validator` | validation report | `gate_sections_drafted.json`: :name: not :label:, cite keys exist (dropdowns are NOT yet present — they are added at Phase 14) |
 | 8 | **critic** | LITREVIEW | `comprev-critic` + `comprev-reviewer-agent` | critic report | `gate_critic_complete.json`: MUST_FIX=0 after send-back, **coverage gate**: every uncited paper classified, no unaddressed `SHOULD_CITE` |
@@ -120,7 +167,7 @@ Each phase transition requires a named gate artifact. The coordinator saves it b
 | 19 → 19V | (updated files) | Patched .md and .bib |
 | 19V → 20a | (myst rebuild report) | All structural checks pass on patched files |
 | 20a → 20 | `gate_phase_20a_methods_refresh.json` | Methods.md M.5/M.6 fully rendered (no `Pending` rows) |
-| 20 → 20V | (pushed repo) | Contents API push complete, commit SHA |
+| 20 → 20V | (pushed repo) | `git push` complete, commit SHA |
 | 20V (release gate) | `gate_repository_push.json` | Fresh-clone build passes; files match local |
 | 20V → 21 | (deployment context) | Build green at HEAD; deploy URL + repo identifier captured |
 | 21 (deploy-polish gate) | `gate_phase21_deploy_polish.json` | Tier-A static checks PASS on built-Pages-artifact; Tier-B live checks either PASS or are reported as `BLOCKED_DEPLOY_INACCESSIBLE` with a manual checklist for the user |
@@ -191,7 +238,7 @@ All three are tool calls, not Python functions. They produce visible output in c
 - **No loops** in coordinator python cells. >5 iterations → delegate to DATAML.
 - **No API calls** in coordinator python cells. CrossRef, databases, repository APIs → DATAML.
 - **Inspection cells ≤20 lines.** Read JSON, check fields, print pass/fail.
-- **Gate checks ≤5 lines.** `pipeline.artifacts(filename='gate_X.json')` + assert.
+- **Gate checks ≤5 lines.** `host.artifacts(filename='gate_X.json')` + assert.
 - **Re-read the orchestrator before each phase.** This is the most important use of context.
 
 **No opportunistic phase completion:** When sending a follow-up to DATAML (e.g., 
@@ -240,7 +287,7 @@ After plan approval, execute all phases continuously. No `ask_user` between phas
 **The plan UI shows step statuses to the user in real time.** Incorrect status updates cause the user to see "all phases complete" while agents are still running. Mark steps with the truth as of the current tool call, not with an optimistic projection.
 
 **Rules:**
-1. Call `update_step_status(step=..., status="in_progress")` when you **delegate** the step (issue the `delegate_to` or `send_message`).
+1. Call `update_step_status(step=..., status="in_progress")` when you **delegate** the step (issue the `host.delegate` or `host.send_message`).
 2. Call `update_step_status(step=..., status="completed")` ONLY after `wait_for_notification` returns AND you have verified the output (gate check passed, or no gate required).
 3. Never mark a step "completed" at delegation time. Never mark a step "completed" before its child frame has finished.
 4. If a child fails: mark the step "blocked", re-delegate, and only mark "completed" when the retry succeeds.
@@ -250,18 +297,18 @@ After plan approval, execute all phases continuously. No `ask_user` between phas
 ```python
 # WRONG — marks completed before children finish
 update_step_status(step="Gather evidence batch 1", status="completed")  # ← too early!
-delegate_to(agent="LITREVIEW", task=batch_2_task)
+host.delegate({"task": batch_2_task, "name": "Batch 2"})
 ```
 
 **Correct pattern:**
 ```python
 update_step_status(step="Gather evidence batch 1", status="in_progress")
-delegate_to(agent="LITREVIEW", task=batch_1_task)
+host.delegate({"task": batch_1_task, "name": "Batch 1"})
 # ... wait_for_notification for all batch 1 children ...
 # ... verify outputs ...
 update_step_status(step="Gather evidence batch 1", status="completed")
 update_step_status(step="Gather evidence batch 2", status="in_progress")
-delegate_to(agent="LITREVIEW", task=batch_2_task)
+host.delegate({"task": batch_2_task, "name": "Batch 2"})
 ```
 
 ### Send-Back Protocol
@@ -286,7 +333,7 @@ Or use `send_message` to resume an existing DATAML child.
 
 **3. Validator delegation (DATAML — ALWAYS a separate agent from the actor):**
 > "Load skill `comprev-[validator-skill]`. Validate the output of Phase N. Your inputs: [Phase N output artifacts]. Run ALL checks. Return structured pass/fail."
-The validator MUST be a NEW `delegate_to` call — never `send_message` to the actor. Never load a validator skill and an actor skill in the same delegation. The validator agent has one job: check and report.
+The validator MUST be a NEW `host.delegate` call — never `send_message` to the actor. Never load a validator skill and an actor skill in the same delegation. The validator agent has one job: check and report.
 
 **Sequence for every phase with a validator (steps 2V, 3V, 5V, 7V, 9V, 14V, 15V, 17V, 19V, 20V):**
 1. Delegate to actor → wait for completion
@@ -312,16 +359,16 @@ Phase 2 children run under a **40-findings-per-frame budget** defined in `compre
 Two failure modes require explicit mitigation:
 
 **Failure mode A: Context compaction leaks into task descriptions.**
-When the coordinator's context compacts mid-pipeline, the next `delegate_to` call may receive the compaction summary as its `task` parameter instead of the actual Phase instructions. The child agent then gets "This session is being continued from a previous conversation..." as its task.
+When the coordinator's context compacts mid-pipeline, the next `host.delegate` call may receive the compaction summary as its `task` parameter instead of the actual Phase instructions. The child agent then gets "This session is being continued from a previous conversation..." as its task.
 
-**Mitigation:** Always build the full task string in a **single python cell** and pass it to `delegate_to` in the **same cell** or the immediately next tool call. Never rely on a task string surviving across multiple tool calls — context compaction can intervene between any two calls.
+**Mitigation:** Always build the full task string in a **single python cell** and pass it to `host.delegate` in the **same cell** or the immediately next tool call. Never rely on a task string surviving across multiple tool calls — context compaction can intervene between any two calls.
 
 ```python
 # CORRECT — task built and used in one cell
 task = f"""Execute Phase 7 (Section Drafting) for section {sec_num}.
 Skills: comprev-section-writing + comprev-reviewer-agent.
 Inputs: {{{{artifact:{evidence_vid}}}}} (evidence package), ..."""
-# delegate_to happens in the next tool call with this exact string
+# host.delegate happens in the next tool call with this exact string
 ```
 
 **Failure mode B: Unresolved f-strings / string interpolation in delegation tasks.**
@@ -332,14 +379,14 @@ If the coordinator builds a list of task strings in Python but then references t
 ```python
 # WRONG — the list reference may not resolve
 for i in range(8):
-    delegate_to(task=f"{verifier_tasks[i]}")  # ← {verifier_tasks[i]} is already
+    host.delegate(f"{verifier_tasks[i]}")  # ← {verifier_tasks[i]} is already
                                                 #    inside an f-string, but if the
                                                 #    outer string isn't f-prefixed, fails
 
 # CORRECT — explicit variable
 for i, task_str in enumerate(verifier_tasks):
     print(f"Delegating batch {i}: {task_str[:80]}...")  # verify it resolved
-    delegate_to(agent="LITREVIEW", task=task_str)
+    host.delegate({"task": task_str, "name": f"Verify {i}"})
 ```
 
 
@@ -364,7 +411,7 @@ Every validator gate JSON that produces post-fix content artifacts (Phase 7V, 14
 }
 ```
 
-**Phase 20 push rule.** The repository-push task receives `section_md_vids_final` from the most recent validator gate (typically `gate_assembly.json` at 14V, augmented by Phase 19V for any fix-pass updates) and uses those VIDs verbatim. The push task MUST NOT call `operon.artifacts(filename=..., latest=True)` to look up "the latest" content. A chronologically-later writer save can leapfrog a coordinator-side or validator-side fix; "latest" is not synonymous with "canonical." If Phase 19V's gate is present, its `section_md_vids_final` supersedes the corresponding entries in Phase 14V's; merge by giving 19V precedence per filename.
+**Phase 20 push rule.** The repository-push task receives `section_md_vids_final` from the most recent validator gate (typically `gate_assembly.json` at 14V, augmented by Phase 19V for any fix-pass updates) and uses those VIDs verbatim. The push task MUST NOT call `host.artifacts(filename=..., latest=True)` to look up "the latest" content. A chronologically-later writer save can leapfrog a coordinator-side or validator-side fix; "latest" is not synonymous with "canonical." If Phase 19V's gate is present, its `section_md_vids_final` supersedes the corresponding entries in Phase 14V's; merge by giving 19V precedence per filename.
 
 Phase 20V re-verifies the deployed content matches the canonical map by comparing the live repo's file contents against the artifacts referenced by VID in `gate_assembly.json` / `gate_phase19v.json`.
 

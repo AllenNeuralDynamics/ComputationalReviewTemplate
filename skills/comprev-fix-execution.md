@@ -1,3 +1,8 @@
+---
+name: comprev-fix-execution
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Citation Fix Execution Protocol"
+---
+
 # Citation Fix Execution Protocol
 
 Phase 18 delegation template. Execute citation fixes: replace bib entries, correct claiming sentences, verify replacements against databases.

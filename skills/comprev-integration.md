@@ -1,3 +1,8 @@
+---
+name: comprev-integration
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Integration and Bookend Protocol"
+---
+
 # Integration and Bookend Protocol
 
 Phase 10 (six-pass integration across all sections) and Phase 11 (Introduction, Conclusion, and Abstract). The integration role sees the full document structure — this is intentional, as integration requires cross-section awareness.

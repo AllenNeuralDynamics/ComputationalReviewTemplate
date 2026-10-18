@@ -1,3 +1,8 @@
+---
+name: comprev-curation-validator
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Curation Validator — Binary Gate for Phase 5"
+---
+
 # Curation Validator — Binary Gate for Phase 5
 
 **Purpose:** Validate evidence curation — correct assignment of findings to sections.

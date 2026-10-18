@@ -1,3 +1,8 @@
+---
+name: comprev-figure-audit
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Figure Comparability Audit Protocol"
+---
+
 # Figure Comparability Audit Protocol
 
 Phase 6 delegation template for BLINDED figure auditors. Evaluate whether cross-study comparisons are methodologically valid.

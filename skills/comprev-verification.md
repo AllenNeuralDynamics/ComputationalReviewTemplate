@@ -1,3 +1,8 @@
+---
+name: comprev-verification
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Citation Verification Protocol"
+---
+
 # Citation Verification Protocol
 
 Phase 16 delegation template. Verify citation triples: DOI resolution, title match, author match, metadata match, claim verification.

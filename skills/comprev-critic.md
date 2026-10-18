@@ -1,3 +1,8 @@
+---
+name: comprev-critic
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Section Critic Protocol"
+---
+
 # Section Critic Protocol
 
 Phase 8 delegation template for BLINDED section critics. Evaluate sections for unsupported claims, misrepresented evidence, and ignored counter-evidence.

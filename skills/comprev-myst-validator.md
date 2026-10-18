@@ -1,3 +1,8 @@
+---
+name: comprev-myst-validator
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): MyST Validator — Binary Gate for Phases 7, 14, 19, 20"
+---
+
 # MyST Validator — Binary Gate for Phases 7, 14, 19, 20
 
 **Purpose:** Validate MyST markdown syntax and build integrity.
@@ -171,7 +176,7 @@ Any other import is a fail. Reports offenders as `notebook:line:module`. **pass/
        `\bPhases? 1[4-9].20 \(scheduled\)`. Zero hits required.
     2. **Pipeline Execution frame count matches live ledger.** Parse the integer that
        follows `Total session frames: \*\*` in the Pipeline Execution section. Must equal
-       `len(operon.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames'])`
+       `len(host.frames(project_id=PROJECT_ID, roots_only=False, has_task=False)['frames'])`
        within ±1 (allow for the validator's own frame).
     3. **Pipeline Execution phases-completed wording is final.** The phrase
        "All 21 pipeline phases completed" (case-sensitive) must appear in

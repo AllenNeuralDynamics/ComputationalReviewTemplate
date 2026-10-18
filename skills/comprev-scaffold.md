@@ -1,3 +1,8 @@
+---
+name: comprev-scaffold
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scaffold Construction Protocol"
+---
+
 # Scaffold Construction Protocol
 
 Phase 4 delegation template. Build the architectural scaffold (argument arc, section plans, figure specs, style guide) from condensed evidence.
