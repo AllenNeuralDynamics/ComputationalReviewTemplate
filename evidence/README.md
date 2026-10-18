@@ -9,20 +9,35 @@ The `evidence-explorer-plugin.mjs` scans this directory for per-section
 JSON files named:
 
 ```
-section_02_evidence_package.json
-section_03_evidence_package.json
+evidence_section_01.json
+evidence_section_02.json
 ...
-section_NN_evidence_package.json
+evidence_section_NN.json
 ```
 
-One file per core review section. Section numbering starts at 02 (the
-Introduction is section 01 and has no evidence package); the upper bound is
-set by the user's table of contents — typical reviews land between section_08
-and section_13, but the orchestrator is agnostic to the exact section count.
+One file per review section, numbered from **01** and covering every section in
+the user's table of contents — the Introduction included. The plugin discovers
+whichever sections are present rather than assuming a count, so the number of
+sections is set by the table of contents alone.
+
+Two earlier naming conventions, `section_NN_evidence_package.json` and
+`section_NN_evidence.json`, are still read for older trees. New work should use
+`evidence_section_NN.json`; the plugin prefers it.
 
 ## JSON Schema
 
-Each per-section file must contain:
+What the explorer reads from each file is a small contract: `section_title`,
+`findings[]`, `conflicts[]` and `figure_data[]`. Findings must be objects —
+`argument_groups.*.supporting_findings` holds cite-key *strings* and is not a
+source of finding records.
+
+Phase 5 writes considerably more than this (`argument_groups`, `thesis`,
+`subsections`, `citation_key_map`, `cross_references` and others); those keys are
+carried for downstream phases and ignored by the explorer. The authoritative
+shape is the Phase 5 section in `skills/comprev-dataml-phases.md` — this file
+documents only the explorer's contract, so the two cannot drift.
+
+The fields below are the ones the widget renders:
 
 ```json
 {
@@ -51,10 +66,6 @@ Each per-section file must contain:
     }
   ],
   "figure_data": [],
-  "unreplicated_claims": [],
-  "evidence_gaps": [],
-  "strongest_evidence": {},
-  "weakest_evidence_cited": {},
   "unique_papers": 0,
   "total_findings": 0
 }
@@ -69,4 +80,9 @@ and copy these into this directory.
 A combined `evidence_database.json` may also be generated, but the
 evidence-explorer plugin does **not** read it directly — it requires
 the individual per-section files.
+
+If this directory holds no JSON at all, the page renders a placeholder and the
+build passes: that is an un-instantiated template awaiting a run. If it holds
+JSON that matches none of the names above, or a file that cannot be read, the
+build **fails** rather than publishing an empty explorer.
 

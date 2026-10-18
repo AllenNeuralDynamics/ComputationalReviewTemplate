@@ -1,5 +1,4 @@
+# Issue forms live alongside this file. contact_links is deliberately absent: a URL here is
+# inherited by every review created from this template and would send readers to the template
+# instead of their own repository. Add your own link after instantiating.
 blank_issues_enabled: true
-contact_links:
-  - name: "💬 General feedback"
-    url: https://github.com/AllenNeuralDynamics/ComputationalReviewTemplate/discussions
-    about: For general comments, questions, or discussion about the review.
