@@ -1,10 +1,36 @@
-# Unreleased
+# v1.2.0
 
-- A hard check that could not be run is no longer recordable as passed. New gate verdict
-  `pass_with_deferred` with a `deferred_checks` list; `gate_passed: true` is forbidden while
-  any hard check is deferred. Every downstream gate that can run a deferred check must run it
-  and record its own verdict — citing the upstream result, fallback or `pass_with_deferred`
-  is forbidden, and an entry still deferred at Phase 20 is an open failure.
+Three gates added or moved, each closing a path a real defect took through the reference run.
+No change to plugin behaviour, the site build, or published output.
+
+**Plugin data binding is verified at Phase 14, not after deployment.**
+
+- New `PLUGIN_PAYLOAD_MATCHES_SOURCE` (`comprev-myst-validator` check 26) runs each
+  file-reading plugin's document transform and requires the bound payload to **equal** its
+  source files — sections, findings, conflicts and figure_data against
+  `evidence/evidence_section_*.json` — rather than merely be non-empty. At 14V the pipeline
+  previously confirmed only that the directive was invoked (check 21) and that the packages
+  were populated (check 22); both passed while the Evidence Database page published empty,
+  and the only binding check ran after deployment. Phase 21's `PLUGIN_DATA_BOUND` is now
+  explicitly a deployed re-check and also requires equality.
+- New `DATA_PLUGIN_NEGATIVE_TEST` (check 27): every file-reading plugin must ship an
+  executable test that the validator runs, covering both directions of emptiness — an empty
+  data directory renders the placeholder and the build survives; unmatched or unreadable
+  input fails the build.
+- New `scripts/test_evidence_explorer.mjs` with committed fixtures under
+  `scripts/test_fixtures/evidence_explorer/` (10 KB, no dependencies), run by the new
+  `Plugin tests` workflow on every push and pull request. Eight cases: the populated bind,
+  cite-key strings staying out of findings, the un-instantiated template, unmatched JSON, a
+  missing directory, legacy filenames, an interior gap, and a `:sections:` mismatch. Verified
+  to fail 8/8 against the plugin revision that shipped the empty explorer.
+
+**A check that never ran is no longer recordable as a check that passed.**
+
+- New gate verdict `pass_with_deferred` with a `deferred_checks` list; `gate_passed: true`
+  is forbidden while any hard check is deferred. Every downstream gate that can run a deferred
+  check must run it and record its own verdict — citing the upstream result, fallback or
+  `pass_with_deferred` is forbidden, and an entry still deferred at Phase 20 is an open
+  failure.
 - Any claim that a tool is unavailable must carry the captured output of the commands that
   establish it, recorded in the gate under `tool_probe`, and must probe every environment
   available to the session rather than only the active one. In the reference run an
@@ -15,38 +41,20 @@
   only with a `tool_probe` record, and records checks 10-13 as deferred, never as pass.
 - Two new rows in the orchestrator's failure-mode table: deferred check inherited as passed,
   and unsupported capability claim.
+
+**Packages describing the same paper must agree.**
+
 - `comprev-curation-validator` gains three cross-package coherence checks, all hard fails.
   Sections are curated independently, so a paper cited in several of them is described several
-  times and each description can be internally consistent while disagreeing with its siblings;
-  no per-section check can see that. `DOI_ATTRIBUTE_COHERENCE` (#11) requires findings sharing
-  a DOI to agree on study system, species, region and preparation, resolved against the paper's
-  own metadata. `SHARED_KEY_SOURCE_UNION` (#12) requires source sentences to be merged across
-  packages rather than partitioned, so a value sourced in one package is not deleted as
-  unsourceable in another. `CLAIM_DOES_NOT_EXCEED_SOURCE` (#13) is a contradiction screen that
-  fails when a source sentence states an explicit null while the claim asserts an effect, or
-  when the claim measures something the sentence does not.
-
-# Unreleased
-
-- Data-binding verification moves from Phase 21 to Phase 14. New
-  `PLUGIN_PAYLOAD_MATCHES_SOURCE` (`comprev-myst-validator` #26) runs each
-  file-reading plugin's document transform and requires the bound payload to **equal** its
-  source files — sections, findings, conflicts and figure_data against
-  `evidence/evidence_section_*.json` — rather than merely be non-empty. At 14V the pipeline
-  previously confirmed only that the directive was invoked and that the packages were
-  populated; both passed while the Evidence Database page published empty, and the only
-  binding check ran after deployment. Phase 21's `PLUGIN_DATA_BOUND` is now explicitly a
-  deployed re-check and also requires equality.
-- New `DATA_PLUGIN_NEGATIVE_TEST` (#27): every file-reading plugin must ship an executable
-  test that the validator runs, covering both directions of emptiness — an empty data
-  directory renders the placeholder and the build survives; unmatched or unreadable input
-  fails the build.
-- New `scripts/test_evidence_explorer.mjs` with committed fixtures under
-  `scripts/test_fixtures/evidence_explorer/` (10 KB, no dependencies), run by the new
-  `Plugin tests` workflow on every push and pull request. Eight cases covering the populated
-  bind, cite-key strings staying out of findings, the un-instantiated template, unmatched
-  JSON, a missing directory, legacy filenames, an interior gap and a `:sections:` mismatch.
-  Verified to fail 8/8 against the plugin revision that shipped the empty explorer.
+  times, and each description can be internally consistent while disagreeing with its
+  siblings; no per-section check can see that. `DOI_ATTRIBUTE_COHERENCE` (check 11) requires
+  findings sharing a DOI to agree on study system, species, region and preparation, resolved
+  against the paper's own metadata. `SHARED_KEY_SOURCE_UNION` (check 12) requires source
+  sentences to be merged across packages rather than partitioned, so a value sourced in one
+  package is not deleted as unsourceable in another. `CLAIM_DOES_NOT_EXCEED_SOURCE` (check 13)
+  is a contradiction screen — not an entailment proof — failing when a source sentence states
+  an explicit null while the claim asserts an effect, or when the claim measures something the
+  sentence does not.
 
 # v1.1.1
 
