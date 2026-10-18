@@ -694,7 +694,7 @@ Phase 14 MUST also:
   5. Verify all `n_sections` files exist and are non-empty before proceeding
 a) Create `content/evidence_database.md` with `:::{evidence-explorer}` directive
 b) Create `content/provenance.md` with pipeline summary from gate artifacts
-c) Add `:::{authorship-explorer}` with `:authors: ../authors.yml` to `content/00_frontmatter.md` ONLY (after the abstract, before the body)
+c) Add `:::{authorship-explorer}` with `:authors: ./authors.yml` to `content/00_frontmatter.md` ONLY (after the abstract, before the body)
 d) Verify `myst.yml` `project.toc` lists ALL `content/*.md` files (count must match)
 e) Deploy plugin files: `evidence-explorer-plugin.mjs`, `evidence-explorer-widget.mjs` — all using the anywidget pattern (NEVER raw HTML/CSS/JS injection)
 f) Insert the Phase 11 Abstract into `content/00_frontmatter.md`
@@ -748,7 +748,7 @@ silent-render condition where a plugin loads but no markdown invokes it.
 **Plugin deployment notes:**
 - All MyST plugins MUST use the anywidget pattern: directive → transform that converts to `node.type='anywidget'` with `.esm` and `.model` properties
 - MyST renders citations as `<cite>` elements with DOI in `<a href="https://doi.org/...">` — citation annotation plugins must match by DOI
-- The released AuthorshipExtractor plugin resolves `./authors.yml` relative to the document directory — directives must specify `:authors: ../authors.yml` since content files are in `content/`
+- The released AuthorshipExtractor plugin resolves the `:authors:` path relative to the document directory — `00_frontmatter.md` and `authors.yml` both live in `content/`, so the directive must specify `:authors: ./authors.yml` (a `../` path yields an empty authorship widget with no build error)
 
 
 ## Phase 15: Citation Triples

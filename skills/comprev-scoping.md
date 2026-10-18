@@ -1,6 +1,6 @@
 ---
 name: comprev-scoping
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scoping Protocol — Phase 1 (LITREVIEW actor) — Phase 1 scientific scoping. The LITREVIEW agent loaded with this skill reads the"
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scoping Protocol — Phase 1 (LITREVIEW actor) — Phase 1 scientific scoping. The LITREVIEW agent loaded with this skill reads the user's prompt at provenance/review_request.md and produces a structured scope.json plus a populated 21-phase plan_content list that downstream phases consume; it does not call generate_plan, so the coordinator submits the plan for user approval."
 ---
 
 # Scoping Protocol — Phase 1 (LITREVIEW actor)
