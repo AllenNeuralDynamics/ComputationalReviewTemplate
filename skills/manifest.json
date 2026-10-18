@@ -18,8 +18,8 @@
     {
       "name": "comprev-curation-validator",
       "file": "skills/comprev-curation-validator.md",
-      "bytes": 3638,
-      "sha256": "c8c7af80f1f162f31b63ac0934e6f5939d9b2c32c53638cf6075dd80b0c658e8"
+      "bytes": 6872,
+      "sha256": "ac67385e6247992478654fd62150d9f1cc361debd62f3d02d665c22a3bf576d8"
     },
     {
       "name": "comprev-dataml-phases",
