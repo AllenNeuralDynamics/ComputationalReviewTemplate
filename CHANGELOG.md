@@ -1,3 +1,27 @@
+# v1.1.1
+
+Documentation only; no change to the pipeline protocol or the site build.
+
+- `evidence/README.md` taught the superseded naming: `section_NN_evidence_package.json`
+  numbered from 02, asserting the Introduction had no evidence package. Corrected to
+  `evidence_section_NN.json` numbered from 01 and covering every section. Its JSON schema
+  listed four top-level keys that no real package contains and omitted the 25 that Phase 5
+  writes; it now documents only the explorer's contract (`section_title`, `findings[]`,
+  `conflicts[]`, `figure_data[]`) and names the Phase 5 spec as authoritative.
+- The Quick Start named three files to make a new repo yours; six carry this template's
+  identity. Added `README.md` (DOI badge and How to Cite, both pointing at this template's
+  Zenodo record), `LICENSE` (copyright holder) and `.github/ISSUE_TEMPLATE/config.yml`.
+- Added the GitHub Pages step — Settings → Pages → Source: GitHub Actions, which a template
+  instantiation does not set and without which the deploy job fails — plus a Requirements
+  paragraph (node ≥ 18, npm, python ≥ 3.9) and a Platform paragraph stating that the
+  protocol is portable but the `host.*` orchestration calls are not.
+- Removed the hardcoded contact link from `config.yml`: it pointed at this template's
+  Discussions, which are not enabled, so it was dead here and misdirected in every review
+  created from it.
+- Dropped the literal release number from the Versioning section and the pinned version from
+  the citation line; both were stale within hours and the DOI is the concept DOI, which
+  always resolves to the newest release.
+
 # v1.1.0
 
 - **Renamed:** `skills/comprev-orchestrator-v29.md` → **`skills/comprev-orchestrator.md`**
