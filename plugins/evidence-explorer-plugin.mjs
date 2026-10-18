@@ -4,19 +4,26 @@ import { resolve, dirname } from 'node:path';
 
 const evidenceDirective = {
   name: 'evidence-explorer',
-  doc: 'Interactive evidence database explorer widget. The :evidence-dir: option is resolved relative to the calling markdown file. Default "../evidence" is correct when the directive is placed in a content/*.md page (the conventional layout).',
+  doc: 'Interactive evidence database explorer widget. The :evidence-dir: option is resolved relative to the calling markdown file. Default "../evidence" is correct when the directive is placed in a content/*.md page (the conventional layout). Section files are discovered from that directory, so no section count is assumed; set the optional :sections: option to the review\'s section count to have an incomplete load reported as a build warning.',
   options: {
     'evidence-dir': { type: String },
     height: { type: String },
+    sections: { type: Number },
   },
   run(data) {
     return [{
       type: 'evidence-explorer',
       evidenceDir: data.options?.['evidence-dir'] || '../evidence',
       height: data.options?.height || '700px',
+      sectionCount: data.options?.sections || 0,
     }];
   },
 };
+
+// Raised when no evidence file can be read; deliberately not caught, so a
+// regression in the filenames or the directory fails the build instead of
+// publishing an empty explorer.
+class EvidenceLoadError extends Error {}
 
 // Universal conflict normalizer — handles all 15+ schema variants
 function normalizeConflict(c, sec) {
@@ -136,42 +143,85 @@ const evidenceTransform = {
       if (node.type === 'evidence-explorer') {
         const docDir = vfile?.path ? dirname(vfile.path) : process.cwd();
         const evidenceDir = resolve(docDir, node.evidenceDir || '../evidence');
+        // Current layout first, then the two legacy names kept for older trees.
+        const NAME_PATTERNS = [
+          (p) => 'evidence_section_' + p + '.json',
+          (p) => 'section_' + p + '_evidence_package.json',
+          (p) => 'section_' + p + '_evidence.json',
+        ];
+        const SECTION_FILE_RE =
+          /^(?:evidence_section_(\d{2})\.json|section_(\d{2})_evidence(?:_package)?\.json)$/;
+        // Discover the sections actually present rather than assuming a count: reviews
+        // instantiated from this template have different numbers of sections, so any
+        // hardcoded range silently drops real sections or hunts for absent ones.
+        let presentSections = [];
+        try {
+          presentSections = [...new Set(
+            readdirSync(evidenceDir)
+              .map((f) => SECTION_FILE_RE.exec(f))
+              .filter(Boolean)
+              .map((m) => parseInt(m[1] ?? m[2], 10))
+          )].sort((a, b) => a - b);
+        } catch (e) {
+          throw new EvidenceLoadError(
+            'evidence-explorer: evidence directory ' + evidenceDir + ' could not be read (' +
+            e.message + '). The explorer would publish empty.'
+          );
+        }
+        if (presentSections.length === 0) {
+          throw new EvidenceLoadError(
+            'evidence-explorer: no file in ' + evidenceDir + ' matches an evidence-package name (' +
+            NAME_PATTERNS.map((p) => p('NN')).join(', ') + '). The explorer would publish empty.'
+          );
+        }
         try {
           const sections = [];
           const allFindings = [];
           const allConflicts = [];
           const allFigureData = [];
 
-          for (let sec = 2; sec <= 13; sec++) {
+          for (const sec of presentSections) {
             const padded = String(sec).padStart(2, '0');
-            let filePath = resolve(evidenceDir, 'section_' + padded + '_evidence_package.json');
             let raw;
-            try {
-              raw = readFileSync(filePath, 'utf-8');
-            } catch (e) {
+            const tried = [];
+            for (const pattern of NAME_PATTERNS) {
+              const candidate = resolve(evidenceDir, pattern(padded));
+              tried.push(candidate);
               try {
-                filePath = resolve(evidenceDir, 'section_' + padded + '_evidence.json');
-                raw = readFileSync(filePath, 'utf-8');
-              } catch (e2) { continue; }
+                raw = readFileSync(candidate, 'utf-8');
+                break;
+              } catch (e) { /* try the next naming convention */ }
             }
-            
+            if (raw === undefined) {
+              throw new EvidenceLoadError(
+                'evidence-explorer: the evidence file for section ' + padded + ' was found in ' +
+                evidenceDir + ' but could not be read (tried ' + tried.join(', ') + ').'
+              );
+            }
+
             const ev = JSON.parse(raw);
 
-            // Extract findings
-            let findings = [];
-            const ag = ev.argument_groups;
-            if (ag && typeof ag === 'object') {
-              for (const [topicKey, topicVal] of Object.entries(ag)) {
-                if (topicVal && typeof topicVal === 'object') {
-                  const supporting = topicVal.supporting_findings || topicVal.supporting_evidence || [];
-                  const counter = topicVal.counter_findings || topicVal.counter_evidence || [];
-                  if (Array.isArray(supporting)) findings.push(...supporting);
-                  if (Array.isArray(counter)) findings.push(...counter);
+            // Extract findings. The current package shape stores finding records in
+            // ev.findings and uses argument_groups only to reference them by cite key,
+            // so object-shaped argument-group entries are accepted but bare strings
+            // (cite keys) are not treated as findings.
+            let findings = Array.isArray(ev.findings) ? ev.findings.filter(f => f && typeof f === 'object') : [];
+            if (findings.length === 0) {
+              const ag = ev.argument_groups;
+              if (ag && typeof ag === 'object') {
+                for (const topicVal of Object.values(ag)) {
+                  if (topicVal && typeof topicVal === 'object') {
+                    const supporting = topicVal.supporting_findings || topicVal.supporting_evidence || [];
+                    const counter = topicVal.counter_findings || topicVal.counter_evidence || [];
+                    if (Array.isArray(supporting)) findings.push(...supporting.filter(f => f && typeof f === 'object'));
+                    if (Array.isArray(counter)) findings.push(...counter.filter(f => f && typeof f === 'object'));
+                  }
                 }
               }
+              if (Array.isArray(ev.unmatched_findings)) {
+                findings.push(...ev.unmatched_findings.filter(f => f && typeof f === 'object'));
+              }
             }
-            if (Array.isArray(ev.unmatched_findings)) findings.push(...ev.unmatched_findings);
-            if (findings.length === 0 && Array.isArray(ev.findings)) findings = ev.findings;
 
             // Normalize conflicts using the universal normalizer
             const conflicts = (ev.conflicts || []).map(c => normalizeConflict(c, sec));
@@ -198,6 +248,37 @@ const evidenceTransform = {
             allFigureData.push(...figData);
           }
 
+          // Fail loudly. A silent `continue` on every read is what previously let an
+          // empty explorer ship with a green build.
+          if (sections.length === 0) {
+            throw new EvidenceLoadError(
+              'evidence-explorer: ' + presentSections.length + ' evidence file(s) were found in ' +
+              evidenceDir + ' but none yielded a section. The explorer would publish empty.'
+            );
+          }
+          // An interior gap in the discovered run, or a count that disagrees with an
+          // explicit :sections: declaration, means the explorer is incomplete.
+          const gaps = [];
+          for (let s = presentSections[0]; s <= presentSections[presentSections.length - 1]; s++) {
+            if (!presentSections.includes(s)) gaps.push(String(s).padStart(2, '0'));
+          }
+          const declared = node.sectionCount || 0;
+          if (gaps.length > 0 || (declared && sections.length !== declared)) {
+            const msg = 'evidence-explorer: loaded ' + sections.length + ' section(s) from ' +
+              evidenceDir + (declared ? ', but :sections: declares ' + declared : '') +
+              (gaps.length ? '; no evidence file for section(s) ' + gaps.join(', ') : '') +
+              '; the explorer is incomplete.';
+            if (utils && typeof utils.fileWarn === 'function') utils.fileWarn(vfile, msg, { node });
+            else console.warn(msg);
+          }
+          if (allFindings.length === 0 || allConflicts.length === 0) {
+            const msg = 'evidence-explorer: evidence files loaded (' + sections.length +
+              ') but the bound payload has ' + allFindings.length + ' findings and ' +
+              allConflicts.length + ' conflicts; the explorer would render empty panels.';
+            if (utils && typeof utils.fileWarn === 'function') utils.fileWarn(vfile, msg, { node });
+            else console.warn(msg);
+          }
+
           node.type = 'anywidget';
           node.id = 'evidence-explorer-' + Date.now() + '-' + Math.random().toString(36).slice(2,9);
           node.esm = './evidence-explorer-widget.mjs';
@@ -211,6 +292,7 @@ const evidenceTransform = {
             height: node.height || '700px',
           };
         } catch (err) {
+          if (err instanceof EvidenceLoadError) throw err;
           node.type = 'paragraph';
           node.children = [{ type: 'text', value: '[Evidence Explorer error: ' + err.message + ']' }];
         }
