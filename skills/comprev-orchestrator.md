@@ -349,6 +349,25 @@ The validator MUST be a NEW `host.delegate` call — never `send_message` to the
 2. Delegate to validator (new agent) → wait for completion
 3. If validator returns `gate: "fail"`: send failures to actor via `send_message` → actor fixes → re-delegate to validator
 4. If validator returns `gate: "pass"`: save gate artifact → advance
+5. If validator returns `gate: "pass_with_deferred"`: a hard check could not be run.
+   Save the gate with `deferred_checks: [...]` and the `tool_probe` evidence, and
+   advance only if this phase's outputs do not depend on what was deferred.
+
+**Deferred hard checks.** `gate_passed: true` is forbidden while any hard check is
+deferred — that is what `pass_with_deferred` exists for. Two rules follow, and the
+coordinator enforces both:
+
+- **Re-test, never cite.** Every downstream gate that *can* run a deferred check MUST
+  run it and record its own verdict. Quoting the upstream result — pass, fallback or
+  `pass_with_deferred` — is forbidden. Carry `deferred_checks` forward in each gate
+  until a gate actually executes them; an entry that reaches Phase 20 unexecuted is an
+  open failure.
+- **Absence needs evidence.** Any claim that a tool is unavailable MUST carry the
+  captured output of the commands probing it, in the gate under `tool_probe`. In the
+  reference run an unsupported "no node/npm" note was inherited as passed for four
+  phases and deferred the first real build to Phase 19V, where it immediately exposed
+  an unresolved `:authors:` path that had been shipping an empty authorship widget.
+  Probe every environment available to the session, not only the active one.
 
 **The coordinator does NOT copy phase templates into the task description.** The sub-agent reads its own template from its loaded skills.
 
@@ -542,5 +561,7 @@ These require active coordinator vigilance. Each maps to specific phase enforcem
 | 15 | Context compaction corrupts delegation task — child gets compaction summary | Delegation Task Construction | Build task string + delegate in same cell; never rely on cross-cell string survival |
 | 16 | Unresolved interpolation in delegation task — child gets literal `{var}` | Delegation Task Construction | Verify task string resolves before delegating; use explicit variables, not inline list indexing |
 | 17 | Gate bypass — Phase N+1 runs after Phase N gate failed | Gate artifact assertion | `assert gate_passed is True` before any delegation for Phase N+1; never treat gate failure as "soft" |
+| 18 | Deferred check inherited as passed — a hard check never runs, downstream gates cite the upstream verdict | `pass_with_deferred` + re-test rule | Gate carries `deferred_checks`; each downstream gate re-runs what it can and records its own verdict; nothing reaches Phase 20 deferred |
+| 19 | Unsupported capability claim — "tool X is unavailable" taken on trust | `tool_probe` evidence | Every absence claim carries captured command output; probe all session environments, not just the active one |
 
 

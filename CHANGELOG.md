@@ -1,5 +1,23 @@
 # Unreleased
 
+- A hard check that could not be run is no longer recordable as passed. New gate verdict
+  `pass_with_deferred` with a `deferred_checks` list; `gate_passed: true` is forbidden while
+  any hard check is deferred. Every downstream gate that can run a deferred check must run it
+  and record its own verdict — citing the upstream result, fallback or `pass_with_deferred`
+  is forbidden, and an entry still deferred at Phase 20 is an open failure.
+- Any claim that a tool is unavailable must carry the captured output of the commands that
+  establish it, recorded in the gate under `tool_probe`, and must probe every environment
+  available to the session rather than only the active one. In the reference run an
+  unsupported "no node/npm" note was false and deferred the first real build by five phases.
+- `comprev-myst-validator` states that Phase 14V runs a real build: it is the first gate that
+  can, 19V and Phase 21 repeat rather than replace it, and a 14V gate whose build never
+  executed is `pass_with_deferred` at best. The `BIB_CITE_KEYS_RESOLVE` fallback is admissible
+  only with a `tool_probe` record, and records checks 10-13 as deferred, never as pass.
+- Two new rows in the orchestrator's failure-mode table: deferred check inherited as passed,
+  and unsupported capability claim.
+
+# Unreleased
+
 - Data-binding verification moves from Phase 21 to Phase 14. New
   `PLUGIN_PAYLOAD_MATCHES_SOURCE` (`comprev-myst-validator` #26) runs each
   file-reading plugin's document transform and requires the bound payload to **equal** its

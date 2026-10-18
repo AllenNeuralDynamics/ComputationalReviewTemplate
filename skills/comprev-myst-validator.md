@@ -83,12 +83,39 @@ Any hit is a fail. Each hit converts a citation into a literal code span and bre
 
 ## Build Checks (Phase 14, 19, 20)
 
+**Phase 14V runs a real build.** It is the first gate that can, and the defects it
+catches are the expensive ones — an unresolved `:authors:` path, an unrendered
+directive, a plugin that binds nothing. 19V and Phase 21 repeat it; neither
+replaces it. A 14V gate whose build was never executed is `pass_with_deferred`
+at best, never `pass`.
+
 10. **MYSTMD_INSTALLED**: `npm install -g mystmd` succeeds? **pass/fail**
+
+    A claim that the toolchain is unavailable MUST carry the captured output of
+    the commands that establish it — `which node`, `which npm`, `node --version`,
+    `npm --version`, and the failing `npm install -g mystmd` — recorded verbatim
+    in the gate under `tool_probe`. An unsupported "node/npm not available" note
+    is not a verdict. In the reference run it was false: both were present in a
+    different conda environment than the one probed, and the claim deferred the
+    first real build by five phases. Search the environments available to the
+    session, not only the active one, and record what you ran.
 11. **BUILD_PASSES**: `myst build --html` exits with zero ⛔ errors? **pass/fail**
 12. **ZERO_CITATION_ERRORS**: Zero "Could not link citation" in output? **pass/fail**
 13. **ZERO_IMAGE_ERRORS**: Zero "Cannot find image" in output? **pass/fail**
 
-13a. **BIB_CITE_KEYS_RESOLVE** *(fallback when `myst build` cannot run)*: When the environment lacks `npm`/`mystmd` so checks 10–13 are deferred, the validator MUST run a mechanical citation-binding test in their place. Three sub-checks, all required:
+13a. **BIB_CITE_KEYS_RESOLVE** *(fallback when `myst build` cannot run)*: When the environment lacks `npm`/`mystmd` so checks 10–13 are deferred, the validator MUST run a mechanical citation-binding test in their place.
+
+     This fallback is admissible only with a `tool_probe` record (check #10). Three
+     rules bind it, and together they are the whole point of the fallback:
+
+     1. Checks 10–13 are recorded as `"deferred"`, **never** as `"pass"`. The
+        fallback substitutes for them; it does not satisfy them.
+     2. The gate verdict becomes `pass_with_deferred`, not `pass`, and lists the
+        deferred check names under `deferred_checks`.
+     3. Every later gate that *can* run a deferred check MUST run it and record
+        its own verdict. Citing the upstream fallback — or the upstream
+        `pass_with_deferred` — is forbidden. A deferred check that is never
+        re-run is an open failure, not a closed one. Three sub-checks, all required:
 
 ```python
 import yaml, re, json
@@ -321,7 +348,9 @@ The validator's gate JSON (e.g. `gate_sections_drafted.json` at 7V, `gate_assemb
 ```json
 {
   "phase": 7|14|19|20,
-  "gate": "pass|fail",
+  "gate": "pass|pass_with_deferred|fail",
+  "deferred_checks": [],
+  "tool_probe": {},
   "per_file_results": {...},
   "build_result": {"myst_errors": int, "myst_warnings": int},
   "structural_results": {
