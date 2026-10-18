@@ -1,0 +1,34 @@
+{
+ "section_id": "03",
+ "section_title": "Demo Section 3",
+ "findings": [
+  {
+   "finding_id": "F03-1",
+   "cite_key": "Author31",
+   "doi": "10.1234/demo.31",
+   "claim": "Demo claim 1 for section 3.",
+   "claim_source_sentence": "Verbatim demo sentence 1 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 11,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  }
+ ],
+ "conflicts": [],
+ "figure_data": [
+  {
+   "figure_id": "fig-demo-3-1",
+   "caption": "Demo figure."
+  },
+  {
+   "figure_id": "fig-demo-3-2",
+   "caption": "Demo figure."
+  }
+ ],
+ "unique_papers": 1,
+ "total_findings": 1
+}

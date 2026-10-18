@@ -1,0 +1,25 @@
+name: Plugin tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-explorer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # No dependencies: the test imports the plugin directly and reads
+      # fixtures from scripts/test_fixtures/.
+      - name: Evidence explorer data binding
+        run: node scripts/test_evidence_explorer.mjs

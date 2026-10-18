@@ -30,8 +30,8 @@
     {
       "name": "comprev-deploy-polish",
       "file": "skills/comprev-deploy-polish.md",
-      "bytes": 12476,
-      "sha256": "984cadc0e0ae1df13cdda26b7496e8a5173042d6320509bee487cc966286350c"
+      "bytes": 12713,
+      "sha256": "c83da639a1efa90c1caf3a07f92e111306b530adbc8454cc0ed1a1e1972e9caa"
     },
     {
       "name": "comprev-evidence-gathering",
@@ -72,8 +72,8 @@
     {
       "name": "comprev-myst-validator",
       "file": "skills/comprev-myst-validator.md",
-      "bytes": 18980,
-      "sha256": "15e78019c16b7332fef2c4d6622d016c99a07b77c763d79d6c429f9843e8df45"
+      "bytes": 21429,
+      "sha256": "9e9d1d31ba1a001f6a63eaf8443d40b87e7dd452d17bfbd3e236c374273e6984"
     },
     {
       "name": "comprev-orchestrator",

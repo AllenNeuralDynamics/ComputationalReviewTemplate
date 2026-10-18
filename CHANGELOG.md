@@ -1,3 +1,25 @@
+# Unreleased
+
+- Data-binding verification moves from Phase 21 to Phase 14. New
+  `PLUGIN_PAYLOAD_MATCHES_SOURCE` (`comprev-myst-validator` #26) runs each
+  file-reading plugin's document transform and requires the bound payload to **equal** its
+  source files — sections, findings, conflicts and figure_data against
+  `evidence/evidence_section_*.json` — rather than merely be non-empty. At 14V the pipeline
+  previously confirmed only that the directive was invoked and that the packages were
+  populated; both passed while the Evidence Database page published empty, and the only
+  binding check ran after deployment. Phase 21's `PLUGIN_DATA_BOUND` is now explicitly a
+  deployed re-check and also requires equality.
+- New `DATA_PLUGIN_NEGATIVE_TEST` (#27): every file-reading plugin must ship an executable
+  test that the validator runs, covering both directions of emptiness — an empty data
+  directory renders the placeholder and the build survives; unmatched or unreadable input
+  fails the build.
+- New `scripts/test_evidence_explorer.mjs` with committed fixtures under
+  `scripts/test_fixtures/evidence_explorer/` (10 KB, no dependencies), run by the new
+  `Plugin tests` workflow on every push and pull request. Eight cases covering the populated
+  bind, cite-key strings staying out of findings, the un-instantiated template, unmatched
+  JSON, a missing directory, legacy filenames, an interior gap and a `:sections:` mismatch.
+  Verified to fail 8/8 against the plugin revision that shipped the empty explorer.
+
 # v1.1.1
 
 Documentation only; no change to the pipeline protocol or the site build.

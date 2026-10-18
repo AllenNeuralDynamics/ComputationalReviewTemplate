@@ -1,0 +1,74 @@
+{
+ "section_id": "02",
+ "section_title": "Demo Section 2",
+ "findings": [
+  {
+   "finding_id": "F02-1",
+   "cite_key": "Author21",
+   "doi": "10.1234/demo.21",
+   "claim": "Demo claim 1 for section 2.",
+   "claim_source_sentence": "Verbatim demo sentence 1 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 11,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  },
+  {
+   "finding_id": "F02-2",
+   "cite_key": "Author22",
+   "doi": "10.1234/demo.22",
+   "claim": "Demo claim 2 for section 2.",
+   "claim_source_sentence": "Verbatim demo sentence 2 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 12,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  },
+  {
+   "finding_id": "F02-3",
+   "cite_key": "Author23",
+   "doi": "10.1234/demo.23",
+   "claim": "Demo claim 3 for section 2.",
+   "claim_source_sentence": "Verbatim demo sentence 3 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 13,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  }
+ ],
+ "conflicts": [
+  {
+   "conflict_id": "C02-1",
+   "paper_a_doi": "10.1234/demo.a1",
+   "paper_b_doi": "10.1234/demo.b1",
+   "paper_a_claim": "A reports an increase.",
+   "paper_b_claim": "B reports no change.",
+   "nature_of_conflict": "Direction of effect disagrees.",
+   "resolution_status": "unresolved"
+  },
+  {
+   "conflict_id": "C02-2",
+   "paper_a_doi": "10.1234/demo.a2",
+   "paper_b_doi": "10.1234/demo.b2",
+   "paper_a_claim": "A reports an increase.",
+   "paper_b_claim": "B reports no change.",
+   "nature_of_conflict": "Direction of effect disagrees.",
+   "resolution_status": "unresolved"
+  }
+ ],
+ "figure_data": [],
+ "unique_papers": 3,
+ "total_findings": 3
+}
