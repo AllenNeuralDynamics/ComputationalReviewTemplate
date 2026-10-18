@@ -1,6 +1,6 @@
 ---
 name: comprev-figure-audit
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Figure Comparability Audit Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Figure Comparability Audit Protocol"
 ---
 
 # Figure Comparability Audit Protocol

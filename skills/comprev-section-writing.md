@@ -1,6 +1,6 @@
 ---
 name: comprev-section-writing
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Section Writing Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Section Writing Protocol"
 ---
 
 # Section Writing Protocol

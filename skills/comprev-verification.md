@@ -1,6 +1,6 @@
 ---
 name: comprev-verification
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Citation Verification Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Citation Verification Protocol"
 ---
 
 # Citation Verification Protocol

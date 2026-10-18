@@ -1,6 +1,6 @@
 ---
 name: comprev-scaffold
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scaffold Construction Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Scaffold Construction Protocol"
 ---
 
 # Scaffold Construction Protocol

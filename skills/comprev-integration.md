@@ -1,6 +1,6 @@
 ---
 name: comprev-integration
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Integration and Bookend Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Integration and Bookend Protocol"
 ---
 
 # Integration and Bookend Protocol

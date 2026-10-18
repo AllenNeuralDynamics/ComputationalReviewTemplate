@@ -2,11 +2,11 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21213212.svg)](https://doi.org/10.5281/zenodo.21213212)
 
-Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v29.
+Template repository for producing comprehensive AI-assisted critical literature reviews using the Expert Review Pipeline v30.
 
 ## Pipeline Overview
 
-![Expert Review Pipeline v29](figures/fig_methods_pipeline.png)
+![Expert Review Pipeline v30](figures/fig_methods_pipeline.png)
 
 The pipeline executes 21 phases with **actor-critic separation** — 20 production phases (scoping through repository push) followed by Phase 21 deploy-polish, a post-deployment UX gate — section writers cannot see how they will be critiqued, figure auditors cannot see the argument arc, and citation verifiers cannot see the fix protocol. This prevents agents from gaming evaluation criteria.
 
@@ -183,7 +183,7 @@ Phase 5 curation floors scale proportionally with your evidence density target.
 
 Two version numbers exist and they are deliberately separate.
 
-- **Pipeline generation** (`v29`) — the skill protocol. It lives in `skills/manifest.json`
+- **Pipeline generation** (`v30`) — the skill protocol. It lives in `skills/manifest.json`
   and nowhere else that can drift: skill filenames carry no version, and every skill's
   `description` must quote the manifest's number. Bump it with
   `python scripts/build_skill_manifest.py --set-version 30`.

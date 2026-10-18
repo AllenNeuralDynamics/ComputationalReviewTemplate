@@ -1,6 +1,6 @@
 ---
 name: comprev-scoping-validator
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Scoping Validator — Binary Gate for Phase 1 — Phase 1V binary gate. Validates the Phase 1 scope outputs and provenance"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Scoping Validator — Binary Gate for Phase 1 — Phase 1V binary gate. Validates the Phase 1 scope outputs and provenance"
 ---
 
 # Scoping Validator — Binary Gate for Phase 1

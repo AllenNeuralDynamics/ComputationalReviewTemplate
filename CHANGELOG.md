@@ -1,3 +1,18 @@
+# v1.2.1
+
+- Pipeline generation 29 -> **30**. v1.2.0 changed the skill protocol — three new checks in
+  `comprev-curation-validator`, two in `comprev-myst-validator`, a new gate verdict
+  (`pass_with_deferred`) and a new required gate field (`tool_probe`) — while the manifest
+  still reported generation 29. A validator written against 29 and one written against
+  v1.2.0 are not the same protocol, which is precisely the drift `skills/manifest.json` was
+  added to prevent, so the number now moves with the protocol it names.
+- All 20 skill descriptions and the two README occurrences move with it; the manifest check
+  enforces that they agree, and verified the result.
+- Reference-run artifacts deliberately keep generation 29: `content/Methods.md`,
+  `content/provenance.md`, `provenance/review_request.md`, `provenance/pipeline_metrics.json`
+  and the pipeline figure notebook describe a review that really did run on 29. Rewriting
+  them would falsify the record the manifest exists to preserve.
+
 # v1.2.0
 
 Three gates added or moved, each closing a path a real defect took through the reference run.

@@ -1,6 +1,6 @@
 ---
 name: comprev-critic
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Section Critic Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Section Critic Protocol"
 ---
 
 # Section Critic Protocol
