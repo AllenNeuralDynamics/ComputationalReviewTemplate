@@ -16,13 +16,32 @@ Runs on Claude Science with **nothing to install** — no agent profiles, no pub
 The coordinator reads the pipeline skills straight from this repository's `skills/` folder
 (see "Runtime: Claude Science" in `skills/comprev-orchestrator.md`).
 
+**Requirements.** "Nothing to install" covers the pipeline skills, not the site build. The
+session environment needs `node` ≥ 18 with `npm` — `myst build` runs at Phases 14, 19V and 21 —
+and `python` ≥ 3.9 for the figure notebooks and `scripts/`. GitHub Actions supplies both for
+the deployed site. Confirm a missing tool with captured command output before recording it as
+absent: a wrong "node is unavailable" note once deferred the first real build by five phases.
+
+**Platform.** The skills assume the Claude Science host API — `host.delegate` for sub-agents,
+`host.artifacts` for version-pinned skill passing, artifact markers inside delegation tasks.
+The *protocol* (phases, gates, information barriers, validator checks) is portable; those
+orchestration calls are not, so an agent on another platform must map them to its own
+equivalents before any of this runs.
+
 1. **Create a new repo** from this template (Use this template → Create a new repository)
-2. **Edit three files** in the new repo:
+2. **Make the new repo yours.** Six files carry this template's identity, and a review that
+   leaves them untouched publishes the template's DOI, copyright and links as its own:
    - `myst.yml` — `title`, `description`, `keywords`, the `github:` URL, and `site.title` / `site.nav` GitHub URL
    - `.github/workflows/deploy.yml` — `BASE_URL: /<your-repo-name>`
    - `content/authors.yml` — real author names and affiliations (Phase 20V fails on placeholders)
-3. **Connect GitHub** in Claude Science (Customize → Credentials) with push access to the new repo
-4. **Start a new session** and paste your review prompt:
+   - `README.md` — replace or delete the DOI badge and the How to Cite block; both point at
+     *this template's* Zenodo record, not your review
+   - `LICENSE` — the copyright holder
+   - `.github/ISSUE_TEMPLATE/config.yml` — add your own contact link if you want one
+3. **Enable GitHub Pages**: Settings → Pages → Source: **GitHub Actions**. Creating a repo from
+   a template does not enable it, and the deploy job fails without it.
+4. **Connect GitHub** in Claude Science (Customize → Credentials) with push access to the new repo
+5. **Start a new session** and paste your review prompt:
 
 ```
 Start a comprehensive critical literature review titled: "[YOUR TITLE]"
@@ -55,8 +74,8 @@ Table of Contents:
 N. Conclusion
 ```
 
-5. The pipeline populates `content/`, `evidence/`, `figures/`, and `provenance/`
-6. GitHub Actions auto-builds and deploys the MyST site to GitHub Pages
+6. The pipeline populates `content/`, `evidence/`, `figures/`, and `provenance/`
+7. GitHub Actions builds and deploys the MyST site to GitHub Pages
 
 ## What's Included
 
@@ -168,8 +187,9 @@ Two version numbers exist and they are deliberately separate.
   and nowhere else that can drift: skill filenames carry no version, and every skill's
   `description` must quote the manifest's number. Bump it with
   `python scripts/build_skill_manifest.py --set-version 30`.
-- **Template release** (`v1.0.0`) — this repository, versioned by git tag and GitHub release
-  under semver. It is not written into any file; read it with `git describe --tags`.
+- **Template release** — this repository, versioned by git tag and GitHub release under
+  semver. It is deliberately written into no file, so it cannot go stale here; read it with
+  `git describe --tags`.
 
 `skills/manifest.json` also records the sha256 and byte count of every skill file, so the
 exact protocol bytes a review ran on can be identified after the fact. Regenerate it after
