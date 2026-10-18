@@ -15,6 +15,16 @@
   only with a `tool_probe` record, and records checks 10-13 as deferred, never as pass.
 - Two new rows in the orchestrator's failure-mode table: deferred check inherited as passed,
   and unsupported capability claim.
+- `comprev-curation-validator` gains three cross-package coherence checks, all hard fails.
+  Sections are curated independently, so a paper cited in several of them is described several
+  times and each description can be internally consistent while disagreeing with its siblings;
+  no per-section check can see that. `DOI_ATTRIBUTE_COHERENCE` (#11) requires findings sharing
+  a DOI to agree on study system, species, region and preparation, resolved against the paper's
+  own metadata. `SHARED_KEY_SOURCE_UNION` (#12) requires source sentences to be merged across
+  packages rather than partitioned, so a value sourced in one package is not deleted as
+  unsourceable in another. `CLAIM_DOES_NOT_EXCEED_SOURCE` (#13) is a contradiction screen that
+  fails when a source sentence states an explicit null while the claim asserts an effect, or
+  when the claim measures something the sentence does not.
 
 # Unreleased
 
