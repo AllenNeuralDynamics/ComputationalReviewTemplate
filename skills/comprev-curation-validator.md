@@ -1,6 +1,6 @@
 ---
 name: comprev-curation-validator
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Curation Validator — Binary Gate for Phase 5"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Curation Validator — Binary Gate for Phase 5"
 ---
 
 # Curation Validator — Binary Gate for Phase 5

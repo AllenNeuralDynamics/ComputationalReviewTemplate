@@ -1,6 +1,6 @@
 ---
 name: comprev-evidence-gathering
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Evidence Gathering Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Evidence Gathering Protocol"
 ---
 
 # Evidence Gathering Protocol

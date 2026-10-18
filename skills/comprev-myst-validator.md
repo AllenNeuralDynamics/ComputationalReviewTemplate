@@ -1,6 +1,6 @@
 ---
 name: comprev-myst-validator
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): MyST Validator — Binary Gate for Phases 7, 14, 19, 20"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): MyST Validator — Binary Gate for Phases 7, 14, 19, 20"
 ---
 
 # MyST Validator — Binary Gate for Phases 7, 14, 19, 20

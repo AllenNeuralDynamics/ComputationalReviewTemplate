@@ -1,6 +1,6 @@
 ---
 name: comprev-citation-validator
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Citation Validator — Binary Gate for Phases 3 and 9"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Citation Validator — Binary Gate for Phases 3 and 9"
 ---
 
 # Citation Validator — Binary Gate for Phases 3 and 9

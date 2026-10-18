@@ -1,6 +1,6 @@
 ---
 name: comprev-figure-construction
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Figure Construction — Worker skill for building publication-quality figures in scientific reviews and analyses. Covers both general figure design and review-specific requirements (cross-study comparison figures, figure_data usage, document style guide compliance)."
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Figure Construction — Worker skill for building publication-quality figures in scientific reviews and analyses. Covers both general figure design and review-specific requirements (cross-study comparison figures, figure_data usage, document style guide compliance)."
 ---
 
 ## Purpose

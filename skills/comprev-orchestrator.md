@@ -1,6 +1,6 @@
 ---
 name: comprev-orchestrator
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Expert Review Orchestrator v29 — Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages)."
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Expert Review Orchestrator v29 — Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages)."
 ---
 
 # Expert Review Orchestrator v29

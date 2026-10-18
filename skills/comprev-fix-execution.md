@@ -1,6 +1,6 @@
 ---
 name: comprev-fix-execution
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Citation Fix Execution Protocol"
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Citation Fix Execution Protocol"
 ---
 
 # Citation Fix Execution Protocol

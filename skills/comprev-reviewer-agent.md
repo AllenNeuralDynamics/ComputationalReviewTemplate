@@ -1,6 +1,6 @@
 ---
 name: comprev-reviewer-agent
-description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Worker skill for LITREVIEW agents conducting evidence gathering and section writing in scientific reviews. Defines HOW to evaluate literature, gather evidence, and write review prose. The orchestrator skill defines WHEN and WHAT — this skill defines HOW."
+description: "Expert Review Pipeline v30 (ComputationalReviewTemplate): Worker skill for LITREVIEW agents conducting evidence gathering and section writing in scientific reviews. Defines HOW to evaluate literature, gather evidence, and write review prose. The orchestrator skill defines WHEN and WHAT — this skill defines HOW."
 ---
 
 ## Purpose
