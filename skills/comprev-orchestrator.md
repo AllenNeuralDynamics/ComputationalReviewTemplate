@@ -1,5 +1,5 @@
 ---
-name: comprev-orchestrator-v29
+name: comprev-orchestrator
 description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Expert Review Orchestrator v29 — Coordinator-level skill governing how specialist agents compose outputs into unified long-form scientific reviews (30–200+ pages)."
 ---
 
@@ -44,10 +44,19 @@ published skills required**. LITREVIEW and DATAML are **roles**, not agent profi
 **Session setup (coordinator, before Phase 1).**
 1. Clone the review repository (created from ComputationalReviewTemplate) into the workspace,
    declaring the GitHub credential on the cell. Never print the token.
-2. Read this file from `skills/comprev-orchestrator-v29.md` in the clone.
+2. Read this file from `skills/comprev-orchestrator.md` in the clone.
 3. Save every `skills/*.md` file as an artifact in ONE `save_artifacts` call, and write the
    resulting `{skill_name: version_id}` map to `skill_vids.json` (save it too). These
    artifacts are the canonical, version-pinned skill texts for the whole run.
+4. **Stamp the pipeline identity.** Run `python scripts/build_skill_manifest.py --check` in
+   the clone. If it fails, STOP: the skill files do not match `skills/manifest.json`, so the
+   run cannot state which pipeline produced it. On pass, write `provenance/pipeline_version.json`
+   containing `pipeline_version` (from the manifest), `template_repo`, `template_commit`
+   (`git rev-parse HEAD`), `template_tag` (`git describe --tags --always`), `manifest_sha256`,
+   and the `{skill_name: version_id}` map from step 3. Every later phase that names the
+   pipeline version reads it from this file — Phase 1 (`review_request.md` header), Phase 13
+   and 20a (Methods M.8, `pipeline_metrics.json`). No phase hardcodes a version number, and the
+   repository release tag is NOT a pipeline version: releases are versioned independently.
 
 **What "Load skill X" means.** Wherever this pipeline says an agent "loads" a skill, the
 coordinator puts the skill's artifact marker in the delegation task, e.g.

@@ -1,3 +1,23 @@
+# Unreleased
+
+- **Breaking:** `skills/comprev-orchestrator-v29.md` → **`skills/comprev-orchestrator.md`**
+  (frontmatter `name` likewise). A generation bump no longer renames a file or breaks the
+  cross-references in four other skills. Prompts and bookmarks naming the old path must be
+  updated.
+- New `skills/manifest.json` — single source of truth for the pipeline generation plus the
+  sha256 and byte count of every skill file. Generated and verified by
+  `scripts/build_skill_manifest.py`; the new `Skill manifest` GitHub Actions workflow runs
+  `--check` on every push and pull request.
+- The pipeline generation and the repository release version are now explicitly separate: the
+  generation lives only in the manifest, the release only in git tags. `README.md` gains a
+  `Versioning` section stating this.
+- Session setup verifies the manifest and writes `provenance/pipeline_version.json`
+  (generation, template commit, template tag, manifest hash, skill artifact ids). Phase 1's
+  `review_request.md` header, Phase 13/20a Methods M.8 and `pipeline_metrics.json` now read
+  the version from that file instead of carrying a typed-in number.
+- `comprev-deploy-polish.md` gains the shared `Expert Review Pipeline v29
+  (ComputationalReviewTemplate):` description prefix, which the manifest check enforces.
+
 # v29 — Claude Science runtime compatibility
 
 - Runs on the current Claude Science product with nothing to install: the coordinator saves

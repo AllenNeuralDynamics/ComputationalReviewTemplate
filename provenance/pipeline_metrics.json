@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "comprev-orchestrator-v29",
+  "pipeline_version": "29",
   "title": "Computational Review (template scaffold)",
   "scope": {
     "section_count": null,
