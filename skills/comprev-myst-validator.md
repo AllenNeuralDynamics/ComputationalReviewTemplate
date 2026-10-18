@@ -271,6 +271,49 @@ Any other import is a fail. Reports offenders as `notebook:line:module`. **pass/
       fields are null/default: emit `"EVIDENCE_PARAMETERS_HONORED": "n/a"`
       with reason "no custom evidence parameters set".
 
+26. **PLUGIN_PAYLOAD_MATCHES_SOURCE** *(Phase 14V, 19V, 20V)*: For every
+    plugin that reads files at build time (a `stage: 'document'` transform
+    that calls `readFileSync`), run that transform over each `content/*.md`
+    page invoking its directive and compare the **bound payload** with the
+    files on disk. For `evidence-explorer`: the payload's `sections`,
+    `findings`, `conflicts` and `figure_data` lengths MUST equal the number
+    of evidence packages and the summed lengths of those arrays across
+    `evidence/evidence_section_*.json`, and every entry of `findings` MUST be
+    an object.
+
+    Require **equality, not non-emptiness**. A bind that drops three of
+    twelve sections passes any non-empty test while publishing an incomplete
+    explorer, and `argument_groups.*.supporting_findings` holds cite-key
+    *strings*, so a payload can be non-empty and still hold no findings.
+
+    This is the check that was missing: at 14V the pipeline previously
+    confirmed only that the directive was invoked (#21) and that the packages
+    were populated (#22), both of which passed while the Evidence Database
+    page published empty. The equivalent Phase 21 check (`PLUGIN_DATA_BOUND`
+    in `comprev-deploy-polish`) runs after deployment and is a re-check, not
+    the first line of defence. No `myst build` is required — invoke the
+    transform directly, which is what makes this affordable at 14V.
+    **HARD FAIL** on any mismatch.
+
+27. **DATA_PLUGIN_NEGATIVE_TEST** *(Phase 14V, 19V, 20V)*: Every
+    file-reading plugin MUST ship an executable test, and the validator MUST
+    run it and require exit status 0. For this template:
+    `node scripts/test_evidence_explorer.mjs`.
+
+    The test MUST cover both directions of emptiness, because fixing one
+    produced the other within a day:
+
+    1. A data directory holding **no** input files renders the documented
+       placeholder and the build survives — an un-instantiated template is
+       not a defect.
+    2. A directory holding input files the plugin matches to **nothing**, or
+       that it cannot read, **fails the build** rather than publishing an
+       empty widget.
+
+    A suite that cannot fail is not evidence. Confirm it detects a real
+    regression by running it against the last known-bad plugin revision
+    before trusting a pass. **pass/fail**.
+
 ## Output Schema
 
 The validator's gate JSON (e.g. `gate_sections_drafted.json` at 7V, `gate_assembly.json` at 14V, `gate_repository_push.json` at 20V — and the in-memory return value at 19V, which has no named gate file) MUST be a single JSON object containing — at minimum — these keys:
@@ -297,6 +340,8 @@ The validator's gate JSON (e.g. `gate_sections_drafted.json` at 7V, `gate_assemb
     "NO_WRITER_SCRATCHPAD": "pass|fail",
     "CITE_DIRECTIVE_SYNTAX_CLEAN": "pass|fail",
     "PLUGIN_DIRECTIVES_INVOKED": "pass|fail",
+    "PLUGIN_PAYLOAD_MATCHES_SOURCE": "pass|fail",
+    "DATA_PLUGIN_NEGATIVE_TEST": "pass|fail",
     "FIGURE_WIDTH_DECLARED": "pass|fail",
     "BIB_CITE_KEYS_RESOLVE": "pass|fail|n/a",
     "EVIDENCE_PARAMETERS_HONORED": "pass|fail|n/a",

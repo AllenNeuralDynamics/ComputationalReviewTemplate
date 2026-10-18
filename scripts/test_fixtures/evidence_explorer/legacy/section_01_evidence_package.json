@@ -1,0 +1,50 @@
+{
+ "section_id": "01",
+ "section_title": "Demo Section 1",
+ "findings": [
+  {
+   "finding_id": "F01-1",
+   "cite_key": "Author11",
+   "doi": "10.1234/demo.11",
+   "claim": "Demo claim 1 for section 1.",
+   "claim_source_sentence": "Verbatim demo sentence 1 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 11,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  },
+  {
+   "finding_id": "F01-2",
+   "cite_key": "Author12",
+   "doi": "10.1234/demo.12",
+   "claim": "Demo claim 2 for section 1.",
+   "claim_source_sentence": "Verbatim demo sentence 2 from the cited paper.",
+   "effect_size": "not reported",
+   "effect_size_source_sentence": "",
+   "n": 12,
+   "study_system": "mouse",
+   "replication_status": "replication_unknown",
+   "replication_evidence_dois": [],
+   "text_access": "fulltext",
+   "evidence": ""
+  }
+ ],
+ "conflicts": [
+  {
+   "conflict_id": "C01-1",
+   "paper_a_doi": "10.1234/demo.a1",
+   "paper_b_doi": "10.1234/demo.b1",
+   "paper_a_claim": "A reports an increase.",
+   "paper_b_claim": "B reports no change.",
+   "nature_of_conflict": "Direction of effect disagrees.",
+   "resolution_status": "unresolved"
+  }
+ ],
+ "figure_data": [],
+ "unique_papers": 2,
+ "total_findings": 2
+}
