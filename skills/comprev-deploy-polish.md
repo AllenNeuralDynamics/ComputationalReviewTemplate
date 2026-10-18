@@ -1,6 +1,6 @@
 ---
 name: comprev-deploy-polish
-description: Phase 21 (post-deployment) UX validation skill. Runs after Phase 20 push to main confirms green build. Catches deployment-class defects (per-page rendering, plugin data-binding, figure dropdown completeness, link health, asset paths, frontmatter visibility) that compile-time checks miss. Loaded by a DATAML validator sub-frame; produces gate_phase21_deploy_polish.json and (on FAIL) a structured fix-list returned to coordinator. Coordinator opens at most one targeted fix-loop iteration before final user sign-off.
+description: "Expert Review Pipeline v29 (ComputationalReviewTemplate): Deploy Polish — Phase 21 (post-deployment) UX validation skill. Runs after Phase 20 push to main confirms green build. Catches deployment-class defects (per-page rendering, plugin data-binding, figure dropdown completeness, link health, asset paths, frontmatter visibility) that compile-time checks miss. Loaded by a DATAML validator sub-frame; produces gate_phase21_deploy_polish.json and (on FAIL) a structured fix-list returned to coordinator. Coordinator opens at most one targeted fix-loop iteration before final user sign-off."
 ---
 
 # Deploy Polish — Phase 21 Post-Deployment UX Validation
@@ -240,6 +240,6 @@ Phase 20V adds a `PAGES_ENABLED` structural check that calls `GET /repos/$OWNER/
 
 ## Cross-references
 
-- `comprev-orchestrator-v29` §Phase 21 row (Phase Index) — phase wiring + gate transitions
-- `comprev-orchestrator-v29` §Directive Whitelist — source-side companion of `DIRECTIVE_RENDERED_OK`
+- `comprev-orchestrator` §Phase 21 row (Phase Index) — phase wiring + gate transitions
+- `comprev-orchestrator` §Directive Whitelist — source-side companion of `DIRECTIVE_RENDERED_OK`
 - `comprev-myst-validator` checks #9, #18 — repo-wide forbidden-lexicon and author-identity rules that this phase re-runs against rendered HTML

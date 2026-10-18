@@ -14,7 +14,7 @@ The pipeline executes 21 phases with **actor-critic separation** — 20 producti
 
 Runs on Claude Science with **nothing to install** — no agent profiles, no published skills.
 The coordinator reads the pipeline skills straight from this repository's `skills/` folder
-(see "Runtime: Claude Science" in `skills/comprev-orchestrator-v29.md`).
+(see "Runtime: Claude Science" in `skills/comprev-orchestrator.md`).
 
 1. **Create a new repo** from this template (Use this template → Create a new repository)
 2. **Edit three files** in the new repo:
@@ -31,7 +31,7 @@ GitHub Repository: https://github.com/[YOUR-ORG]/[YOUR-REPO]
 Clone it into the workspace. The files in its skills/ folder define the complete pipeline;
 nothing needs to be installed — follow the "Runtime: Claude Science" section of the orchestrator.
 
-skills/comprev-orchestrator-v29.md — The coordinator protocol. Read this FIRST.
+skills/comprev-orchestrator.md — The coordinator protocol. Read this FIRST.
 It defines the routing across 21 phases, gate artifacts, and the session protocol.
 Per-phase rules live in the agent skills, which the coordinator passes to sub-agents.
 
@@ -72,7 +72,7 @@ it can optionally be published from Customize → Skills, but this is not requir
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
-| `comprev-orchestrator-v29` | All | Coordinator | Sees everything |
+| `comprev-orchestrator` | All | Coordinator | Sees everything |
 | `comprev-scoping` | 1 | LITREVIEW | No barriers (first phase, sees user prompt) |
 | `comprev-evidence-gathering` | 2 | LITREVIEW | Cannot see critic/writing criteria |
 | `comprev-scaffold` | 4 | LITREVIEW | Cannot see critic criteria |
@@ -159,6 +159,36 @@ Phase 5 curation floors scale proportionally with your evidence density target.
 - **Max 4 parallel agents**: Prevents system resource exhaustion from too many simultaneous heavy agents.
 - **Gate checkpoints**: Each phase transition requires a named gate artifact. The coordinator verifies compliance before advancing.
 - **Full-text citation verification**: Every citation-claim pair is verified against the cited paper's full text (not just abstract). VERIFIED status requires a verbatim supporting passage from the paper. This catches interpretive mismatches where the abstract is topically compatible but the paper's findings contradict the review's claim.
+
+## Versioning
+
+Two version numbers exist and they are deliberately separate.
+
+- **Pipeline generation** (`v29`) — the skill protocol. It lives in `skills/manifest.json`
+  and nowhere else that can drift: skill filenames carry no version, and every skill's
+  `description` must quote the manifest's number. Bump it with
+  `python scripts/build_skill_manifest.py --set-version 30`.
+- **Template release** (`v1.0.0`) — this repository, versioned by git tag and GitHub release
+  under semver. It is not written into any file; read it with `git describe --tags`.
+
+`skills/manifest.json` also records the sha256 and byte count of every skill file, so the
+exact protocol bytes a review ran on can be identified after the fact. Regenerate it after
+editing any skill:
+
+```bash
+python scripts/build_skill_manifest.py          # regenerate
+python scripts/build_skill_manifest.py --check  # verify (CI runs this on every PR)
+```
+
+The check fails on a skill edited without a manifest regeneration, a version-bearing skill
+filename, a `name` that disagrees with its filename, a description quoting the wrong
+generation, or a README naming a generation the manifest does not.
+
+At session setup the coordinator verifies the manifest and writes
+`provenance/pipeline_version.json` into the review repository — pipeline generation, template
+commit, template tag, manifest hash, and the per-skill artifact ids the run actually used.
+Every later phase that reports a version reads it from there, so a published review states
+what produced it rather than what someone typed.
 
 ## Customization
 

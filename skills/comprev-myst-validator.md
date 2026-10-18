@@ -69,7 +69,7 @@ re.findall(r"\{cite:[pt]\}[A-Za-z]", text)     # missing opening backtick AFTER 
 Any hit is a fail. Each hit converts a citation into a literal code span and breaks rendering. Report offenders as `path:line:fragment`. **pass/fail**
 
 6a. **DIRECTIVE_WHITELIST_VIOLATION** *(Phase 7V, 19V)*: Every `:::{name}` directive in
-    `content/*.md` body files matches the whitelist documented in `comprev-orchestrator-v29`
+    `content/*.md` body files matches the whitelist documented in `comprev-orchestrator`
     §Directive Whitelist (`figure`, `dropdown`, `admonition`, `warning`, `authorship-explorer`
     in frontmatter only, `evidence-explorer`). Any `:::{contents}`, `:::{toctree}`,
     `:::{include}`, or `:::{tableofcontents}` in body sections is a hard fail — the build
