@@ -216,5 +216,9 @@ If you use this template in your research, please cite:
 }
 ```
 
-> Lecoq, J. (2026). *AllenNeuralDynamics/ComputationalReviewTemplate* (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.21213212
+> Lecoq, J. (2026). *AllenNeuralDynamics/ComputationalReviewTemplate*. Zenodo. https://doi.org/10.5281/zenodo.21213212
+
+That DOI is the *concept* DOI: it always resolves to the most recent release, so it needs no
+update when a version is cut. To cite one specific version instead, take that version's own
+DOI from the Zenodo record.
 
