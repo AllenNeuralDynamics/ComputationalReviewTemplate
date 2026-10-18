@@ -14,7 +14,10 @@
   strings as finding records, and swallowed every read failure in `catch { continue }` — so a
   complete evidence set bound an empty explorer with a green build. It now discovers the
   section files present (no hardcoded count), prefers `ev.findings`, and throws when nothing
-  loads; `:sections:` optionally declares the expected count.
+  loads; `:sections:` optionally declares the expected count. An evidence directory with no
+  JSON at all is treated as an un-instantiated template and renders a placeholder, so the
+  template's own build still passes; JSON files present but matching no package name stay
+  fatal.
 - All 20 skill files gain `name`/`description` YAML frontmatter (optional publishing).
 - README Quick Start rewritten (template → edit 3 files → connect GitHub → paste prompt).
 

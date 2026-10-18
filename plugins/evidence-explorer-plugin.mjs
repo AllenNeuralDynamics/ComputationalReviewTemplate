@@ -154,25 +154,46 @@ const evidenceTransform = {
         // Discover the sections actually present rather than assuming a count: reviews
         // instantiated from this template have different numbers of sections, so any
         // hardcoded range silently drops real sections or hunts for absent ones.
-        let presentSections = [];
+        let entries = [];
         try {
-          presentSections = [...new Set(
-            readdirSync(evidenceDir)
-              .map((f) => SECTION_FILE_RE.exec(f))
-              .filter(Boolean)
-              .map((m) => parseInt(m[1] ?? m[2], 10))
-          )].sort((a, b) => a - b);
+          entries = readdirSync(evidenceDir);
         } catch (e) {
           throw new EvidenceLoadError(
             'evidence-explorer: evidence directory ' + evidenceDir + ' could not be read (' +
             e.message + '). The explorer would publish empty.'
           );
         }
+        const presentSections = [...new Set(
+          entries
+            .map((f) => SECTION_FILE_RE.exec(f))
+            .filter(Boolean)
+            .map((m) => parseInt(m[1] ?? m[2], 10))
+        )].sort((a, b) => a - b);
         if (presentSections.length === 0) {
-          throw new EvidenceLoadError(
-            'evidence-explorer: no file in ' + evidenceDir + ' matches an evidence-package name (' +
-            NAME_PATTERNS.map((p) => p('NN')).join(', ') + '). The explorer would publish empty.'
-          );
+          // An evidence directory holding no JSON at all is an un-instantiated template:
+          // the packages are written by the review pipeline, so this page renders a
+          // placeholder instead of failing the template's own build. JSON files that ARE
+          // present but match no package name mean the naming has drifted — the failure
+          // that once published an empty explorer — and that stays fatal.
+          const jsonCount = entries.filter((f) => f.endsWith('.json')).length;
+          if (jsonCount > 0) {
+            throw new EvidenceLoadError(
+              'evidence-explorer: ' + jsonCount + ' JSON file(s) in ' + evidenceDir +
+              ' but none match an evidence-package name (' +
+              NAME_PATTERNS.map((p) => p('NN')).join(', ') + '). The explorer would publish empty.'
+            );
+          }
+          const msg = 'evidence-explorer: no evidence packages in ' + node.evidenceDir +
+            ' yet; rendering a placeholder in place of the explorer.';
+          if (utils && typeof utils.fileWarn === 'function') utils.fileWarn(vfile, msg, { node });
+          else console.warn(msg);
+          node.type = 'paragraph';
+          node.children = [{
+            type: 'text',
+            value: 'Evidence Explorer: no evidence packages found in ' + node.evidenceDir +
+              '. This page populates once the review pipeline writes evidence_section_NN.json.',
+          }];
+          return;
         }
         try {
           const sections = [];
