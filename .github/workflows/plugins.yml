@@ -23,3 +23,17 @@ jobs:
       # fixtures from scripts/test_fixtures/.
       - name: Evidence explorer data binding
         run: node scripts/test_evidence_explorer.mjs
+
+  prose-fidelity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Standard library only. The self-test must pass before any fidelity result
+      # from this script is trusted.
+      - name: Prose fidelity comparator self-test
+        run: python scripts/check_prose_fidelity.py --self-test

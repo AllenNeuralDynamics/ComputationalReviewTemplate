@@ -1,3 +1,22 @@
+# Unreleased
+
+- New skill `comprev-writing-style`: prose rules for review sections, loaded by the writers at
+  Phases 7 and 11, applied as a standard by the critics at Phases 8 and 12, and by the fix
+  executor at Phase 18. Nine rules — order of argument, one move per paragraph, enumerations as
+  lists, relations restored after splitting, one idea per sentence, the finding in the stress
+  position, agents and actions, no narration of the review's own retrieval, and one typographic
+  convention. The skill states that a caveat outranks brevity: shortening prose by deleting a
+  qualification is a defect, not a style improvement.
+- New `scripts/check_prose_fidelity.py`: compares two versions of prose and asserts that every
+  citation role, numeric value and cross-reference survived. Citation roles are compared as
+  ordered key tuples, so a multi-key role cannot be split or merged, and range dashes are
+  distinguished from minus signs. `--self-test` checks the comparator against edits that must
+  register as equivalent and corruptions that must be caught, including a flipped sign; the new
+  `prose-fidelity` CI job runs it on every push and pull request.
+- The orchestrator now routes `comprev-writing-style` to every phase that writes or edits prose,
+  and Phase 18 re-checks prose fidelity after applying fixes.
+- Skill count 20 → 21; manifest regenerated.
+
 # v1.2.1
 
 - Pipeline generation 29 -> **30**. v1.2.0 changed the skill protocol — three new checks in
