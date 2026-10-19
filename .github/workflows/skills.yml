@@ -22,3 +22,9 @@ jobs:
       # Standard library only — no dependencies to install.
       - name: Verify skills/manifest.json matches skills/
         run: python scripts/build_skill_manifest.py --check
+
+      # The repository must agree with itself: skill counts, README tables and
+      # phase columns against the orchestrator's phase index, gates routed,
+      # generation quoted consistently, referenced files present.
+      - name: Template consistency audit
+        run: python scripts/check_template_consistency.py

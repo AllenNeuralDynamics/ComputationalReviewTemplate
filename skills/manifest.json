@@ -72,14 +72,14 @@
     {
       "name": "comprev-myst-validator",
       "file": "skills/comprev-myst-validator.md",
-      "bytes": 23192,
-      "sha256": "1c1efb9837a17725a530f5705d9c84fd5a14ce1e97296fdeaa5f6ae8e1e50193"
+      "bytes": 23754,
+      "sha256": "c154b7452d71f6b8c1fe776c43555101f33562482f3df751bcedb092f0351b77"
     },
     {
       "name": "comprev-orchestrator",
       "file": "skills/comprev-orchestrator.md",
-      "bytes": 45240,
-      "sha256": "ad515b1f64c7fa38baecbce4ac863d00126d116d5786e8b703e1a2deb23fdb55"
+      "bytes": 45347,
+      "sha256": "b0557831797996f2f9f5eda78cd0842a16d50e911a1e2d8676a6ffccb24c2ef9"
     },
     {
       "name": "comprev-reviewer-agent",
