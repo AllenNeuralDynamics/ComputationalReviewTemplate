@@ -79,7 +79,7 @@ N. Conclusion
 
 ## What's Included
 
-### Skills (20 files in `skills/`)
+### Skills (21 files in `skills/`)
 
 The pipeline is split into role-specific skills with **information barriers** to enforce actor-critic separation. Worker skills produce content; validator skills run after each phase as blinded gates that emit named pass/fail checks into the gate JSON.
 
@@ -87,7 +87,7 @@ LITREVIEW and DATAML are **roles**, not agent profiles: each phase is delegated 
 sub-agent that is handed the listed skill files. Every skill file carries YAML frontmatter, so
 it can optionally be published from Customize → Skills, but this is not required.
 
-**Worker skills (13):**
+**Worker skills (14):**
 
 | Skill | Phase | Role | Barrier |
 |-------|-------|------|---------|
@@ -104,6 +104,7 @@ it can optionally be published from Customize → Skills, but this is not requir
 | `comprev-dataml-phases` | 1, 3, 5, 9, 13–15, 17, 19–20 | DATAML | No barriers (mechanical work) |
 | `comprev-reviewer-agent` | 2, 4, 6–8, 10–12, 16, 18 | LITREVIEW | Evidence & writing procedures |
 | `comprev-figure-construction` | 7 | LITREVIEW | Figure production |
+| `comprev-writing-style` | 7, 8, 11, 12, 18 | LITREVIEW | Prose rules; the standard the critics apply to writing |
 
 **Validator skills (7):**
 
@@ -198,6 +199,16 @@ editing any skill:
 ```bash
 python scripts/build_skill_manifest.py          # regenerate
 python scripts/build_skill_manifest.py --check  # verify (CI runs this on every PR)
+```
+
+`scripts/check_prose_fidelity.py` guards any pass that rewrites existing prose. It compares two
+versions and asserts that every citation role, numeric value and cross-reference survived;
+`--self-test` verifies the comparator itself against known-equivalent and known-corrupt edits,
+and CI runs it on every PR.
+
+```bash
+python scripts/check_prose_fidelity.py --self-test
+python scripts/check_prose_fidelity.py before.md after.md
 ```
 
 The check fails on a skill edited without a manifest regeneration, a version-bearing skill
