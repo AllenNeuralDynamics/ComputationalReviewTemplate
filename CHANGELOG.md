@@ -16,6 +16,21 @@
 - The orchestrator now routes `comprev-writing-style` to every phase that writes or edits prose,
   and Phase 18 re-checks prose fidelity after applying fixes.
 - Skill count 20 → 21; manifest regenerated.
+- Fix: `ALL_PLUGINS_LISTED` asserted that `myst.yml` lists four plugins; the template ships
+  three, so the check failed a correct repository and had to be waived during a real run. It now
+  derives both sides — local `plugins/*.mjs` against the declared `project.plugins` entries —
+  and the skill states that hardcoding a count is the defect, since a review may add a plugin.
+- Fix: the orchestrator's Phase 20 push rule pointed at `gate_phase19v.json`, which no validator
+  emits; `comprev-myst-validator` states that 19V returns its map in memory and writes no gate
+  file. The rule now names what 19V actually provides.
+- Fix: the README's phase column claimed `comprev-verification` runs at 15-17 (the index routes
+  it at 16 only) and `comprev-triples-validator` at 15V only (the index routes it at 15V and 17V).
+- New `scripts/check_template_consistency.py`, run by CI on every push and pull request: twelve
+  checks that the repository agrees with itself — skill counts across every place that states
+  one, skills referenced but absent, orphan skills, README tables and phase columns against the
+  orchestrator's phase index, gates named in a skill but not routed, gates routed but produced by
+  nothing, generation quoted consistently, versioned filenames, and referenced scripts and
+  plugins present. Verified to fail on each of the three defects above.
 
 # v1.2.1
 

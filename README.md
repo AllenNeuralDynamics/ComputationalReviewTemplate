@@ -99,7 +99,7 @@ it can optionally be published from Customize → Skills, but this is not requir
 | `comprev-section-writing` | 7 | LITREVIEW | Cannot see critic criteria |
 | `comprev-critic` | 8, 12 | LITREVIEW | Blinded — no scaffold or writing template |
 | `comprev-integration` | 10–11 | LITREVIEW | Full visibility (integration role) |
-| `comprev-verification` | 15–17 | LITREVIEW | Cannot see fix protocol |
+| `comprev-verification` | 16 | LITREVIEW | Cannot see fix protocol |
 | `comprev-fix-execution` | 18 | LITREVIEW | Cannot see verification criteria |
 | `comprev-dataml-phases` | 1, 3, 5, 9, 13–15, 17, 19–20 | DATAML | No barriers (mechanical work) |
 | `comprev-reviewer-agent` | 2, 4, 6–8, 10–12, 16, 18 | LITREVIEW | Evidence & writing procedures |
@@ -114,7 +114,7 @@ it can optionally be published from Customize → Skills, but this is not requir
 | `comprev-evidence-validator` | 2V | DATAML | Evidence-package schema, per-cluster coverage, fulltext rate |
 | `comprev-curation-validator` | 5V | DATAML | Per-section evidence package size, conflict and figure-data presence |
 | `comprev-citation-validator` | 3V, 9V | DATAML | citation_key_map (Phase 3) and BibTeX (Phase 9) — DOI resolution, CrossRef matching, key uniqueness, author match |
-| `comprev-triples-validator` | 15V | DATAML | One triple per `{cite:p}`/`{cite:t}` occurrence, no sampling |
+| `comprev-triples-validator` | 15V, 17V | DATAML | One triple per `{cite:p}`/`{cite:t}` occurrence, no sampling |
 | `comprev-myst-validator` | 7V, 14V, 19V, 20V | DATAML | MyST build, structural checks, figure/heading consistency, plugin-directive invocation, evidence-package population, directive whitelist (7V/19V), repo-wide forbidden-lexicon glob (19V), author-identity placeholder check (20V) |
 | `comprev-deploy-polish` | 21 | DATAML | Post-deployment UX gate: tier-A static checks against built Pages-artifact tarball; tier-B live-URL checks (per-page HTTP, external link health) with manual-checklist fallback when deploy URL is sandbox-inaccessible |
 

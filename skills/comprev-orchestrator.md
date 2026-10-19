@@ -443,7 +443,7 @@ Every validator gate JSON that produces post-fix content artifacts (Phase 7V, 14
 
 **Phase 20 push rule.** The repository-push task receives `section_md_vids_final` from the most recent validator gate (typically `gate_assembly.json` at 14V, augmented by Phase 19V for any fix-pass updates) and uses those VIDs verbatim. The push task MUST NOT call `host.artifacts(filename=..., latest=True)` to look up "the latest" content. A chronologically-later writer save can leapfrog a coordinator-side or validator-side fix; "latest" is not synonymous with "canonical." If Phase 19V's gate is present, its `section_md_vids_final` supersedes the corresponding entries in Phase 14V's; merge by giving 19V precedence per filename.
 
-Phase 20V re-verifies the deployed content matches the canonical map by comparing the live repo's file contents against the artifacts referenced by VID in `gate_assembly.json` / `gate_phase19v.json`.
+Phase 20V re-verifies the deployed content matches the canonical map by comparing the live repo's file contents against the artifacts referenced by VID in `gate_assembly.json`, together with the `section_md_vids_final` map returned in memory by the Phase 19V validator, which emits no gate file of its own.
 
 ### Save-after-write race
 

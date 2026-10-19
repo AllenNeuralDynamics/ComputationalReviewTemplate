@@ -185,7 +185,15 @@ Any other import is a fail. Reports offenders as `notebook:line:module`. **pass/
     `content/*.md`. Forbidden tokens (case-insensitive substring match on `name:` values
     and byline text): `Human Supervisor`, `Anonymous`, `TBD`, `[NAME]`, `<...>` template
     angle-brackets, `Author N` patterns. **pass/fail**
-19. **ALL_PLUGINS_LISTED**: myst.yml lists all 4 plugins? **pass/fail**
+19. **ALL_PLUGINS_LISTED**: every plugin the repository ships is declared in
+    `myst.yml` `project.plugins`. Derive both sides rather than asserting a count:
+    list `plugins/*.mjs` on disk, read the `project.plugins` entries, and require
+    every local file to appear among them. Remote entries (a plugin loaded from a
+    release URL) have no local file and are not expected to have one.
+
+    Do not hardcode how many plugins there are. A review may add one, and a check
+    that names a number fails a correct repository — this check asserted four
+    against a template that ships three, and had to be waived. **pass/fail**
 20. **HEADING_STYLE_CONSISTENT**: Run `audit_headings()` (defined in `comprev-critic.md`)
     across all `content/*.md` files. Zero problems of any type:
     `MANUAL_NUMBER_PREFIX`, `WRAPPED_HEADING`, `MULTI_SPACE_AFTER_NUMBER`,
